@@ -63,7 +63,7 @@
         #health-bar-fill { background-color: var(--health-color); }
         #xp-bar-fill { background-color: var(--xp-color); }
         .modal {
-            position: absolute;
+            position: fixed; /* CORREÇÃO: Mudei para 'fixed' para garantir que o modal sempre cubra a viewport inteira */
             inset: 0;
             background-color: rgba(0,0,0,0.7);
             backdrop-filter: blur(5px);
@@ -401,11 +401,8 @@
     // --- Configuração Inicial e Elementos do DOM ---
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
-    let screenWidth = window.innerWidth;
-    let screenHeight = window.innerHeight;
-    canvas.width = screenWidth;
-    canvas.height = screenHeight;
-    
+    let screenWidth, screenHeight; // CORREÇÃO: Removida a inicialização aqui
+
     // --- Otimização: Cache do background ---
     const gridCanvas = document.createElement('canvas');
     const gridCtx = gridCanvas.getContext('2d');
@@ -1603,8 +1600,27 @@
         soundManager.play('levelUp');
     }
 
+    // CORREÇÃO: Nova função para redimensionar o canvas corretamente
+    function resizeCanvas() {
+        // Obter o tamanho real que o canvas ocupa na tela, definido pelo CSS
+        const rect = canvas.getBoundingClientRect();
+
+        // Verificar se o tamanho mudou para evitar trabalho desnecessário
+        if (canvas.width !== rect.width || canvas.height !== rect.height) {
+            // Definir a resolução (pixels) do canvas para corresponder ao seu tamanho de exibição
+            // Isso evita que o navegador estique ou achate a imagem.
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+
+        // Atualizar as variáveis globais de dimensão da tela usadas pela câmera e outras lógicas
+        screenWidth = canvas.width;
+        screenHeight = canvas.height;
+    }
+
     function init() {
         soundManager = new SoundManager();
+        resizeCanvas(); // CORREÇÃO: Chamar a função para definir o tamanho inicial correto
         loadProgress();
         setupEventListeners();
         createGridPattern();
@@ -2029,11 +2045,9 @@
             if (e.key === ' ' || e.key === 'Shift') { e.preventDefault(); player?.dash(); }
         });
         window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
-        window.addEventListener('resize', () => {
-            screenWidth = window.innerWidth; screenHeight = window.innerHeight;
-            canvas.width = screenWidth; canvas.height = screenHeight;
-            if (camera) { camera.width = screenWidth; camera.height = screenHeight; }
-        });
+        
+        // CORREÇÃO: Usar a nova função de redimensionamento
+        window.addEventListener('resize', resizeCanvas);
         
         // --- Controles de Toque Flexíveis ---
         let joystickID = null;
