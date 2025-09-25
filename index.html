@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
     <title>Sobrevivente 2D Otimizado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
@@ -92,6 +92,14 @@
             from { transform: scale(0.9); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
+
+        /* CORREÇÃO APLICADA AQUI */
+        #hud {
+            /* Aumentamos o valor base para 2.5rem (equivalente a 'top-10') 
+               e mantemos o ajuste da área segura. Isso garante que ele desça o suficiente. */
+            top: calc(2.5rem + env(safe-area-inset-top)); 
+        }
+
         .btn {
             padding: 0.75rem 1.5rem;
             font-size: 1rem;
@@ -254,7 +262,9 @@
         /* NOVO: Ajustes para telas na horizontal (mobile em modo paisagem) */
         @media (orientation: landscape) and (max-height: 500px) {
             #hud {
-                top: 0.5rem; left: 0.5rem; right: 0.5rem;
+                left: 0.5rem; right: 0.5rem;
+                /* Adicionamos a correção para a área segura também aqui, com um valor menor */
+                top: calc(0.5rem + env(safe-area-inset-top)); 
             }
             /* Reduz o texto do HUD para economizar espaço vertical */
             #level-text, #wave-timer { font-size: 0.75rem; }
@@ -295,7 +305,8 @@
 
     <div id="game-container" class="relative w-screen h-screen">
         <canvas id="game-canvas"></canvas>
-        <div id="hud" class="absolute top-4 left-4 right-4" style="display: none;">
+        <!-- CORREÇÃO APLICADA AQUI: Removida a classe 'top-4' -->
+        <div id="hud" class="absolute left-4 right-4" style="display: none;">
             <div class="flex justify-between items-center mb-2">
                 <div id="level-text" class="text-base sm:text-lg">Nível 1</div>
                 <div id="gems-container" class="flex items-center gap-2">
@@ -2109,3 +2120,4 @@
     </script>
 </body>
 </html>
+
