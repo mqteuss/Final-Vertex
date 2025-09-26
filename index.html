@@ -48,6 +48,8 @@
             width: 100%; 
             height: 100%;
         }
+        
+        /* ALTERAÇÃO APLICADA: Novo estilo para a barra inspirada no Minecraft */
         .hud-bar {
             position: relative;
             height: 1rem;
@@ -56,10 +58,27 @@
             overflow: hidden;
             border: 2px solid var(--dark-border);
         }
+
+        /* ALTERAÇÃO APLICADA: Adicionado pseudo-elemento para criar os segmentos */
+        .hud-bar::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 8px,
+                rgba(0,0,0,0.4) 8px,
+                rgba(0,0,0,0.4) 10px
+            );
+            pointer-events: none; /* Garante que não interfira com o mouse */
+        }
+        
         .hud-bar-fill {
             height: 100%;
             transition: width 0.3s ease-in-out;
         }
+
         #health-bar-fill { background-color: var(--health-color); }
         #xp-bar-fill { background-color: var(--xp-color); }
         .modal {
@@ -100,27 +119,40 @@
             top: calc(2.5rem + env(safe-area-inset-top)); 
         }
 
+        /* ALTERAÇÃO APLICADA: Efeito de sombra e borda nos botões */
         .btn {
             padding: 0.75rem 1.5rem;
             font-size: 1rem;
             transition: all 0.1s ease-out;
-            border: 3px solid var(--light-text);
+            border: 2px solid var(--light-text);
+            border-radius: 6px;
             background-color: var(--accent-bg);
             color: var(--light-text);
             text-transform: uppercase;
             cursor: pointer;
+            box-shadow: 0 4px 0 var(--dark-border), 0 5px 5px rgba(0,0,0,0.4);
         }
         .btn:hover {
             background-color: #6a6a8e;
         }
+        /* ALTERAÇÃO APLICADA: Ajuste no estado ativo para o efeito de "pressionar" */
         .btn:active {
-            transform: scale(0.95);
+            transform: translateY(2px) scale(0.98);
+            box-shadow: 0 2px 0 var(--dark-border);
         }
         .btn:disabled {
             background-color: #3a3a5e;
             cursor: not-allowed;
             opacity: 0.7;
+            box-shadow: 0 2px 0 var(--dark-border);
+            transform: translateY(2px);
         }
+        
+        /* ALTERAÇÃO APLICADA: Efeito de brilho no título */
+        #start-modal h1 {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 15px rgba(138, 138, 255, 0.3);
+        }
+        
         .card {
             background-color: #3a3a5e;
             border: 3px solid var(--light-text);
@@ -217,6 +249,11 @@
             padding-bottom: 0.5rem;
             margin-bottom: -2px;
             border-radius: 0;
+            box-shadow: none; /* Remove a sombra dos botões de aba */
+        }
+        .tab-btn:active {
+            transform: none; /* Remove o efeito de clique das abas */
+            box-shadow: none;
         }
         .tab-btn.active-tab {
             border-bottom-color: var(--player-color);
@@ -305,7 +342,6 @@
 
     <div id="game-container" class="relative w-screen h-screen">
         <canvas id="game-canvas"></canvas>
-        <!-- CORREÇÃO APLICADA AQUI: Removida a classe 'top-4' -->
         <div id="hud" class="absolute left-4 right-4" style="display: none;">
             <div class="flex justify-between items-center mb-2">
                 <div id="level-text" class="text-base sm:text-lg">Nível 1</div>
@@ -315,11 +351,14 @@
                 </div>
                 <div id="wave-timer" class="text-base sm:text-lg"></div>
             </div>
-            <div class="hud-bar w-full">
-                <div id="health-bar-fill" class="hud-bar-fill"></div>
-            </div>
-            <div class="hud-bar w-full mt-2">
-                <div id="xp-bar-fill" class="hud-bar-fill"></div>
+            
+            <div class="flex w-full gap-2 mt-2">
+                <div class="hud-bar w-full">
+                    <div id="health-bar-fill" class="hud-bar-fill"></div>
+                </div>
+                <div class="hud-bar w-full">
+                    <div id="xp-bar-fill" class="hud-bar-fill"></div>
+                </div>
             </div>
         </div>
 
@@ -330,10 +369,7 @@
                 <div class="flex flex-col gap-4">
                     <button id="start-button" class="btn">Iniciar Jogo</button>
                     <button id="upgrades-button" class="btn">Arsenal</button>
-                </div>
-                <div id="audio-settings" class="mt-8 flex items-center justify-center gap-4">
-                    <button id="mute-button" class="btn text-xl p-2 leading-none">🔊</button>
-                    <input type="range" id="volume-slider" min="0" max="1" step="0.01" class="w-40">
+                    <button id="options-button" class="btn">Opções</button>
                 </div>
                  <div class="absolute top-4 right-4 flex items-center gap-2 text-lg">
                     <span class="text-yellow-400">♦</span>
@@ -363,6 +399,24 @@
 
                 <div class="mt-6 text-center">
                     <button id="upgrades-back-button" class="btn">Voltar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="options-modal" class="modal" style="display: none;">
+            <div class="modal-content text-center">
+                <h2 class="text-2xl sm:text-3xl mb-8">Opções</h2>
+                
+                <div id="audio-settings" class="flex flex-col items-center justify-center gap-6">
+                    <p class="text-lg">Volume</p>
+                    <div class="flex items-center justify-center gap-4">
+                        <button id="mute-button" class="btn text-xl p-2 leading-none">🔊</button>
+                        <input type="range" id="volume-slider" min="0" max="1" step="0.01" class="w-40">
+                    </div>
+                </div>
+
+                <div class="mt-12 text-center">
+                     <button id="options-back-button" class="btn w-full">Voltar</button>
                 </div>
             </div>
         </div>
@@ -450,6 +504,10 @@
         showUpgradesTab: document.getElementById('show-upgrades-tab'),
         showWeaponsTab: document.getElementById('show-weapons-tab'),
         weaponShopContainer: document.getElementById('weapon-shop-container'),
+        // NOVO: Elementos do modal de opções
+        optionsModal: document.getElementById('options-modal'),
+        optionsButton: document.getElementById('options-button'),
+        optionsBackButton: document.getElementById('options-back-button'),
     };
     
     // --- Variáveis Globais do Jogo ---
@@ -2029,6 +2087,16 @@
         DOM.upgradesBackButton.addEventListener('click', () => {
             DOM.upgradesModal.style.display = 'none'; DOM.startModal.style.display = 'flex';
         });
+        // NOVO: Listeners para o modal de opções
+        DOM.optionsButton.addEventListener('click', () => {
+            DOM.startModal.style.display = 'none';
+            DOM.optionsModal.style.display = 'flex';
+        });
+        DOM.optionsBackButton.addEventListener('click', () => {
+            DOM.optionsModal.style.display = 'none';
+            DOM.startModal.style.display = 'flex';
+        });
+
         DOM.restartButton.addEventListener('click', () => {
             DOM.gameOverModal.style.display = 'none'; DOM.startModal.style.display = 'flex';
             updateGemDisplays(); gameState = 'start';
@@ -2120,4 +2188,3 @@
     </script>
 </body>
 </html>
-
