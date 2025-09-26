@@ -116,7 +116,7 @@
         #hud {
             /* Aumentamos o valor base para 2.5rem (equivalente a 'top-10') 
                e mantemos o ajuste da área segura. Isso garante que ele desça o suficiente. */
-            top: calc(2.5rem + env(safe-area-inset-top)); 
+            top: calc(1rem + env(safe-area-inset-top)); 
         }
 
         /* ALTERAÇÃO APLICADA: Efeito de sombra e borda nos botões */
@@ -343,6 +343,14 @@
     <div id="game-container" class="relative w-screen h-screen">
         <canvas id="game-canvas"></canvas>
         <div id="hud" class="absolute left-4 right-4" style="display: none;">
+            <!-- Barra de Vida do Chefe -->
+            <div id="boss-hud" class="w-full px-4 mb-4" style="display: none;">
+                <p id="boss-name" class="text-center text-xl mb-2 text-purple-300"></p>
+                <div class="hud-bar w-full h-6 border-4 border-purple-400 bg-purple-900/50">
+                    <div id="boss-health-bar-fill" class="hud-bar-fill" style="background-color: #be4dff;"></div>
+                </div>
+            </div>
+
             <div class="flex justify-between items-center mb-2">
                 <div id="level-text" class="text-base sm:text-lg">Nível 1</div>
                 <div id="gems-container" class="flex items-center gap-2">
@@ -480,6 +488,9 @@
         levelText: document.getElementById('level-text'),
         runGemsCount: document.getElementById('run-gems-count'),
         waveTimerText: document.getElementById('wave-timer'),
+        bossHud: document.getElementById('boss-hud'),
+        bossName: document.getElementById('boss-name'),
+        bossHealthBar: document.getElementById('boss-health-bar-fill'),
         abilityModal: document.getElementById('ability-modal'),
         abilityOptions: document.getElementById('ability-options'),
         startModal: document.getElementById('start-modal'),
@@ -504,7 +515,6 @@
         showUpgradesTab: document.getElementById('show-upgrades-tab'),
         showWeaponsTab: document.getElementById('show-weapons-tab'),
         weaponShopContainer: document.getElementById('weapon-shop-container'),
-        // NOVO: Elementos do modal de opções
         optionsModal: document.getElementById('options-modal'),
         optionsButton: document.getElementById('options-button'),
         optionsBackButton: document.getElementById('options-back-button'),
@@ -521,6 +531,7 @@
     let gameTime = 0;
     let lastTime = 0;
     let animationFrameId;
+    let bossWaveActive = false; // NOVA: Controla a onda do chefe
 
     let playerData = {
         totalSoulGems: 9999,
@@ -542,6 +553,7 @@
             'bat':   { size: 12, color: '#ff4da6', hp: 20, maxHp: 20, speed: 230, damage: 12, xp: 4, aggroRange: 350, diveSpeed: 1200, diveWindup: 0.3, diveCooldown: 2.5, circlingDist: 200 },
             'brute': { size: 30, color: '#ff4d4d', hp: 100, maxHp: 100, speed: 120, damage: 20, xp: 8, slamDamage: 30 },
             'mage':  { size: 22, color: '#be4dff', hp: 40, maxHp: 40, speed: 130, damage: 8, xp: 12 },
+            'spectral_elder': {}, // Adicionado para o chefe
         },
         WEAPONS: {
             'fireball': { name: 'Bola de Fogo', desc: 'Dispara uma bola de fogo que perfura inimigos.', cooldown: 0.8, damage: 15, speed: 400, pierce: 1, size: 8, color: '#ff8c1a', cost: 0 },
@@ -846,6 +858,7 @@
             this.isAlive = true;
             this.meleeAttackRange = this.size / 2 + 5;
             this.isChampion = false;
+            this.isBoss = false; // Adicionado para identificar chefes
         }
 
         makeChampion() {
@@ -1322,6 +1335,352 @@
         }
     }
 
+    // --- NOVA CLASSE: CHEFE ANCIÃO ESPECTRAL ---
+    class SpectralElder extends Enemy {
+        constructor(x, y) {
+            super(x, y, 'spectral_elder');
+            this.maxHp = 10000;
+            this.hp = this.maxHp;
+            this.size = 80;
+            this.speed = 80;
+            this.damage = 0; // Sem dano de contato
+            this.xpValue = 500;
+            this.phase = 1;
+            this.isBoss = true;
+            this.castingInfo = null; // { type, duration, progress }
+
+            // Aparência
+            this.orbitingSkulls = [
+                { angle: 0, dist: this.size * 1.5, size: 15 },
+                { angle: Math.PI, dist: this.size * 1.5, size: 15 },
+                { angle: Math.PI / 2, dist: this.size * 2.0, size: 12 },
+                { angle: 3 * Math.PI / 2, dist: this.size * 2.0, size: 12 },
+            ];
+            this.trail = [];
+            this.trailTimer = 0.05;
+
+            // Timers de Ataque
+            this.actionTimer = 2;
+            this.teleportCooldown = 7;
+            this.summonCooldown = 10;
+            this.soulBurstCooldown = 3;
+            this.soulHarvestCooldown = 12;
+        }
+
+        update(dt) {
+             // Lógica do rastro fantasma
+            this.trailTimer -= dt;
+            if (this.trailTimer <= 0) {
+                this.trail.push({ x: this.x, y: this.y, size: this.size, alpha: 0.5 });
+                this.trailTimer = 0.05;
+            }
+            for (let i = this.trail.length - 1; i >= 0; i--) {
+                this.trail[i].alpha -= dt * 2;
+                if (this.trail[i].alpha <= 0) {
+                    this.trail.splice(i, 1);
+                }
+            }
+
+            // Lógica de "Casting" (Canalização de Habilidade)
+            if (this.castingInfo) {
+                this.castingInfo.progress += dt;
+                // Para o efeito visual de sugar partículas
+                const coreColor = this.phase === 1 ? 'rgba(220, 240, 255, 0.9)' : 'rgba(255, 180, 180, 0.9)';
+                if (Math.random() < 0.6) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 300 * (1 - (this.castingInfo.progress / this.castingInfo.duration));
+                    particles.push(new Particle(this.x + Math.cos(angle) * dist, this.y + Math.sin(angle) * dist, coreColor, 0.3, 3, -400));
+                }
+
+                if (this.castingInfo.progress >= this.castingInfo.duration) {
+                    this.finishAction(this.castingInfo.type);
+                    this.castingInfo = null;
+                }
+                return; // Não faz mais nada enquanto canaliza
+            }
+
+
+            // Transição de fase
+            if (this.phase === 1 && this.hp / this.maxHp <= 0.5) {
+                this.enterPhase2();
+            }
+
+            // Atualiza timers
+            this.actionTimer -= dt;
+            this.teleportCooldown -= dt;
+            this.summonCooldown -= dt;
+            this.soulBurstCooldown -= dt;
+            if (this.phase === 2) this.soulHarvestCooldown -= dt;
+
+            // Atualiza caveiras orbitais
+            this.orbitingSkulls.forEach((skull, i) => {
+                skull.angle += (1 + i * 0.1) * dt;
+            });
+
+            // Movimento (flutuante)
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > 300) { // Mantém distância
+                this.x += (dx / dist) * this.speed * dt;
+                this.y += (dy / dist) * this.speed * dt;
+            } else {
+                 this.x -= (dx / dist) * this.speed * 0.5 * dt;
+                 this.y -= (dy / dist) * this.speed * 0.5 * dt;
+            }
+
+            // Seleção de Ação da IA
+            if (this.actionTimer <= 0) {
+                this.performAction();
+            }
+
+            if (this.flashTimer > 0) this.flashTimer -= dt;
+        }
+
+        performAction() {
+            const actions = [];
+            if (this.teleportCooldown <= 0) actions.push('teleport');
+            if (this.summonCooldown <= 0) actions.push('summon');
+            if (this.soulBurstCooldown <= 0) actions.push('soulBurst');
+            if (this.phase === 2 && this.soulHarvestCooldown <= 0) actions.push('soulHarvest');
+
+            if (actions.length === 0) {
+                actions.push('soulBurst'); // Ação padrão
+            }
+
+            const chosenAction = actions[Math.floor(Math.random() * actions.length)];
+            this.startAction(chosenAction);
+        }
+
+        startAction(type) {
+             switch (type) {
+                case 'teleport':
+                    this.finishAction('teleport'); // Teleporte é instantâneo
+                    break;
+                case 'summon':
+                    this.castingInfo = { type: 'summon', duration: 1.5, progress: 0 };
+                    this.actionTimer = 2;
+                    break;
+                case 'soulHarvest':
+                    this.castingInfo = { type: 'soulHarvest', duration: 2.5, progress: 0 };
+                    this.actionTimer = this.castingInfo.duration;
+                    break;
+                case 'soulBurst':
+                default:
+                    this.castingInfo = { type: 'soulBurst', duration: 1.0, progress: 0 };
+                    this.actionTimer = 1.5;
+                    break;
+            }
+        }
+
+        finishAction(type) {
+             switch (type) {
+                case 'teleport':
+                    this.ghostTeleport();
+                    this.teleportCooldown = this.phase === 1 ? 8 : 5;
+                    if (this.phase === 2) this.actionTimer = 0.2; // Combo na fase 2!
+                    else this.actionTimer = 1.0;
+                    break;
+                case 'summon':
+                    this.summonEchoes();
+                    this.summonCooldown = this.phase === 1 ? 12 : 8;
+                    this.actionTimer = 2;
+                    break;
+                case 'soulHarvest':
+                    this.soulHarvest();
+                    this.soulHarvestCooldown = 15;
+                    this.actionTimer = 2.0;
+                    break;
+                case 'soulBurst':
+                default:
+                    this.soulBurst();
+                    this.soulBurstCooldown = this.phase === 1 ? 3 : 1.5;
+                    this.actionTimer = this.soulBurstCooldown;
+                    break;
+            }
+        }
+
+        soulBurst() {
+            const amount = this.phase === 1 ? 6 : 10;
+            for (let i = 0; i < amount; i++) {
+                setTimeout(() => {
+                    if (!this.isAlive) return;
+                    const proj = new HomingSoul(this.x, this.y, player, 220, 15);
+                    enemyProjectiles.push(proj);
+                }, i * 150);
+            }
+        }
+
+        summonEchoes() {
+            const amount = this.phase === 1 ? 4 : 6;
+            for (let i = 0; i < amount; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const spawnX = this.x + Math.cos(angle) * 100;
+                const spawnY = this.y + Math.sin(angle) * 100;
+                const echo = new SlimeEcho(spawnX, spawnY);
+                enemies.push(echo);
+            }
+        }
+
+        ghostTeleport() {
+            createParticleBurst(this.x, this.y, 50, 'rgba(150, 200, 255, 0.5)', 1, 5, 200);
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 400 + Math.random() * 200;
+            this.x = player.x + Math.cos(angle) * dist;
+            this.y = player.y + Math.sin(angle) * dist;
+            this.x = Math.max(this.size, Math.min(this.x, CONFIG.MAP_SIZE.width - this.size));
+            this.y = Math.max(this.size, Math.min(this.y, CONFIG.MAP_SIZE.height - this.size));
+            createParticleBurst(this.x, this.y, 50, 'rgba(150, 200, 255, 0.5)', 1, 5, 200);
+        }
+
+        soulHarvest() {
+            const warningCircle = new WarningCircle(player.x, player.y, 400, 2.5, (circleX, circleY) => {
+                if (!this.isAlive) return;
+                const dx = player.x - circleX;
+                const dy = player.y - circleY;
+                if (dx * dx + dy * dy < 400 * 400) {
+                    player.takeDamage(80); // Dano massivo
+                    player.applyStun(2); // Lentidão (implementada como stun)
+                }
+                createParticleBurst(circleX, circleY, 200, 'rgba(255, 50, 100, 0.7)', 1.5, 8, 400);
+                camera.startShake(20, 0.8);
+            });
+            effects.push(warningCircle);
+        }
+
+        enterPhase2() {
+            this.phase = 2;
+            floatingTexts.push(new FloatingText(this.x, this.y, 'ENFURECIDO!', '#ff4d4d', 3, 24));
+            this.speed *= 1.3;
+            // Reduz cooldowns
+            this.teleportCooldown = 5;
+            this.summonCooldown = 8;
+            this.soulBurstCooldown = 1.5;
+            this.soulHarvestCooldown = 10;
+        }
+
+        draw(ctx) {
+            const phaseColor = this.phase === 1 ? 'rgba(150, 200, 255, 0.8)' : 'rgba(255, 100, 100, 0.9)';
+            const coreColor = this.phase === 1 ? 'rgba(220, 240, 255, 0.9)' : 'rgba(255, 180, 180, 0.9)';
+            const bob = Math.sin(gameTime * 2) * 10;
+
+             // 1. Rastro Fantasma
+            for (const trailPart of this.trail) {
+                ctx.save();
+                ctx.globalAlpha = trailPart.alpha;
+                ctx.fillStyle = phaseColor;
+                this.drawCloakedShape(ctx, trailPart.x, trailPart.y + bob, trailPart.size);
+                ctx.restore();
+            }
+
+            // 2. Aura Pulsante
+            const auraPulse = Math.sin(gameTime * (this.phase === 1 ? 3 : 7));
+            const auraColor = this.phase === 1 ? 'rgba(150, 200, 255,' : 'rgba(255, 80, 80,';
+            const auraSize = this.size + 10 + auraPulse * 8;
+            ctx.save();
+            ctx.globalAlpha = 0.5;
+            ctx.fillStyle = auraColor + '0.2)';
+            ctx.shadowColor = coreColor;
+            ctx.shadowBlur = 20;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y + bob, auraSize, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // 3. Corpo Principal (Forma de Manto)
+            ctx.save();
+            ctx.fillStyle = this.flashTimer > 0 ? '#ffffff' : phaseColor;
+            ctx.shadowColor = coreColor;
+            ctx.shadowBlur = 30;
+            this.drawCloakedShape(ctx, this.x, this.y + bob, this.size);
+            ctx.restore();
+
+
+            // 4. Caveiras Orbitais com brilho de "Carga"
+            this.orbitingSkulls.forEach(skull => {
+                const x = this.x + Math.cos(skull.angle) * skull.dist;
+                const y = this.y + Math.sin(skull.angle) * skull.dist + bob;
+                
+                let skullGlow = 15;
+                if (this.castingInfo) {
+                    const chargeProgress = this.castingInfo.progress / this.castingInfo.duration;
+                    skullGlow = 15 + Math.sin(chargeProgress * Math.PI) * 30;
+                }
+
+                ctx.save();
+                ctx.fillStyle = coreColor;
+                ctx.shadowColor = this.phase === 2 && this.castingInfo ? 'red' : coreColor;
+                ctx.shadowBlur = skullGlow;
+
+                // Desenha uma forma simples de caveira
+                ctx.fillRect(x - skull.size / 2, y - skull.size / 2, skull.size, skull.size);
+                ctx.fillStyle = 'black';
+                ctx.fillRect(x - skull.size / 4, y - skull.size / 4, skull.size / 5, skull.size / 5); // olho
+                ctx.fillRect(x + skull.size / 8, y - skull.size / 4, skull.size / 5, skull.size / 5); // olho
+                ctx.restore();
+            });
+        }
+        
+        drawCloakedShape(ctx, x, y, size) {
+            const s = size;
+            ctx.beginPath();
+            ctx.moveTo(x, y - s); // Topo
+            ctx.quadraticCurveTo(x + s, y - s * 0.2, x + s * 0.7, y + s * 0.5); // Lado direito
+            ctx.quadraticCurveTo(x, y + s * 1.2, x - s * 0.7, y + s * 0.5); // Base e lado esquerdo
+            ctx.quadraticCurveTo(x - s, y - s * 0.2, x, y - s); // Volta ao topo
+            ctx.fill();
+        }
+
+        die() {
+            this.isAlive = false;
+            createParticleBurst(this.x, this.y, 300, 'rgba(150, 200, 255, 1)', 3, 10, 500);
+            camera.startShake(30, 2);
+
+            // Explosão de recompensas
+            for (let i = 0; i < 20; i++) {
+                expOrbs.push(new ExpOrb(this.x + (Math.random() - 0.5) * 100, this.y + (Math.random() - 0.5) * 100, 50));
+            }
+            for (let i = 0; i < 50; i++) {
+                soulGems.push(new SoulGem(this.x + (Math.random() - 0.5) * 100, this.y + (Math.random() - 0.5) * 100));
+            }
+
+            bossWaveActive = false;
+            floatingTexts.push(new FloatingText(player.x, player.y - 100, 'VITÓRIA!', '#ffd700', 5, 32));
+            
+            setTimeout(() => {
+                DOM.bossHud.style.display = 'none';
+                gameState = 'playing';
+                wave++;
+                waveTimer = 30;
+                spawnWave();
+            }, 5000); // Pausa de 5 segundos após a vitória
+        }
+    }
+    
+    // --- NOVA CLASSE: ECO DE SLIME (MINION DO CHEFE) ---
+    class SlimeEcho extends Slime {
+        constructor(x, y) {
+            super(x, y);
+            this.hp = 5;
+            this.maxHp = 5;
+            this.damage = 5;
+            this.xpValue = 0; // Sem XP
+        }
+
+        draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = 0.6;
+            super.draw(ctx);
+            ctx.restore();
+        }
+
+        die() {
+            this.isAlive = false;
+            createParticleBurst(this.x, this.y, 5, 'rgba(150, 200, 255, 0.5)');
+            // Sem drops
+        }
+    }
+
     // --- Classes de Coletáveis e Efeitos ---
     class Collectible {
         constructor(x, y, size) { this.x = x; this.y = y; this.size = size; this.isCollected = false; }
@@ -1417,7 +1776,7 @@
             const progress = 1 - (this.life / this.lifespan);
             const currentRadius = this.maxRadius * progress;
             enemies.forEach(enemy => {
-                if (!this.hitEnemies.includes(enemy)) {
+                if (!this.hitEnemies.includes(enemy) && !enemy.isBoss) { // Ondas de choque não afetam o chefe
                     const distSq = (enemy.x - this.x)**2 + (enemy.y - this.y)**2;
                     if (distSq < currentRadius**2) {
                         enemy.takeDamage(this.damage);
@@ -1437,6 +1796,46 @@
             ctx.beginPath();
             ctx.arc(this.x, this.y, currentRadius, 0, Math.PI * 2);
             ctx.stroke();
+            ctx.restore();
+        }
+    }
+
+    // --- NOVA CLASSE: CÍRCULO DE AVISO (ATAQUE DO CHEFE) ---
+    class WarningCircle {
+        constructor(x, y, radius, duration, onEndCallback) {
+            this.x = x; this.y = y; this.radius = radius;
+            this.lifespan = duration;
+            this.life = duration;
+            this.onEndCallback = onEndCallback;
+        }
+
+        update(dt) {
+            this.life -= dt;
+            if (this.life <= 0) {
+                this.onEndCallback(this.x, this.y);
+            }
+        }
+
+        draw(ctx) {
+            const progress = 1 - (this.life / this.lifespan);
+            ctx.save();
+            ctx.globalAlpha = 0.5 + Math.sin(progress * Math.PI) * 0.3;
+            ctx.fillStyle = `rgba(255, 50, 100, ${0.2 + progress * 0.3})`;
+            ctx.strokeStyle = `rgba(255, 80, 120, 1)`;
+            ctx.lineWidth = 5;
+
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Círculo de timer encolhendo no meio
+            ctx.strokeStyle = `rgba(255, 255, 255, 0.8)`;
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 50 * (this.life / this.lifespan), 0, Math.PI * 2);
+            ctx.stroke();
+
             ctx.restore();
         }
     }
@@ -1477,7 +1876,7 @@
             createParticleBurst(this.x, this.y, 20, '#ff8c1a', 0.6, 5, 200);
             camera.startShake(5, 0.1);
             enemies.forEach(enemy => {
-                if ((enemy.x - this.x)**2 + (enemy.y - this.y)**2 < this.explosionRadius**2) {
+                if (!enemy.isBoss && (enemy.x - this.x)**2 + (enemy.y - this.y)**2 < this.explosionRadius**2) {
                     enemy.takeDamage(this.damage * 0.5); // Dano da explosão é 50%
                 }
             });
@@ -1504,6 +1903,54 @@
             ctx.save();
             ctx.shadowColor = '#be4dff'; ctx.shadowBlur = 15;
             ctx.fillStyle = 'rgba(190, 77, 255, 0.8)';
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur = 8; ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 0.4, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        }
+    }
+    
+    // --- NOVO PROJÉTIL: ALMA TELEGUIDADA (ATAQUE DO CHEFE) ---
+    class HomingSoul extends EnergyBall {
+        constructor(x, y, target, speed, damage) {
+            super(x, y, target, speed, damage);
+            this.target = target;
+            this.turnSpeed = Math.PI / 1.5; // Radianos por segundo
+            this.color = 'rgba(150, 220, 255, 0.8)';
+            this.size = 12;
+            this.acceleration = 150; // Aceleração constante
+        }
+
+        update(dt) {
+            // Acelera o projétil
+            this.speed += this.acceleration * dt;
+
+            // Lógica de perseguição
+            const targetAngle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
+            let currentAngle = Math.atan2(this.vy, this.vx);
+            let angleDiff = targetAngle - currentAngle;
+            // Normaliza a diferença de ângulo para [-PI, PI]
+            while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+            while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+
+            const turnAmount = this.turnSpeed * dt;
+            if (Math.abs(angleDiff) < turnAmount) {
+                currentAngle = targetAngle;
+            } else {
+                currentAngle += Math.sign(angleDiff) * turnAmount;
+            }
+
+            this.vx = Math.cos(currentAngle) * this.speed;
+            this.vy = Math.sin(currentAngle) * this.speed;
+
+            this.x += this.vx * dt;
+            this.y += this.vy * dt;
+            this.lifetime -= dt;
+        }
+        draw(ctx){
+            ctx.save();
+            ctx.shadowColor = this.color; ctx.shadowBlur = 15;
+            ctx.fillStyle = this.color;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             ctx.shadowBlur = 8; ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 0.4, 0, Math.PI * 2); ctx.fill();
@@ -1669,27 +2116,19 @@
         soundManager.play('levelUp');
     }
 
-    // CORREÇÃO: Nova função para redimensionar o canvas corretamente
     function resizeCanvas() {
-        // Obter o tamanho real que o canvas ocupa na tela, definido pelo CSS
         const rect = canvas.getBoundingClientRect();
-
-        // Verificar se o tamanho mudou para evitar trabalho desnecessário
         if (canvas.width !== rect.width || canvas.height !== rect.height) {
-            // Definir a resolução (pixels) do canvas para corresponder ao seu tamanho de exibição
-            // Isso evita que o navegador estique ou achate a imagem.
             canvas.width = rect.width;
             canvas.height = rect.height;
         }
-
-        // Atualizar as variáveis globais de dimensão da tela usadas pela câmera e outras lógicas
         screenWidth = canvas.width;
         screenHeight = canvas.height;
     }
 
     function init() {
         soundManager = new SoundManager();
-        resizeCanvas(); // CORREÇÃO: Chamar a função para definir o tamanho inicial correto
+        resizeCanvas();
         loadProgress();
         setupEventListeners();
         createGridPattern();
@@ -1703,6 +2142,8 @@
         camera = new Camera(player);
         enemies = []; expOrbs = []; projectiles = []; enemyProjectiles = []; soulGems = []; particles = []; floatingTexts = []; effects = [];
         wave = 1; runGems = 0; gameTime = 0; waveTimer = 30;
+        bossWaveActive = false;
+        DOM.bossHud.style.display = 'none';
         spawnWave();
         gameState = 'playing';
     }
@@ -1739,12 +2180,26 @@
         }
     }
 
+    function startBossWave() {
+        bossWaveActive = true;
+        enemies.forEach(e => e.takeDamage(9999)); // Limpa inimigos normais
+        
+        setTimeout(() => {
+            const boss = new SpectralElder(player.x, player.y - 600);
+            enemies.push(boss);
+            floatingTexts.push(new FloatingText(player.x, player.y - 100, 'AVISO: CHEFE APARECEU!', '#ff4d4d', 4, 28));
+        }, 2000);
+    }
+
     function findNearestEnemy(entity) {
         let nearest = null, nearestDistSq = Infinity;
         for (const enemy of enemies) {
+            if(enemy.isBoss) continue; // Armas não miram no chefe
             const distSq = (entity.x - enemy.x)**2 + (entity.y - enemy.y)**2;
             if (distSq < nearestDistSq) { nearestDistSq = distSq; nearest = enemy; }
         };
+        // Se não houver minions, mira no chefe
+        if(!nearest) nearest = enemies.find(e => e.isBoss);
         return nearest;
     }
     
@@ -1841,12 +2296,12 @@
             }
         }
         
-        DOM.abilityOptions.innerHTML = '';
         if (chosen.length === 0) {
             chosen.push({id: 'gem_cache', name: 'Tesouro', desc: 'Ganhe 25 gemas.', apply: () => { runGems += 25; player.weaponUpgradeLuck++; } });
             chosen.push({id: 'health_potion', name: 'Poção', desc: 'Recupere 30% da vida máxima.', apply: () => { player.hp = Math.min(player.maxHp, player.hp + player.maxHp * 0.3); player.weaponUpgradeLuck++; } });
         }
         
+        DOM.abilityOptions.innerHTML = '';
         chosen.forEach(ability => {
             const card = document.createElement('div');
             card.className = 'card p-4 text-center';
@@ -1893,12 +2348,22 @@
         if (gameState !== 'playing') return;
 
         gameTime += dt;
-        waveTimer -= dt;
-        if (waveTimer <= 0) {
-            wave++;
-            waveTimer = 30;
-            giveWaveCompletionBonus();
-            spawnWave();
+
+        if (bossWaveActive) {
+            // Lógica do chefe já é tratada no loop de inimigos
+        } else {
+            waveTimer -= dt;
+            if (waveTimer <= 0) {
+                if (wave === 9) { // Prepara para a onda 10 (chefe)
+                    wave++;
+                    startBossWave();
+                } else {
+                    wave++;
+                    waveTimer = 30;
+                    giveWaveCompletionBonus();
+                    spawnWave();
+                }
+            }
         }
         
         player.update(dt);
@@ -1971,7 +2436,20 @@
         DOM.xpBar.style.width = `${(player.xp / player.xpToNextLevel) * 100}%`;
         DOM.levelText.textContent = `Nível ${player.level}`;
         DOM.runGemsCount.textContent = runGems;
-        DOM.waveTimerText.textContent = `Onda ${wave}: ${Math.ceil(waveTimer)}s`;
+
+        if (bossWaveActive) {
+            DOM.waveTimerText.textContent = `DERROTE O CHEFE!`;
+            const boss = enemies.find(e => e.isBoss);
+            if (boss) {
+                DOM.bossHud.style.display = 'block';
+                DOM.bossName.textContent = 'Ancião Espectral';
+                DOM.bossHealthBar.style.width = `${(boss.hp / boss.maxHp) * 100}%`;
+            }
+        } else {
+             DOM.bossHud.style.display = 'none';
+             DOM.waveTimerText.textContent = `Onda ${wave}: ${Math.ceil(waveTimer)}s`;
+        }
+
         const dashCooldownProgress = player.dashCooldown > 0 ? player.dashCooldown / CONFIG.PLAYER.dashCooldown : 0;
         DOM.dashCooldownOverlay.style.height = `${dashCooldownProgress * 100}%`;
         DOM.dashButton.style.opacity = dashCooldownProgress > 0 ? '0.7' : '1';
@@ -2087,7 +2565,6 @@
         DOM.upgradesBackButton.addEventListener('click', () => {
             DOM.upgradesModal.style.display = 'none'; DOM.startModal.style.display = 'flex';
         });
-        // NOVO: Listeners para o modal de opções
         DOM.optionsButton.addEventListener('click', () => {
             DOM.startModal.style.display = 'none';
             DOM.optionsModal.style.display = 'flex';
@@ -2125,7 +2602,6 @@
         });
         window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
         
-        // CORREÇÃO: Usar a nova função de redimensionamento
         window.addEventListener('resize', resizeCanvas);
         
         // --- Controles de Toque Flexíveis ---
