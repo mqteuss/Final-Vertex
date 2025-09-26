@@ -148,6 +148,13 @@
             transform: translateY(2px);
         }
         
+        /* NOVO: Estilo para botão de qualidade ativo */
+        .quality-btn.active {
+            background-color: var(--player-color);
+            box-shadow: 0 2px 0 var(--dark-border), inset 0 0 10px rgba(0,0,0,0.3);
+            transform: translateY(2px);
+        }
+
         /* ALTERAÇÃO APLICADA: Efeito de brilho no título */
         #start-modal h1 {
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 15px rgba(138, 138, 255, 0.3);
@@ -423,6 +430,16 @@
                     </div>
                 </div>
 
+                <!-- NOVO: Configurações Gráficas -->
+                <div id="graphics-settings" class="mt-8 flex flex-col items-center justify-center gap-4">
+                    <p class="text-lg">Qualidade Gráfica</p>
+                    <div class="flex items-center justify-center gap-4">
+                        <button id="quality-low" class="btn quality-btn text-sm p-2">Baixa</button>
+                        <button id="quality-medium" class="btn quality-btn text-sm p-2">Média</button>
+                        <button id="quality-high" class="btn quality-btn text-sm p-2">Alta</button>
+                    </div>
+                </div>
+
                 <div class="mt-12 text-center">
                      <button id="options-back-button" class="btn w-full">Voltar</button>
                 </div>
@@ -518,11 +535,16 @@
         optionsModal: document.getElementById('options-modal'),
         optionsButton: document.getElementById('options-button'),
         optionsBackButton: document.getElementById('options-back-button'),
+        // NOVO: Botões de qualidade
+        qualityLowBtn: document.getElementById('quality-low'),
+        qualityMediumBtn: document.getElementById('quality-medium'),
+        qualityHighBtn: document.getElementById('quality-high'),
     };
     
     // --- Variáveis Globais do Jogo ---
     let player, camera, soundManager;
     let enemies = [], expOrbs = [], projectiles = [], enemyProjectiles = [], soulGems = [], particles = [], floatingTexts = [], effects = [];
+    let ambientParticles = []; // NOVO: Partículas mágicas de ambiente
     let keys = {}, joystickVector = { x: 0, y: 0 };
     let gameState = 'start';
     let runGems = 0;
@@ -532,11 +554,13 @@
     let lastTime = 0;
     let animationFrameId;
     let bossWaveActive = false; // NOVA: Controla a onda do chefe
+    let currentGraphics; // NOVO: Configurações gráficas atuais
 
     let playerData = {
         totalSoulGems: 9999,
         purchasedUpgrades: {},
         audio: { volume: 0.5, isMuted: false },
+        graphics: { quality: 'medium' }, // NOVO: Configuração de qualidade
         unlockedWeapons: ['fireball'],
         equippedWeapon: 'fireball'
     };
@@ -598,6 +622,12 @@
                 requires: ['hammer_damage', 'hammer_radius', 'hammer_count', 'hammer_rotation_speed', 'hammer_size'],
                 apply: p => p.weapon.evolve()
             }
+        },
+        // NOVO: Níveis de Qualidade Gráfica
+        GRAPHICS: {
+            'low':    { particleMultiplier: 0.2, shadows: false, ambientParticles: 20 },
+            'medium': { particleMultiplier: 0.6, shadows: true,  ambientParticles: 80 },
+            'high':   { particleMultiplier: 1.0, shadows: true,  ambientParticles: 150 }
         }
     };
 
@@ -829,7 +859,9 @@
 
             // NOVO: Desenho do jogador como Entidade de Energia
             ctx.save();
-            ctx.shadowColor = playerColor;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = playerColor;
+            }
             
             // Desenha os fragmentos orbitais
             this.fragments.forEach(frag => {
@@ -839,21 +871,21 @@
                 ctx.translate(fragX, fragY);
                 ctx.rotate(frag.rotation);
                 ctx.fillStyle = playerColor;
-                ctx.shadowBlur = 10;
+                if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 10;
                 ctx.fillRect(-frag.size / 2, -frag.size / 2, frag.size, frag.size);
                 ctx.restore();
             });
 
             // Desenha o núcleo de energia
             ctx.fillStyle = playerColor;
-            ctx.shadowBlur = 20;
+            if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 20;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size / 1.5, 0, Math.PI * 2);
             ctx.fill();
             
             // Desenha um brilho interno
             ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.shadowBlur = 0;
+            if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size / 3, 0, Math.PI * 2);
             ctx.fill();
@@ -957,15 +989,19 @@
         }
         draw(ctx) {
             ctx.save();
-            ctx.shadowColor = this.color;
-            ctx.shadowBlur = 10;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+            }
             ctx.fillStyle = this.flashTimer > 0 ? '#ffffff' : this.color;
             ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
 
             if (this.isChampion) {
                 const glow = Math.abs(Math.sin(gameTime * 5));
-                ctx.shadowColor = '#ffd700';
-                ctx.shadowBlur = 15 + glow * 10;
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = '#ffd700';
+                    ctx.shadowBlur = 15 + glow * 10;
+                }
                 ctx.strokeStyle = `rgba(255, 215, 0, ${0.5 + glow * 0.5})`;
                 ctx.lineWidth = 3;
                 ctx.strokeRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
@@ -1069,7 +1105,10 @@
             ctx.save();
             ctx.fillStyle = this.flashTimer > 0 ? '#ffffff' : 'rgba(77, 255, 77, 0.8)';
             ctx.strokeStyle = '#28a428'; ctx.lineWidth = 2;
-            ctx.shadowColor = this.color; ctx.shadowBlur = 10;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+            }
             
             ctx.beginPath();
             ctx.rect(this.x - width / 2, drawY - height / 2, width, height);
@@ -1080,8 +1119,10 @@
 
             if (this.isChampion) {
                 const glow = Math.abs(Math.sin(gameTime * 5));
-                ctx.shadowColor = '#ffd700';
-                ctx.shadowBlur = 15 + glow * 10;
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = '#ffd700';
+                    ctx.shadowBlur = 15 + glow * 10;
+                }
                 ctx.strokeStyle = `rgba(255, 215, 0, ${0.5 + glow * 0.5})`;
                 ctx.lineWidth = 3;
                 ctx.strokeRect(this.x - width / 2, drawY - height / 2, width, height);
@@ -1163,12 +1204,15 @@
         }
         draw(ctx) {
             ctx.save();
-            ctx.shadowColor = this.color; ctx.shadowBlur = 10;
-            if (this.state === 'windup' || this.isChampion) {
-                const glow = Math.abs(Math.sin(gameTime * 5));
-                ctx.shadowBlur = (this.isChampion ? 15 : 10) + glow * 10;
-                ctx.shadowColor = this.isChampion ? '#ffd700' : this.color;
-                ctx.globalAlpha = 0.5 + glow * 0.5;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                if (this.state === 'windup' || this.isChampion) {
+                    const glow = Math.abs(Math.sin(gameTime * 5));
+                    ctx.shadowBlur = (this.isChampion ? 15 : 10) + glow * 10;
+                    ctx.shadowColor = this.isChampion ? '#ffd700' : this.color;
+                    ctx.globalAlpha = 0.5 + glow * 0.5;
+                }
             }
             ctx.translate(this.x, this.y);
             const flapAngle = Math.sin(gameTime * 30) * 0.5;
@@ -1270,7 +1314,11 @@
             const robeColor = this.flashTimer > 0 ? '#DDDDDD' : this.color;
             const bob = Math.sin(gameTime * 4) * 2;
             
-            ctx.fillStyle = robeColor; ctx.shadowColor = this.color; ctx.shadowBlur = 12;
+            ctx.fillStyle = robeColor;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 12;
+            }
             ctx.beginPath();
             ctx.moveTo(0, -s / 2 + bob);
             ctx.bezierCurveTo(s, -s / 2 + bob, s, s/2 + bob, 0, s + bob);
@@ -1291,20 +1339,22 @@
                 const castingProgress = this.castingState !== 'none' ? 1 - (this.castingTimer / this.castingTime) : 1;
                 const glow = Math.sin(castingProgress * Math.PI);
 
-                if (this.isChampion) {
-                    ctx.shadowColor = '#ffd700';
-                    ctx.shadowBlur = 15 + Math.abs(Math.sin(gameTime * 5)) * 10;
-                }
-                
-                if (this.castingState === 'attacking') {
-                    ctx.fillStyle = 'rgba(255, 150, 255, 0.7)'; ctx.shadowColor = '#FFFFFF'; ctx.shadowBlur = 15 + glow * 20;
-                    this.runes.forEach(rune => {
-                        const runeX = Math.cos(rune.angle) * rune.dist, runeY = Math.sin(rune.angle) * rune.dist;
-                        ctx.beginPath(); ctx.arc(runeX, runeY + bob, s * 0.2, 0, Math.PI * 2); ctx.fill();
-                    });
-                } else if (this.castingState === 'healing') {
-                    ctx.fillStyle = 'rgba(150, 255, 150, 0.7)'; ctx.shadowColor = '#adff2f'; ctx.shadowBlur = 15 + glow * 20;
-                    ctx.beginPath(); ctx.arc(0, bob, s * 0.8, 0, Math.PI * 2); ctx.fill();
+                if (currentGraphics && currentGraphics.shadows) {
+                    if (this.isChampion) {
+                        ctx.shadowColor = '#ffd700';
+                        ctx.shadowBlur = 15 + Math.abs(Math.sin(gameTime * 5)) * 10;
+                    }
+                    
+                    if (this.castingState === 'attacking') {
+                        ctx.fillStyle = 'rgba(255, 150, 255, 0.7)'; ctx.shadowColor = '#FFFFFF'; ctx.shadowBlur = 15 + glow * 20;
+                        this.runes.forEach(rune => {
+                            const runeX = Math.cos(rune.angle) * rune.dist, runeY = Math.sin(rune.angle) * rune.dist;
+                            ctx.beginPath(); ctx.arc(runeX, runeY + bob, s * 0.2, 0, Math.PI * 2); ctx.fill();
+                        });
+                    } else if (this.castingState === 'healing') {
+                        ctx.fillStyle = 'rgba(150, 255, 150, 0.7)'; ctx.shadowColor = '#adff2f'; ctx.shadowBlur = 15 + glow * 20;
+                        ctx.beginPath(); ctx.arc(0, bob, s * 0.8, 0, Math.PI * 2); ctx.fill();
+                    }
                 }
             }
             ctx.restore();
@@ -1389,19 +1439,26 @@
             let fistColor = this.flashTimer > 0 ? '#dddddd' : '#cc3d3d';
             let fistSize = s * 0.4, bodyWidth = s;
             
-            if (this.state === 'windup' || this.isChampion) {
-                const glow = Math.abs(Math.sin((this.windupDuration - this.stateTimer) * Math.PI / this.windupDuration * 5));
-                ctx.shadowColor = this.isChampion ? '#ffd700' : '#ff8888';
-                ctx.shadowBlur = (this.isChampion ? 15 : 10) + glow * (this.isChampion ? 10 : 20);
-                fistSize += glow * 5;
-            } else if (this.state === 'charging') bodyWidth = s * 1.2;
+            if (currentGraphics && currentGraphics.shadows) {
+                if (this.state === 'windup' || this.isChampion) {
+                    const glow = Math.abs(Math.sin((this.windupDuration - this.stateTimer) * Math.PI / this.windupDuration * 5));
+                    ctx.shadowColor = this.isChampion ? '#ffd700' : '#ff8888';
+                    ctx.shadowBlur = (this.isChampion ? 15 : 10) + glow * (this.isChampion ? 10 : 20);
+                    fistSize += glow * 5;
+                }
+            }
+
+            if (this.state === 'charging') bodyWidth = s * 1.2;
             else if (this.state === 'recovering') ctx.globalAlpha = 0.7;
 
             ctx.fillStyle = fistColor;
             ctx.fillRect(-bodyWidth / 2 - fistSize * 0.8, -s / 2, fistSize, s);
             ctx.fillRect(bodyWidth / 2 - fistSize * 0.2, -s / 2, fistSize, s);
             ctx.fillStyle = bodyColor;
-            ctx.shadowBlur = 10; ctx.shadowColor = this.color;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+            }
             ctx.fillRect(-bodyWidth / 2, -s / 2, bodyWidth, s);
             ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             const eyeSize = s * 0.1;
@@ -1463,9 +1520,12 @@
                 // Para o efeito visual de sugar partículas
                 const coreColor = this.phase === 1 ? 'rgba(220, 240, 255, 0.9)' : 'rgba(255, 180, 180, 0.9)';
                 if (Math.random() < 0.6) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const dist = 300 * (1 - (this.castingInfo.progress / this.castingInfo.duration));
-                    particles.push(new Particle(this.x + Math.cos(angle) * dist, this.y + Math.sin(angle) * dist, coreColor, 0.3, 3, -400));
+                    const finalCount = Math.ceil(1 * (currentGraphics ? currentGraphics.particleMultiplier : 1));
+                    for (let i = 0; i < finalCount; i++) {
+                        const angle = Math.random() * Math.PI * 2;
+                        const dist = 300 * (1 - (this.castingInfo.progress / this.castingInfo.duration));
+                        particles.push(new Particle(this.x + Math.cos(angle) * dist, this.y + Math.sin(angle) * dist, coreColor, 0.3, 3, -400));
+                    }
                 }
 
                 if (this.castingInfo.progress >= this.castingInfo.duration) {
@@ -1656,8 +1716,10 @@
             ctx.save();
             ctx.globalAlpha = 0.5;
             ctx.fillStyle = auraColor + '0.2)';
-            ctx.shadowColor = coreColor;
-            ctx.shadowBlur = 20;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = coreColor;
+                ctx.shadowBlur = 20;
+            }
             ctx.beginPath();
             ctx.arc(this.x, this.y + bob, auraSize, 0, Math.PI * 2);
             ctx.fill();
@@ -1666,8 +1728,10 @@
             // 3. Corpo Principal (Forma de Manto)
             ctx.save();
             ctx.fillStyle = this.flashTimer > 0 ? '#ffffff' : phaseColor;
-            ctx.shadowColor = coreColor;
-            ctx.shadowBlur = 30;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = coreColor;
+                ctx.shadowBlur = 30;
+            }
             this.drawCloakedShape(ctx, this.x, this.y + bob, this.size);
             ctx.restore();
 
@@ -1685,8 +1749,10 @@
 
                 ctx.save();
                 ctx.fillStyle = coreColor;
-                ctx.shadowColor = this.phase === 2 && this.castingInfo ? 'red' : coreColor;
-                ctx.shadowBlur = skullGlow;
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = this.phase === 2 && this.castingInfo ? 'red' : coreColor;
+                    ctx.shadowBlur = skullGlow;
+                }
 
                 // Desenha uma forma simples de caveira
                 ctx.fillRect(x - skull.size / 2, y - skull.size / 2, skull.size, skull.size);
@@ -1777,7 +1843,10 @@
         draw(ctx) {
             const glowColor = '#4dff9e';
             ctx.save();
-            ctx.shadowColor = glowColor; ctx.shadowBlur = 8;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = glowColor;
+                ctx.shadowBlur = 8;
+            }
             ctx.fillStyle = glowColor;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
@@ -1790,13 +1859,17 @@
             const size = this.size, glowColor = '#ffff4d';
             ctx.save();
             ctx.translate(this.x, this.y); ctx.rotate(gameTime * 2);
-            ctx.shadowColor = glowColor; ctx.shadowBlur = 12;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = glowColor;
+                ctx.shadowBlur = 12;
+            }
             ctx.fillStyle = glowColor;
             ctx.beginPath();
             ctx.moveTo(0, -size * 1.2); ctx.lineTo(size, 0);
             ctx.lineTo(0, size * 1.2); ctx.lineTo(-size, 0);
             ctx.closePath(); ctx.fill();
-            ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
             ctx.beginPath();
             ctx.moveTo(0, -size * 0.5); ctx.lineTo(size * 0.4, 0);
             ctx.lineTo(0, size * 0.5); ctx.lineTo(-size * 0.4, 0);
@@ -1867,8 +1940,10 @@
             ctx.save();
             ctx.strokeStyle = `rgba(255, 255, 200, ${this.life / this.lifespan})`;
             ctx.lineWidth = 10 * (this.life / this.lifespan);
-            ctx.shadowColor = '#ffd700';
-            ctx.shadowBlur = 20;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#ffd700';
+                ctx.shadowBlur = 20;
+            }
             ctx.beginPath();
             ctx.arc(this.x, this.y, currentRadius, 0, Math.PI * 2);
             ctx.stroke();
@@ -1940,10 +2015,14 @@
         }
         draw(ctx) {
             ctx.save();
-            ctx.shadowColor = '#ff6600'; ctx.shadowBlur = 12;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#ff6600';
+                ctx.shadowBlur = 12;
+            }
             ctx.fillStyle = 'rgba(255, 100, 0, 0.8)';
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-            ctx.shadowBlur = 5; ctx.fillStyle = 'rgba(255, 255, 100, 1)';
+            if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 5;
+            ctx.fillStyle = 'rgba(255, 255, 100, 1)';
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 0.5, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
         }
@@ -1977,10 +2056,14 @@
         }
         draw(ctx) {
             ctx.save();
-            ctx.shadowColor = '#be4dff'; ctx.shadowBlur = 15;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#be4dff';
+                ctx.shadowBlur = 15;
+            }
             ctx.fillStyle = 'rgba(190, 77, 255, 0.8)';
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-            ctx.shadowBlur = 8; ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+            if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 8;
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 0.4, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
         }
@@ -2025,10 +2108,14 @@
         }
         draw(ctx){
             ctx.save();
-            ctx.shadowColor = this.color; ctx.shadowBlur = 15;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 15;
+            }
             ctx.fillStyle = this.color;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-            ctx.shadowBlur = 8; ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+            if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 8;
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 0.4, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
         }
@@ -2145,7 +2232,10 @@
                 ctx.fillStyle = handleColor;
                 ctx.fillRect(-handleWidth / 2, -handleLength, handleWidth, handleLength);
                 ctx.fillStyle = headColor;
-                ctx.shadowColor = headColor; ctx.shadowBlur = 10;
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = headColor;
+                    ctx.shadowBlur = 10;
+                }
                 ctx.fillRect(-headWidth / 2, -handleLength - headHeight, headWidth, headHeight);
 
                 ctx.restore();
@@ -2155,13 +2245,56 @@
 
 
     // --- Funções Auxiliares e de Jogo ---
+    // --- INÍCIO: Seção das Partículas de Ambiente ---
+    class AmbientParticle {
+        constructor() {
+            // Nasce em um lugar aleatório do mapa
+            this.x = Math.random() * CONFIG.MAP_SIZE.width;
+            this.y = Math.random() * CONFIG.MAP_SIZE.height;
+            this.size = Math.random() * 1.5 + 1;
+            this.baseY = this.y;
+            this.speedX = (Math.random() - 0.5) * 15; // Movimento horizontal lento
+            this.amplitudeY = Math.random() * 10 + 5; // Quão alto "flutua"
+            this.frequencyY = Math.random() * 0.5 + 0.2; // Velocidade da flutuação
+            this.color = `rgba(200, 220, 255, ${Math.random() * 0.4 + 0.2})`;
+        }
+
+        update(dt) {
+            this.x += this.speedX * dt;
+            // Usa o tempo de jogo para criar uma flutuação suave com seno
+            this.y = this.baseY + Math.sin(gameTime * this.frequencyY) * this.amplitudeY;
+
+            // Se sair da tela, reposiciona do outro lado (efeito de loop)
+            if (this.x < 0) this.x = CONFIG.MAP_SIZE.width;
+            if (this.x > CONFIG.MAP_SIZE.width) this.x = 0;
+        }
+
+        draw(ctx) {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function createAmbientParticles() {
+        if (!currentGraphics) return; // Checagem de segurança
+        const count = currentGraphics.ambientParticles;
+        for (let i = 0; i < count; i++) {
+            ambientParticles.push(new AmbientParticle());
+        }
+    }
+    // --- FIM: Seção das Partículas de Ambiente ---
+
     const normalizeVector = v => {
         const mag = Math.sqrt(v.x * v.x + v.y * v.y);
         return mag > 0 ? { x: v.x / mag, y: v.y / mag } : { x: 0, y: 0 };
     };
     
     function createParticleBurst(x, y, count, color, lifespan = 0.5, size = 3, speed = 150) {
-        for (let i = 0; i < count; i++) {
+        if (!currentGraphics) return; // Checagem de segurança
+        const finalCount = Math.ceil(count * currentGraphics.particleMultiplier);
+        for (let i = 0; i < finalCount; i++) {
             particles.push(new Particle(x, y, color, lifespan, Math.random() * size + 1, speed));
         }
     }
@@ -2169,8 +2302,9 @@
         const dx = endX - startX, dy = endY - startY;
         const distance = Math.sqrt(dx * dx + dy * dy);
         const steps = Math.floor(distance / 10);
-        for (let i = 0; i <= steps; i++) {
-            const t = i / steps;
+        const finalSteps = Math.ceil(steps * (currentGraphics ? currentGraphics.particleMultiplier : 1));
+        for (let i = 0; i <= finalSteps; i++) {
+            const t = i / finalSteps;
             const x = startX + dx * t, y = startY + dy * t;
             particles.push(new Particle(x, y, color, 0.5, Math.random() * 2 + 1, 20));
         }
@@ -2208,6 +2342,7 @@
         loadProgress();
         setupEventListeners();
         createGridPattern();
+        // createAmbientParticles(); // Movido para applyGraphicsSettings
         lastTime = performance.now();
         if (!animationFrameId) gameLoop(lastTime);
     }
@@ -2467,6 +2602,9 @@
         for (let i = floatingTexts.length - 1; i >= 0; i--) if (floatingTexts[i].lifespan <= 0) floatingTexts.splice(i, 1);
         for (let i = enemies.length - 1; i >= 0; i--) if (!enemies[i].isAlive) enemies.splice(i, 1);
         for (let i = effects.length - 1; i >= 0; i--) if (effects[i].life <= 0) effects.splice(i, 1);
+
+        // Atualiza as partículas de ambiente
+        for(const p of ambientParticles) p.update(dt);
     }
     
     function draw() {
@@ -2478,11 +2616,19 @@
         ctx.fillStyle = gridPattern;
         ctx.fillRect(camera.x, camera.y, screenWidth, screenHeight);
         
+        // Desenha as partículas de ambiente
+        if (currentGraphics && currentGraphics.shadows) {
+            ctx.shadowColor = '#ffffff';
+            ctx.shadowBlur = 5;
+        }
+        for(const p of ambientParticles) p.draw(ctx);
+        if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
+
         for(const o of expOrbs) o.draw(ctx);
         for(const g of soulGems) g.draw(ctx);
 
         ctx.save();
-        ctx.shadowBlur = 0;
+        if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
         for(const p of particles) p.draw(ctx);
         ctx.restore();
 
@@ -2616,14 +2762,35 @@
             const loadedData = JSON.parse(saved);
             Object.assign(playerData, loadedData);
             if (loadedData.audio) Object.assign(playerData.audio, loadedData.audio);
+            if (loadedData.graphics) Object.assign(playerData.graphics, loadedData.graphics);
         }
         updateGemDisplays();
         applyAudioSettings();
+        applyGraphicsSettings();
     }
     function applyAudioSettings() {
         DOM.volumeSlider.value = playerData.audio.volume;
         DOM.muteButton.textContent = playerData.audio.isMuted || playerData.audio.volume === 0 ? '🔇' : '🔊';
         if (soundManager) soundManager.setVolume(playerData.audio.volume, playerData.audio.isMuted);
+    }
+    // NOVO: Funções de Qualidade Gráfica
+    function applyGraphicsSettings() {
+        const quality = playerData.graphics.quality || 'medium';
+        currentGraphics = CONFIG.GRAPHICS[quality];
+        
+        [DOM.qualityLowBtn, DOM.qualityMediumBtn, DOM.qualityHighBtn].forEach(btn => btn.classList.remove('active'));
+        if (quality === 'low') DOM.qualityLowBtn.classList.add('active');
+        else if (quality === 'medium') DOM.qualityMediumBtn.classList.add('active');
+        else if (quality === 'high') DOM.qualityHighBtn.classList.add('active');
+
+        ambientParticles = [];
+        createAmbientParticles();
+    }
+
+    function setGraphicsQuality(quality) {
+        playerData.graphics.quality = quality;
+        applyGraphicsSettings();
+        saveProgress();
     }
     
     // --- Event Listeners ---
@@ -2672,6 +2839,12 @@
             if(!playerData.audio.isMuted && playerData.audio.volume === 0) playerData.audio.volume = 0.5;
             applyAudioSettings(); saveProgress();
         });
+
+        // NOVO: Listeners de Qualidade Gráfica
+        DOM.qualityLowBtn.addEventListener('click', () => setGraphicsQuality('low'));
+        DOM.qualityMediumBtn.addEventListener('click', () => setGraphicsQuality('medium'));
+        DOM.qualityHighBtn.addEventListener('click', () => setGraphicsQuality('high'));
+        
         window.addEventListener('keydown', e => {
             keys[e.key.toLowerCase()] = true;
             if (e.key === ' ' || e.key === 'Shift') { e.preventDefault(); player?.dash(); }
