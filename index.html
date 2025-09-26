@@ -714,7 +714,23 @@
             this.dashDirection = { x: 0, y: 0 };
             this.lastMoveDirection = { x: 0, y: 1 };
             this.weaponUpgradeLuck = 0;
+            this.isMoving = false;
             
+            // NOVO: Visual de Entidade de Energia
+            this.fragments = [];
+            this.orbitalAngle = 0; // CORREÇÃO: Adicionada base para o ângulo orbital
+            for (let i = 0; i < 4; i++) {
+                this.fragments.push({
+                    size: 8 + Math.random() * 4,
+                    angle: (Math.PI / 2) * i, // Ângulo inicial
+                    targetAngle: (Math.PI / 2) * i,
+                    distance: this.size * 1.8, // Distância do centro
+                    targetDistance: this.size * 1.8,
+                    rotation: 0,
+                    rotationSpeed: (Math.random() - 0.5) * 4
+                });
+            }
+
             switch (playerData.equippedWeapon) {
                 case 'hammer':
                     this.weapon = new HammerWeapon(this);
@@ -737,6 +753,37 @@
             if (this.regen > 0 && this.hp < this.maxHp) {
                 this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
             }
+
+            // NOVO: Lógica de animação dos fragmentos
+            this.orbitalAngle += 1.5 * dt; // CORREÇÃO: O ângulo base sempre gira
+            const lerpFactor = dt * 8;
+            const moveAngle = Math.atan2(this.lastMoveDirection.y, this.lastMoveDirection.x);
+
+            this.fragments.forEach((frag, i) => {
+                if (this.isDashing) {
+                    // Cauda de cometa no dash
+                    frag.targetDistance = this.size * 0.8 + i * 5;
+                    frag.targetAngle = Math.atan2(-this.dashDirection.y, -this.dashDirection.x);
+                } else if (this.isMoving) {
+                    // Rastro ao mover
+                    frag.targetDistance = this.size * 1.5 + i * 3;
+                    frag.targetAngle = moveAngle + Math.PI; // Oposto da direção
+                } else {
+                    // Órbita normal
+                    frag.targetDistance = this.size * 1.8;
+                    frag.targetAngle = this.orbitalAngle + (Math.PI / 2) * i; // CORREÇÃO: Retorna para a órbita correta
+                }
+                
+                // Suaviza a transição de ângulo e distância (Lerp)
+                frag.distance += (frag.targetDistance - frag.distance) * lerpFactor;
+                
+                let angleDiff = frag.targetAngle - frag.angle;
+                while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+                while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+                frag.angle += angleDiff * lerpFactor;
+                
+                frag.rotation += frag.rotationSpeed * dt;
+            });
         }
         handleMovement(dt) {
             if (this.stunTimer > 0) return;
@@ -753,9 +800,9 @@
             if (keys['a'] || keys['arrowleft']) move.x = -1;
             if (keys['d'] || keys['arrowright']) move.x = 1;
             
-            const isMoving = move.x !== 0 || move.y !== 0;
+            this.isMoving = move.x !== 0 || move.y !== 0;
 
-            if (isMoving) {
+            if (this.isMoving) {
                 const mag = Math.sqrt(move.x**2 + move.y**2);
                 if (mag > 0) {
                     move.x /= mag; move.y /= mag;
@@ -780,11 +827,40 @@
             if (this.invincibilityTimer > 0) playerColor = 'rgba(200, 200, 255, 0.7)';
             if (this.stunTimer > 0) playerColor = '#ffff99';
 
+            // NOVO: Desenho do jogador como Entidade de Energia
+            ctx.save();
+            ctx.shadowColor = playerColor;
+            
+            // Desenha os fragmentos orbitais
+            this.fragments.forEach(frag => {
+                const fragX = this.x + Math.cos(frag.angle) * frag.distance;
+                const fragY = this.y + Math.sin(frag.angle) * frag.distance;
+                ctx.save();
+                ctx.translate(fragX, fragY);
+                ctx.rotate(frag.rotation);
+                ctx.fillStyle = playerColor;
+                ctx.shadowBlur = 10;
+                ctx.fillRect(-frag.size / 2, -frag.size / 2, frag.size, frag.size);
+                ctx.restore();
+            });
+
+            // Desenha o núcleo de energia
             ctx.fillStyle = playerColor;
+            ctx.shadowBlur = 20;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.arc(this.x, this.y, this.size / 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Desenha um brilho interno
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size / 3, 0, Math.PI * 2);
             ctx.fill();
 
+            ctx.restore();
+
+            // Lógica da barra de cooldown do dash (desenhada em cima do jogador)
             const cooldownProgress = this.dashCooldown > 0 ? this.dashCooldown / CONFIG.PLAYER.dashCooldown : 0;
             if (cooldownProgress > 0) {
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
