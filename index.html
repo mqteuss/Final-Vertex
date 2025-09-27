@@ -266,6 +266,25 @@
             border-bottom-color: var(--player-color);
             color: var(--light-text);
         }
+
+        /* NOVO: Estilos para o resumo no menu de pausa */
+        #pause-summary h3 {
+            border-bottom: 2px solid var(--accent-bg);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        #pause-summary ul {
+            list-style: none;
+            padding: 0;
+        }
+        #pause-summary li {
+            background-color: var(--primary-bg);
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
         
         /* Mostra controles em dispositivos com tela de toque */
         @media (pointer: coarse) {
@@ -337,7 +356,7 @@
     <div id="game-container" class="relative w-screen h-screen">
         <canvas id="game-canvas"></canvas>
         <div id="hud" class="absolute left-4 right-4" style="display: none;">
-            <!-- Barra de Vida do Chefe -->
+            
             <div id="boss-hud" class="w-full px-4 mb-4" style="display: none;">
                 <p id="boss-name" class="text-center text-xl mb-2 text-purple-300"></p>
                 <div class="hud-bar w-full h-6 border-4 border-purple-400 bg-purple-900/50">
@@ -417,7 +436,6 @@
                     </div>
                 </div>
 
-                <!-- NOVO: Configurações Gráficas -->
                 <div id="graphics-settings" class="mt-8 flex flex-col items-center justify-center gap-4">
                     <p class="text-lg">Qualidade Gráfica</p>
                     <div class="flex items-center justify-center gap-4">
@@ -439,12 +457,32 @@
                 <div id="ability-options" class="grid grid-cols-1 md:grid-cols-3 gap-6 px-4"></div>
             </div>
         </div>
+        
+        <div id="pause-modal" class="modal" style="display: none;">
+            <div class="modal-content text-center">
+                <h2 class="text-3xl sm:text-4xl mb-6">Pausado</h2>
+
+                <div id="pause-summary" class="mb-8 text-left">
+                    </div>
+
+                <div class="flex flex-col gap-4">
+                    <button id="resume-button" class="btn">Continuar</button>
+                    <button id="quit-button" class="btn">Sair para o Menu</button>
+                </div>
+            </div>
+        </div>
 
         <div id="game-over-modal" class="modal" style="display: none;">
             <div class="modal-content text-center">
                 <h2 class="text-3xl sm:text-4xl mb-2 text-red-500">Fim de Jogo</h2>
                 <p class="text-xl mb-2">Você sobreviveu por <span id="time-survived"></span>.</p>
                 <p class="text-lg mb-4">Gemas Coletadas: <span id="final-gems-count"></span></p>
+                
+                <div class="my-6 text-left border-t border-b border-gray-600 py-4 px-2 text-sm sm:text-base">
+                    <p class="flex justify-between"><span>Inimigos Derrotados:</span> <span id="enemies-defeated-stat">0</span></p>
+                    <p class="flex justify-between mt-2"><span>Dano Total Causado:</span> <span id="damage-dealt-stat">0</span></p>
+                    <p class="flex justify-between mt-2"><span>Nível Final:</span> <span id="level-reached-stat">0</span></p>
+                </div>
                 
                 <button id="restart-button" class="btn mt-6 w-full">Voltar ao Menu</button>
             </div>
@@ -472,13 +510,12 @@
                 <button class="card-button btn w-full text-sm"></button>
             </div>
         </div>
-    </template>
-    
-    <script>
+    </template>    
+	<script>
     // --- Configuração Inicial e Elementos do DOM ---
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
-    let screenWidth, screenHeight; // CORREÇÃO: Removida a inicialização aqui
+    let screenWidth, screenHeight; 
 
     // --- Otimização: Cache do background ---
     const gridCanvas = document.createElement('canvas');
@@ -521,16 +558,23 @@
         optionsModal: document.getElementById('options-modal'),
         optionsButton: document.getElementById('options-button'),
         optionsBackButton: document.getElementById('options-back-button'),
-        // NOVO: Botões de qualidade
         qualityLowBtn: document.getElementById('quality-low'),
         qualityMediumBtn: document.getElementById('quality-medium'),
         qualityHighBtn: document.getElementById('quality-high'),
+        // NOVO: Elementos do Menu de Pausa e Estatísticas
+        pauseModal: document.getElementById('pause-modal'),
+        resumeButton: document.getElementById('resume-button'),
+        quitButton: document.getElementById('quit-button'),
+        pauseSummary: document.getElementById('pause-summary'),
+        enemiesDefeatedStat: document.getElementById('enemies-defeated-stat'),
+        damageDealtStat: document.getElementById('damage-dealt-stat'),
+        levelReachedStat: document.getElementById('level-reached-stat'),
     };
     
     // --- Variáveis Globais do Jogo ---
     let player, camera, soundManager;
     let enemies = [], expOrbs = [], projectiles = [], enemyProjectiles = [], soulGems = [], particles = [], floatingTexts = [], effects = [];
-    let ambientParticles = []; // NOVO: Partículas mágicas de ambiente
+    let ambientParticles = []; 
     let keys = {}, joystickVector = { x: 0, y: 0 };
     let gameState = 'start';
     let runGems = 0;
@@ -539,14 +583,20 @@
     let gameTime = 0;
     let lastTime = 0;
     let animationFrameId;
-    let bossWaveActive = false; // NOVA: Controla a onda do chefe
-    let currentGraphics; // NOVO: Configurações gráficas atuais
+    let bossWaveActive = false; 
+    let currentGraphics; 
+
+    // NOVO: Objeto para estatísticas da partida
+    let runStats = {
+        enemiesDefeated: 0,
+        damageDealt: 0,
+    };
 
     let playerData = {
         totalSoulGems: 9999,
         purchasedUpgrades: {},
         audio: { volume: 0.5, isMuted: false },
-        graphics: { quality: 'medium' }, // NOVO: Configuração de qualidade
+        graphics: { quality: 'medium' }, 
         unlockedWeapons: ['fireball'],
         equippedWeapon: 'fireball'
     };
@@ -563,7 +613,7 @@
             'bat':   { size: 12, color: '#ff4da6', hp: 20, maxHp: 20, speed: 230, damage: 12, xp: 4, aggroRange: 350, diveSpeed: 1200, diveWindup: 0.3, diveCooldown: 2.5, circlingDist: 200 },
             'brute': { size: 30, color: '#ff4d4d', hp: 100, maxHp: 100, speed: 120, damage: 20, xp: 8, slamDamage: 30 },
             'mage':  { size: 22, color: '#be4dff', hp: 40, maxHp: 40, speed: 130, damage: 8, xp: 12 },
-            'spectral_elder': {}, // Adicionado para o chefe
+            'spectral_elder': {}, 
         },
         WEAPONS: {
             'fireball': { name: 'Bola de Fogo', desc: 'Dispara uma bola de fogo que perfura inimigos.', cooldown: 0.8, damage: 15, speed: 400, pierce: 1, size: 8, color: '#ff8c1a', cost: 0 },
@@ -609,7 +659,6 @@
                 apply: p => p.weapon.evolve()
             }
         },
-        // NOVO: Níveis de Qualidade Gráfica
         GRAPHICS: {
             'low':    { particleMultiplier: 0.2, shadows: false, ambientParticles: 20 },
             'medium': { particleMultiplier: 0.6, shadows: true,  ambientParticles: 80 },
@@ -732,15 +781,14 @@
             this.weaponUpgradeLuck = 0;
             this.isMoving = false;
             
-            // NOVO: Visual de Entidade de Energia
             this.fragments = [];
-            this.orbitalAngle = 0; // CORREÇÃO: Adicionada base para o ângulo orbital
+            this.orbitalAngle = 0; 
             for (let i = 0; i < 4; i++) {
                 this.fragments.push({
                     size: 8 + Math.random() * 4,
-                    angle: (Math.PI / 2) * i, // Ângulo inicial
+                    angle: (Math.PI / 2) * i, 
                     targetAngle: (Math.PI / 2) * i,
-                    distance: this.size * 1.8, // Distância do centro
+                    distance: this.size * 1.8, 
                     targetDistance: this.size * 1.8,
                     rotation: 0,
                     rotationSpeed: (Math.random() - 0.5) * 4
@@ -770,27 +818,22 @@
                 this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
             }
 
-            // NOVO: Lógica de animação dos fragmentos
-            this.orbitalAngle += 1.5 * dt; // CORREÇÃO: O ângulo base sempre gira
+            this.orbitalAngle += 1.5 * dt; 
             const lerpFactor = dt * 8;
             const moveAngle = Math.atan2(this.lastMoveDirection.y, this.lastMoveDirection.x);
 
             this.fragments.forEach((frag, i) => {
                 if (this.isDashing) {
-                    // Cauda de cometa no dash
                     frag.targetDistance = this.size * 0.8 + i * 5;
                     frag.targetAngle = Math.atan2(-this.dashDirection.y, -this.dashDirection.x);
                 } else if (this.isMoving) {
-                    // Rastro ao mover
                     frag.targetDistance = this.size * 1.5 + i * 3;
-                    frag.targetAngle = moveAngle + Math.PI; // Oposto da direção
+                    frag.targetAngle = moveAngle + Math.PI; 
                 } else {
-                    // Órbita normal
                     frag.targetDistance = this.size * 1.8;
-                    frag.targetAngle = this.orbitalAngle + (Math.PI / 2) * i; // CORREÇÃO: Retorna para a órbita correta
+                    frag.targetAngle = this.orbitalAngle + (Math.PI / 2) * i; 
                 }
                 
-                // Suaviza a transição de ângulo e distância (Lerp)
                 frag.distance += (frag.targetDistance - frag.distance) * lerpFactor;
                 
                 let angleDiff = frag.targetAngle - frag.angle;
@@ -843,13 +886,11 @@
             if (this.invincibilityTimer > 0) playerColor = 'rgba(200, 200, 255, 0.7)';
             if (this.stunTimer > 0) playerColor = '#ffff99';
 
-            // NOVO: Desenho do jogador como Entidade de Energia
             ctx.save();
             if (currentGraphics && currentGraphics.shadows) {
                 ctx.shadowColor = playerColor;
             }
             
-            // Desenha os fragmentos orbitais
             this.fragments.forEach(frag => {
                 const fragX = this.x + Math.cos(frag.angle) * frag.distance;
                 const fragY = this.y + Math.sin(frag.angle) * frag.distance;
@@ -862,14 +903,12 @@
                 ctx.restore();
             });
 
-            // Desenha o núcleo de energia
             ctx.fillStyle = playerColor;
             if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 20;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size / 1.5, 0, Math.PI * 2);
             ctx.fill();
             
-            // Desenha um brilho interno
             ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
             if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
             ctx.beginPath();
@@ -878,7 +917,6 @@
 
             ctx.restore();
 
-            // Lógica da barra de cooldown do dash (desenhada em cima do jogador)
             const cooldownProgress = this.dashCooldown > 0 ? this.dashCooldown / CONFIG.PLAYER.dashCooldown : 0;
             if (cooldownProgress > 0) {
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
@@ -952,7 +990,7 @@
             this.isAlive = true;
             this.meleeAttackRange = this.size / 2 + 5;
             this.isChampion = false;
-            this.isBoss = false; // Adicionado para identificar chefes
+            this.isBoss = false; 
         }
 
         makeChampion() {
@@ -966,9 +1004,11 @@
 
         takeDamage(amount) {
             if (!this.isAlive) return;
-            this.hp -= amount;
+            const finalDamage = Math.round(amount);
+            this.hp -= finalDamage;
+            runStats.damageDealt += finalDamage; // NOVO: Rastreia o dano
             this.flashTimer = 0.1;
-            floatingTexts.push(new FloatingText(this.x, this.y - this.size / 2, Math.round(amount), '#ffffff'));
+            floatingTexts.push(new FloatingText(this.x, this.y - this.size / 2, finalDamage, '#ffffff'));
             if (this.hp <= 0) this.die();
         }
         heal(amount) {
@@ -978,6 +1018,7 @@
         }
         die() {
             this.isAlive = false;
+            runStats.enemiesDefeated++; // NOVO: Rastreia inimigos derrotados
             createParticleBurst(this.x, this.y, 15, this.color);
             expOrbs.push(new ExpOrb(this.x, this.y, this.xpValue));
             
@@ -1424,7 +1465,6 @@
         }
     }
 
-    // --- NOVA CLASSE: CHEFE ANCIÃO ESPECTRAL ---
     class SpectralElder extends Enemy {
         constructor(x, y) {
             super(x, y, 'spectral_elder');
@@ -1432,13 +1472,12 @@
             this.hp = this.maxHp;
             this.size = 80;
             this.speed = 80;
-            this.damage = 0; // Sem dano de contato
+            this.damage = 0; 
             this.xpValue = 500;
             this.phase = 1;
             this.isBoss = true;
-            this.castingInfo = null; // { type, duration, progress }
+            this.castingInfo = null; 
 
-            // Aparência
             this.orbitingSkulls = [
                 { angle: 0, dist: this.size * 1.5, size: 15 },
                 { angle: Math.PI, dist: this.size * 1.5, size: 15 },
@@ -1448,7 +1487,6 @@
             this.trail = [];
             this.trailTimer = 0.05;
 
-            // Timers de Ataque
             this.actionTimer = 2;
             this.teleportCooldown = 7;
             this.summonCooldown = 10;
@@ -1457,7 +1495,6 @@
         }
 
         update(dt) {
-             // Lógica do rastro fantasma
             this.trailTimer -= dt;
             if (this.trailTimer <= 0) {
                 this.trail.push({ x: this.x, y: this.y, size: this.size, alpha: 0.5 });
@@ -1470,10 +1507,8 @@
                 }
             }
 
-            // Lógica de "Casting" (Canalização de Habilidade)
             if (this.castingInfo) {
                 this.castingInfo.progress += dt;
-                // Para o efeito visual de sugar partículas
                 const coreColor = this.phase === 1 ? 'rgba(220, 240, 255, 0.9)' : 'rgba(255, 180, 180, 0.9)';
                 if (Math.random() < 0.6) {
                     const finalCount = Math.ceil(1 * (currentGraphics ? currentGraphics.particleMultiplier : 1));
@@ -1488,32 +1523,28 @@
                     this.finishAction(this.castingInfo.type);
                     this.castingInfo = null;
                 }
-                return; // Não faz mais nada enquanto canaliza
+                return; 
             }
 
 
-            // Transição de fase
             if (this.phase === 1 && this.hp / this.maxHp <= 0.5) {
                 this.enterPhase2();
             }
 
-            // Atualiza timers
             this.actionTimer -= dt;
             this.teleportCooldown -= dt;
             this.summonCooldown -= dt;
             this.soulBurstCooldown -= dt;
             if (this.phase === 2) this.soulHarvestCooldown -= dt;
 
-            // Atualiza caveiras orbitais
             this.orbitingSkulls.forEach((skull, i) => {
                 skull.angle += (1 + i * 0.1) * dt;
             });
 
-            // Movimento (flutuante)
             const dx = player.x - this.x;
             const dy = player.y - this.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist > 300) { // Mantém distância
+            if (dist > 300) { 
                 this.x += (dx / dist) * this.speed * dt;
                 this.y += (dy / dist) * this.speed * dt;
             } else {
@@ -1521,7 +1552,6 @@
                  this.y -= (dy / dist) * this.speed * 0.5 * dt;
             }
 
-            // Seleção de Ação da IA
             if (this.actionTimer <= 0) {
                 this.performAction();
             }
@@ -1537,7 +1567,7 @@
             if (this.phase === 2 && this.soulHarvestCooldown <= 0) actions.push('soulHarvest');
 
             if (actions.length === 0) {
-                actions.push('soulBurst'); // Ação padrão
+                actions.push('soulBurst'); 
             }
 
             const chosenAction = actions[Math.floor(Math.random() * actions.length)];
@@ -1547,7 +1577,7 @@
         startAction(type) {
              switch (type) {
                 case 'teleport':
-                    this.finishAction('teleport'); // Teleporte é instantâneo
+                    this.finishAction('teleport'); 
                     break;
                 case 'summon':
                     this.castingInfo = { type: 'summon', duration: 1.5, progress: 0 };
@@ -1570,7 +1600,7 @@
                 case 'teleport':
                     this.ghostTeleport();
                     this.teleportCooldown = this.phase === 1 ? 8 : 5;
-                    if (this.phase === 2) this.actionTimer = 0.2; // Combo na fase 2!
+                    if (this.phase === 2) this.actionTimer = 0.2; 
                     else this.actionTimer = 1.0;
                     break;
                 case 'summon':
@@ -1631,8 +1661,8 @@
                 const dx = player.x - circleX;
                 const dy = player.y - circleY;
                 if (dx * dx + dy * dy < 400 * 400) {
-                    player.takeDamage(80); // Dano massivo
-                    player.applyStun(2); // Lentidão (implementada como stun)
+                    player.takeDamage(80); 
+                    player.applyStun(2); 
                 }
                 createParticleBurst(circleX, circleY, 200, 'rgba(255, 50, 100, 0.7)', 1.5, 8, 400);
                 camera.startShake(20, 0.8);
@@ -1644,7 +1674,6 @@
             this.phase = 2;
             floatingTexts.push(new FloatingText(this.x, this.y, 'ENFURECIDO!', '#ff4d4d', 3, 24));
             this.speed *= 1.3;
-            // Reduz cooldowns
             this.teleportCooldown = 5;
             this.summonCooldown = 8;
             this.soulBurstCooldown = 1.5;
@@ -1656,7 +1685,6 @@
             const coreColor = this.phase === 1 ? 'rgba(220, 240, 255, 0.9)' : 'rgba(255, 180, 180, 0.9)';
             const bob = Math.sin(gameTime * 2) * 10;
 
-             // 1. Rastro Fantasma
             for (const trailPart of this.trail) {
                 ctx.save();
                 ctx.globalAlpha = trailPart.alpha;
@@ -1665,7 +1693,6 @@
                 ctx.restore();
             }
 
-            // 2. Aura Pulsante
             const auraPulse = Math.sin(gameTime * (this.phase === 1 ? 3 : 7));
             const auraColor = this.phase === 1 ? 'rgba(150, 200, 255,' : 'rgba(255, 80, 80,';
             const auraSize = this.size + 10 + auraPulse * 8;
@@ -1681,7 +1708,6 @@
             ctx.fill();
             ctx.restore();
 
-            // 3. Corpo Principal (Forma de Manto)
             ctx.save();
             ctx.fillStyle = this.flashTimer > 0 ? '#ffffff' : phaseColor;
             if (currentGraphics && currentGraphics.shadows) {
@@ -1692,7 +1718,6 @@
             ctx.restore();
 
 
-            // 4. Caveiras Orbitais com brilho de "Carga"
             this.orbitingSkulls.forEach(skull => {
                 const x = this.x + Math.cos(skull.angle) * skull.dist;
                 const y = this.y + Math.sin(skull.angle) * skull.dist + bob;
@@ -1710,11 +1735,10 @@
                     ctx.shadowBlur = skullGlow;
                 }
 
-                // Desenha uma forma simples de caveira
                 ctx.fillRect(x - skull.size / 2, y - skull.size / 2, skull.size, skull.size);
                 ctx.fillStyle = 'black';
-                ctx.fillRect(x - skull.size / 4, y - skull.size / 4, skull.size / 5, skull.size / 5); // olho
-                ctx.fillRect(x + skull.size / 8, y - skull.size / 4, skull.size / 5, skull.size / 5); // olho
+                ctx.fillRect(x - skull.size / 4, y - skull.size / 4, skull.size / 5, skull.size / 5); 
+                ctx.fillRect(x + skull.size / 8, y - skull.size / 4, skull.size / 5, skull.size / 5); 
                 ctx.restore();
             });
         }
@@ -1722,19 +1746,19 @@
         drawCloakedShape(ctx, x, y, size) {
             const s = size;
             ctx.beginPath();
-            ctx.moveTo(x, y - s); // Topo
-            ctx.quadraticCurveTo(x + s, y - s * 0.2, x + s * 0.7, y + s * 0.5); // Lado direito
-            ctx.quadraticCurveTo(x, y + s * 1.2, x - s * 0.7, y + s * 0.5); // Base e lado esquerdo
-            ctx.quadraticCurveTo(x - s, y - s * 0.2, x, y - s); // Volta ao topo
+            ctx.moveTo(x, y - s); 
+            ctx.quadraticCurveTo(x + s, y - s * 0.2, x + s * 0.7, y + s * 0.5); 
+            ctx.quadraticCurveTo(x, y + s * 1.2, x - s * 0.7, y + s * 0.5); 
+            ctx.quadraticCurveTo(x - s, y - s * 0.2, x, y - s); 
             ctx.fill();
         }
 
         die() {
             this.isAlive = false;
+            runStats.enemiesDefeated++;
             createParticleBurst(this.x, this.y, 300, 'rgba(150, 200, 255, 1)', 3, 10, 500);
             camera.startShake(30, 2);
 
-            // Explosão de recompensas
             for (let i = 0; i < 20; i++) {
                 expOrbs.push(new ExpOrb(this.x + (Math.random() - 0.5) * 100, this.y + (Math.random() - 0.5) * 100, 50));
             }
@@ -1751,18 +1775,17 @@
                 wave++;
                 waveTimer = 30;
                 spawnWave();
-            }, 5000); // Pausa de 5 segundos após a vitória
+            }, 5000); 
         }
     }
     
-    // --- NOVA CLASSE: ECO DE SLIME (MINION DO CHEFE) ---
     class SlimeEcho extends Slime {
         constructor(x, y) {
             super(x, y);
             this.hp = 5;
             this.maxHp = 5;
             this.damage = 5;
-            this.xpValue = 0; // Sem XP
+            this.xpValue = 0; 
         }
 
         draw(ctx) {
@@ -1774,8 +1797,8 @@
 
         die() {
             this.isAlive = false;
+            runStats.enemiesDefeated++;
             createParticleBurst(this.x, this.y, 5, 'rgba(150, 200, 255, 0.5)');
-            // Sem drops
         }
     }
 
@@ -1881,7 +1904,7 @@
             const progress = 1 - (this.life / this.lifespan);
             const currentRadius = this.maxRadius * progress;
             enemies.forEach(enemy => {
-                if (!this.hitEnemies.includes(enemy) && !enemy.isBoss) { // Ondas de choque não afetam o chefe
+                if (!this.hitEnemies.includes(enemy) && !enemy.isBoss) { 
                     const distSq = (enemy.x - this.x)**2 + (enemy.y - this.y)**2;
                     if (distSq < currentRadius**2) {
                         enemy.takeDamage(this.damage);
@@ -1907,7 +1930,6 @@
         }
     }
 
-    // --- NOVA CLASSE: CÍRCULO DE AVISO (ATAQUE DO CHEFE) ---
     class WarningCircle {
         constructor(x, y, radius, duration, onEndCallback) {
             this.x = x; this.y = y; this.radius = radius;
@@ -1936,7 +1958,6 @@
             ctx.fill();
             ctx.stroke();
 
-            // Círculo de timer encolhendo no meio
             ctx.strokeStyle = `rgba(255, 255, 255, 0.8)`;
             ctx.lineWidth = 10;
             ctx.beginPath();
@@ -1953,7 +1974,7 @@
             this.x = x; this.y = y; this.speed = speed; this.damage = damage;
             this.pierce = pierce; this.size = size; this.color = color;
             this.hitEnemies = []; this.lifetime = 3;
-            const dir = target; // Direção já deve vir normalizada
+            const dir = target; 
             this.vx = dir.x * speed; this.vy = dir.y * speed;
             this.particleTimer = 0;
             this.explodes = options.explodes || false;
@@ -1988,7 +2009,7 @@
             camera.startShake(5, 0.1);
             enemies.forEach(enemy => {
                 if (!enemy.isBoss && (enemy.x - this.x)**2 + (enemy.y - this.y)**2 < this.explosionRadius**2) {
-                    enemy.takeDamage(this.damage * 0.5); // Dano da explosão é 50%
+                    enemy.takeDamage(this.damage * 0.5); 
                 }
             });
         }
@@ -2025,26 +2046,23 @@
         }
     }
     
-    // --- NOVO PROJÉTIL: ALMA TELEGUIDADA (ATAQUE DO CHEFE) ---
     class HomingSoul extends EnergyBall {
         constructor(x, y, target, speed, damage) {
             super(x, y, target, speed, damage);
             this.target = target;
-            this.turnSpeed = Math.PI / 1.5; // Radianos por segundo
+            this.turnSpeed = Math.PI / 1.5; 
             this.color = 'rgba(150, 220, 255, 0.8)';
             this.size = 12;
-            this.acceleration = 150; // Aceleração constante
+            this.acceleration = 150; 
         }
 
         update(dt) {
-            // Acelera o projétil
             this.speed += this.acceleration * dt;
 
-            // Lógica de perseguição
             const targetAngle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
             let currentAngle = Math.atan2(this.vy, this.vx);
             let angleDiff = targetAngle - currentAngle;
-            // Normaliza a diferença de ângulo para [-PI, PI]
+
             while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
             while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
 
@@ -2096,7 +2114,7 @@
             if (this.isEvolved) {
                 const baseDir = normalizeVector({x: target.x - this.player.x, y: target.y - this.player.y});
                 const angle = Math.atan2(baseDir.y, baseDir.x);
-                const spread = Math.PI / 8; // 22.5 graus de spread
+                const spread = Math.PI / 8; 
                 for (let i = -1; i <= 1; i++) {
                     const currentAngle = angle + i * spread;
                     const dir = {x: Math.cos(currentAngle), y: Math.sin(currentAngle)};
@@ -2201,26 +2219,22 @@
 
 
     // --- Funções Auxiliares e de Jogo ---
-    // --- INÍCIO: Seção das Partículas de Ambiente ---
     class AmbientParticle {
         constructor() {
-            // Nasce em um lugar aleatório do mapa
             this.x = Math.random() * CONFIG.MAP_SIZE.width;
             this.y = Math.random() * CONFIG.MAP_SIZE.height;
             this.size = Math.random() * 1.5 + 1;
             this.baseY = this.y;
-            this.speedX = (Math.random() - 0.5) * 15; // Movimento horizontal lento
-            this.amplitudeY = Math.random() * 10 + 5; // Quão alto "flutua"
-            this.frequencyY = Math.random() * 0.5 + 0.2; // Velocidade da flutuação
+            this.speedX = (Math.random() - 0.5) * 15; 
+            this.amplitudeY = Math.random() * 10 + 5; 
+            this.frequencyY = Math.random() * 0.5 + 0.2; 
             this.color = `rgba(200, 220, 255, ${Math.random() * 0.4 + 0.2})`;
         }
 
         update(dt) {
             this.x += this.speedX * dt;
-            // Usa o tempo de jogo para criar uma flutuação suave com seno
             this.y = this.baseY + Math.sin(gameTime * this.frequencyY) * this.amplitudeY;
 
-            // Se sair da tela, reposiciona do outro lado (efeito de loop)
             if (this.x < 0) this.x = CONFIG.MAP_SIZE.width;
             if (this.x > CONFIG.MAP_SIZE.width) this.x = 0;
         }
@@ -2234,13 +2248,12 @@
     }
 
     function createAmbientParticles() {
-        if (!currentGraphics) return; // Checagem de segurança
+        if (!currentGraphics) return; 
         const count = currentGraphics.ambientParticles;
         for (let i = 0; i < count; i++) {
             ambientParticles.push(new AmbientParticle());
         }
     }
-    // --- FIM: Seção das Partículas de Ambiente ---
 
     const normalizeVector = v => {
         const mag = Math.sqrt(v.x * v.x + v.y * v.y);
@@ -2248,7 +2261,7 @@
     };
     
     function createParticleBurst(x, y, count, color, lifespan = 0.5, size = 3, speed = 150) {
-        if (!currentGraphics) return; // Checagem de segurança
+        if (!currentGraphics) return; 
         const finalCount = Math.ceil(count * currentGraphics.particleMultiplier);
         for (let i = 0; i < finalCount; i++) {
             particles.push(new Particle(x, y, color, lifespan, Math.random() * size + 1, speed));
@@ -2298,13 +2311,17 @@
         loadProgress();
         setupEventListeners();
         createGridPattern();
-        // createAmbientParticles(); // Movido para applyGraphicsSettings
         lastTime = performance.now();
         if (!animationFrameId) gameLoop(lastTime);
     }
     
     function startGame() {
-        DOM.startModal.style.display = 'none'; DOM.hud.style.display = 'block';
+        DOM.startModal.style.display = 'none'; 
+        DOM.hud.style.display = 'block';
+
+        // NOVO: Reseta as estatísticas
+        runStats = { enemiesDefeated: 0, damageDealt: 0 };
+
         player = new Player();
         camera = new Camera(player);
         enemies = []; expOrbs = []; projectiles = []; enemyProjectiles = []; soulGems = []; particles = []; floatingTexts = []; effects = [];
@@ -2313,6 +2330,7 @@
         DOM.bossHud.style.display = 'none';
         spawnWave();
         gameState = 'playing';
+        history.pushState({ inGame: true }, "");
     }
     
     function spawnWave() {
@@ -2349,7 +2367,7 @@
 
     function startBossWave() {
         bossWaveActive = true;
-        enemies.forEach(e => e.takeDamage(9999)); // Limpa inimigos normais
+        enemies.forEach(e => e.takeDamage(9999)); 
         
         setTimeout(() => {
             const boss = new SpectralElder(player.x, player.y - 600);
@@ -2361,11 +2379,10 @@
     function findNearestEnemy(entity) {
         let nearest = null, nearestDistSq = Infinity;
         for (const enemy of enemies) {
-            if(enemy.isBoss) continue; // Armas não miram no chefe
+            if(enemy.isBoss) continue; 
             const distSq = (entity.x - enemy.x)**2 + (entity.y - enemy.y)**2;
             if (distSq < nearestDistSq) { nearestDistSq = distSq; nearest = enemy; }
         };
-        // Se não houver minions, mira no chefe
         if(!nearest) nearest = enemies.find(e => e.isBoss);
         return nearest;
     }
@@ -2424,8 +2441,8 @@
     }
     
     function showAbilityChoice() {
-        if (gameState === 'gameOver') return;
-        gameState = 'paused';
+        if (gameState === 'gameOver' || gameState === 'paused') return; // Alterado para não abrir sobre o menu de pausa
+        gameState = 'paused_ability'; // Novo estado para diferenciar da pausa manual
         const weaponId = player.weapon.id;
         let evolutionAvailable = null;
 
@@ -2507,6 +2524,12 @@
         const minutes = Math.floor(gameTime / 60), seconds = Math.floor(gameTime % 60).toString().padStart(2, '0');
         DOM.timeSurvived.textContent = `${minutes}:${seconds}`;
         DOM.finalGems.textContent = runGems;
+        
+        // NOVO: Exibe as estatísticas finais
+        DOM.enemiesDefeatedStat.textContent = runStats.enemiesDefeated;
+        DOM.damageDealtStat.textContent = Math.round(runStats.damageDealt);
+        DOM.levelReachedStat.textContent = player.level;
+        
         DOM.gameOverModal.style.display = 'flex';
     }
     
@@ -2521,7 +2544,7 @@
         } else {
             waveTimer -= dt;
             if (waveTimer <= 0) {
-                if (wave === 9) { // Prepara para a onda 10 (chefe)
+                if (wave === 9) { 
                     wave++;
                     startBossWave();
                 } else {
@@ -2559,7 +2582,6 @@
         for (let i = enemies.length - 1; i >= 0; i--) if (!enemies[i].isAlive) enemies.splice(i, 1);
         for (let i = effects.length - 1; i >= 0; i--) if (effects[i].life <= 0) effects.splice(i, 1);
 
-        // Atualiza as partículas de ambiente
         for(const p of ambientParticles) p.update(dt);
     }
     
@@ -2572,7 +2594,6 @@
         ctx.fillStyle = gridPattern;
         ctx.fillRect(camera.x, camera.y, screenWidth, screenHeight);
         
-        // Desenha as partículas de ambiente
         if (currentGraphics && currentGraphics.shadows) {
             ctx.shadowColor = '#ffffff';
             ctx.shadowBlur = 5;
@@ -2729,7 +2750,6 @@
         DOM.muteButton.textContent = playerData.audio.isMuted || playerData.audio.volume === 0 ? '🔇' : '🔊';
         if (soundManager) soundManager.setVolume(playerData.audio.volume, playerData.audio.isMuted);
     }
-    // NOVO: Funções de Qualidade Gráfica
     function applyGraphicsSettings() {
         const quality = playerData.graphics.quality || 'medium';
         currentGraphics = CONFIG.GRAPHICS[quality];
@@ -2747,6 +2767,55 @@
         playerData.graphics.quality = quality;
         applyGraphicsSettings();
         saveProgress();
+    }
+
+    // NOVO: Funções do Menu de Pausa
+    function updatePauseSummary() {
+        if (!player) return;
+        DOM.pauseSummary.innerHTML = ''; // Limpa o conteúdo anterior
+
+        // Seção da Arma
+        let weaponHtml = '<h3>Arma</h3><ul>';
+        const weaponName = player.weapon.isEvolved ? `${player.weapon.stats.name} (EVO)` : player.weapon.stats.name;
+        weaponHtml += `<li>${weaponName}</li>`;
+        weaponHtml += '</ul>';
+        DOM.pauseSummary.innerHTML += weaponHtml;
+
+        // Seção das Melhorias
+        let abilitiesHtml = '<h3 class="mt-4">Melhorias</h3><ul>';
+        const abilityNames = { ...CONFIG.GENERAL_ABILITIES.reduce((obj, item) => ({...obj, [item.id]: item.name }), {}),
+            ...Object.values(CONFIG.WEAPON_UPGRADES).flat().reduce((obj, item) => ({...obj, [item.id]: item.name }), {})
+        };
+        
+        const sortedAbilities = Object.keys(player.abilityLevels).sort();
+        if (sortedAbilities.length > 0) {
+            sortedAbilities.forEach(id => {
+                 const name = abilityNames[id] || id;
+                 const level = player.abilityLevels[id];
+                 abilitiesHtml += `<li>${name} - Nível ${level}</li>`;
+            });
+        } else {
+            abilitiesHtml += '<li>Nenhuma melhoria adquirida.</li>';
+        }
+        
+        abilitiesHtml += '</ul>';
+        DOM.pauseSummary.innerHTML += abilitiesHtml;
+    }
+
+    function togglePause(isManual = true) {
+        if (gameState === 'gameOver' || (gameState === 'paused_ability' && isManual)) return;
+
+        const shouldPause = gameState === 'playing';
+
+        if (shouldPause) {
+            gameState = 'paused';
+            updatePauseSummary();
+            DOM.pauseModal.style.display = 'flex';
+        } else if (gameState === 'paused') {
+            gameState = 'playing';
+            DOM.pauseModal.style.display = 'none';
+            lastTime = performance.now(); 
+        }
     }
     
     // --- Event Listeners ---
@@ -2774,8 +2843,11 @@
         });
 
         DOM.restartButton.addEventListener('click', () => {
-            DOM.gameOverModal.style.display = 'none'; DOM.startModal.style.display = 'flex';
-            updateGemDisplays(); gameState = 'start';
+            DOM.gameOverModal.style.display = 'none'; 
+            DOM.hud.style.display = 'none';
+            DOM.startModal.style.display = 'flex';
+            updateGemDisplays(); 
+            gameState = 'start';
         });
         DOM.showUpgradesTab.addEventListener('click', () => {
             DOM.upgradesContainer.style.display = 'grid'; DOM.weaponShopContainer.style.display = 'none';
@@ -2795,21 +2867,44 @@
             if(!playerData.audio.isMuted && playerData.audio.volume === 0) playerData.audio.volume = 0.5;
             applyAudioSettings(); saveProgress();
         });
-
-        // NOVO: Listeners de Qualidade Gráfica
+        
         DOM.qualityLowBtn.addEventListener('click', () => setGraphicsQuality('low'));
         DOM.qualityMediumBtn.addEventListener('click', () => setGraphicsQuality('medium'));
         DOM.qualityHighBtn.addEventListener('click', () => setGraphicsQuality('high'));
         
+        DOM.resumeButton.addEventListener('click', () => togglePause(true));
+        DOM.quitButton.addEventListener('click', () => {
+            togglePause(false); 
+            DOM.gameOverModal.style.display = 'none';
+            DOM.pauseModal.style.display = 'none';
+            DOM.hud.style.display = 'none';
+            DOM.startModal.style.display = 'flex';
+            updateGemDisplays(); 
+            gameState = 'start';
+        });
+
         window.addEventListener('keydown', e => {
             keys[e.key.toLowerCase()] = true;
             if (e.key === ' ' || e.key === 'Shift') { e.preventDefault(); player?.dash(); }
+            if (e.key === 'Escape') { 
+                e.preventDefault(); 
+                if (gameState === 'playing' || gameState === 'paused') {
+                    togglePause(true);
+                }
+            }
         });
+
         window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
         
+        window.addEventListener('popstate', (event) => {
+            if (gameState === 'playing') {
+                togglePause(true);
+                history.pushState({ inGame: true }, "");
+            }
+        });
+
         window.addEventListener('resize', resizeCanvas);
         
-        // --- Controles de Toque Flexíveis ---
         let joystickID = null;
         let joystickCenter = { x: 0, y: 0 };
         const joystickMaxDist = 50;
@@ -2862,7 +2957,6 @@
             e.preventDefault(); player?.dash();
         }, { passive: false });
     }
-    
     // --- Iniciar o Jogo ---
     init();
     </script>
