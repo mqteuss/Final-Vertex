@@ -112,11 +112,9 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        /* CORREÇÃO APLICADA AQUI */
+        /* ALTERAÇÃO APLICADA AQUI: HUD movido mais para baixo */
         #hud {
-            /* Aumentamos o valor base para 2.5rem (equivalente a 'top-10') 
-               e mantemos o ajuste da área segura. Isso garante que ele desça o suficiente. */
-            top: calc(1rem + env(safe-area-inset-top)); 
+            top: calc(2.5rem + env(safe-area-inset-top)); 
         }
 
         /* ALTERAÇÃO APLICADA: Efeito de sombra e borda nos botões */
@@ -203,6 +201,7 @@
             top: 30px; left: 30px;
             pointer-events: none;
         }
+        /* ALTERAÇÃO APLICADA AQUI: Botão Dash movido mais para cima */
         #dash-button {
             display: none;
             position: absolute;
@@ -212,9 +211,9 @@
             color: var(--primary-bg); font-size: 1.2rem; font-weight: bold;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             overflow: hidden;
-            bottom: 2rem;
+            bottom: 4rem; /* Aumentado de 2rem */
             right: 2rem;
-            bottom: calc(2rem + env(safe-area-inset-bottom));
+            bottom: calc(4rem + env(safe-area-inset-bottom)); /* Aumentado de 2rem */
             right: calc(2rem + env(safe-area-inset-right));
             z-index: 5;
         }
@@ -561,7 +560,6 @@
         qualityLowBtn: document.getElementById('quality-low'),
         qualityMediumBtn: document.getElementById('quality-medium'),
         qualityHighBtn: document.getElementById('quality-high'),
-        // NOVO: Elementos do Menu de Pausa e Estatísticas
         pauseModal: document.getElementById('pause-modal'),
         resumeButton: document.getElementById('resume-button'),
         quitButton: document.getElementById('quit-button'),
@@ -585,8 +583,8 @@
     let animationFrameId;
     let bossWaveActive = false; 
     let currentGraphics; 
+    let isMobile = false; // NOVA: Variável para detectar se é mobile
 
-    // NOVO: Objeto para estatísticas da partida
     let runStats = {
         enemiesDefeated: 0,
         damageDealt: 0,
@@ -730,21 +728,45 @@
     class Camera {
         constructor(target) {
             this.target = target;
-            this.x = target.x - screenWidth / 2;
-            this.y = target.y - screenHeight / 2;
+            this.zoom = 1; // Fator de zoom inicial
+            this.targetZoom = 1;
+            this.x = 0;
+            this.y = 0;
             this.shakeDuration = 0;
             this.shakeIntensity = 0;
+            this.updateZoom(); // Define o zoom inicial com base no dispositivo
         }
+
+        updateZoom() {
+            // Se for mobile (tela pequena), afasta a câmera (zoom menor)
+            if (isMobile) {
+                this.targetZoom = 0.8; 
+            } else {
+                this.targetZoom = 1.0;
+            }
+        }
+
+        // ALTERAÇÃO APLICADA: Lógica da câmera simplificada para garantir centralização
         update() {
+            // Suaviza a transição do zoom
+            this.zoom += (this.targetZoom - this.zoom) * 0.05;
+
             const lerpFactor = 0.1;
-            const targetX = this.target.x - screenWidth / 2;
-            const targetY = this.target.y - screenHeight / 2;
-            this.x += (targetX - this.x) * lerpFactor;
-            this.y += (targetY - this.y) * lerpFactor;
-            this.x = Math.max(0, Math.min(this.x, CONFIG.MAP_SIZE.width - screenWidth));
-            this.y = Math.max(0, Math.min(this.y, CONFIG.MAP_SIZE.height - screenHeight));
+            // A câmera segue suavemente o centro do alvo
+            this.x += (this.target.x - this.x) * lerpFactor;
+            this.y += (this.target.y - this.y) * lerpFactor;
+
+            // Limita a câmera ao mapa, garantindo que não mostre fora dos limites
+            const visibleWidth = screenWidth / this.zoom;
+            const visibleHeight = screenHeight / this.zoom;
+
+            this.x = Math.max(visibleWidth / 2, Math.min(this.x, CONFIG.MAP_SIZE.width - visibleWidth / 2));
+            this.y = Math.max(visibleHeight / 2, Math.min(this.y, CONFIG.MAP_SIZE.height - visibleHeight / 2));
+
             if (this.shakeDuration > 0) this.shakeDuration -= 1 / 60;
         }
+        
+        // ALTERAÇÃO APLICADA: Lógica de renderização da câmera simplificada
         apply(context) {
             context.save();
             let shakeX = 0, shakeY = 0;
@@ -752,8 +774,15 @@
                 shakeX = (Math.random() - 0.5) * this.shakeIntensity;
                 shakeY = (Math.random() - 0.5) * this.shakeIntensity;
             }
+
+            // Centraliza a tela
+            context.translate(screenWidth / 2, screenHeight / 2);
+            // Aplica o zoom a partir do centro
+            context.scale(this.zoom, this.zoom);
+            // Move o mundo para que o ponto (this.x, this.y) fique no centro
             context.translate(-this.x + shakeX, -this.y + shakeY);
         }
+
         restore(context) { context.restore(); }
         startShake(intensity, duration) {
             this.shakeIntensity = intensity;
@@ -2303,6 +2332,9 @@
         }
         screenWidth = canvas.width;
         screenHeight = canvas.height;
+        // Atualiza a flag de mobile e o zoom da câmera no redimensionamento
+        isMobile = screenWidth < 768;
+        if(camera) camera.updateZoom();
     }
 
     function init() {
@@ -2319,7 +2351,6 @@
         DOM.startModal.style.display = 'none'; 
         DOM.hud.style.display = 'block';
 
-        // NOVO: Reseta as estatísticas
         runStats = { enemiesDefeated: 0, damageDealt: 0 };
 
         player = new Player();
@@ -2337,7 +2368,7 @@
         const enemiesToSpawn = 5 + wave * 3;
         for (let i = 0; i < enemiesToSpawn; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const radius = Math.max(screenWidth, screenHeight) * 0.7;
+            const radius = Math.max(screenWidth, screenHeight) / (camera ? camera.zoom : 1) * 0.7;
             const x = player.x + Math.cos(angle) * radius;
             const y = player.y + Math.sin(angle) * radius;
             
@@ -2441,8 +2472,8 @@
     }
     
     function showAbilityChoice() {
-        if (gameState === 'gameOver' || gameState === 'paused') return; // Alterado para não abrir sobre o menu de pausa
-        gameState = 'paused_ability'; // Novo estado para diferenciar da pausa manual
+        if (gameState === 'gameOver' || gameState === 'paused') return; 
+        gameState = 'paused_ability'; 
         const weaponId = player.weapon.id;
         let evolutionAvailable = null;
 
@@ -2525,7 +2556,6 @@
         DOM.timeSurvived.textContent = `${minutes}:${seconds}`;
         DOM.finalGems.textContent = runGems;
         
-        // NOVO: Exibe as estatísticas finais
         DOM.enemiesDefeatedStat.textContent = runStats.enemiesDefeated;
         DOM.damageDealtStat.textContent = Math.round(runStats.damageDealt);
         DOM.levelReachedStat.textContent = player.level;
@@ -2540,7 +2570,6 @@
         gameTime += dt;
 
         if (bossWaveActive) {
-            // Lógica do chefe já é tratada no loop de inimigos
         } else {
             waveTimer -= dt;
             if (waveTimer <= 0) {
@@ -2592,7 +2621,7 @@
         camera.apply(ctx);
         
         ctx.fillStyle = gridPattern;
-        ctx.fillRect(camera.x, camera.y, screenWidth, screenHeight);
+        ctx.fillRect(0, 0, CONFIG.MAP_SIZE.width, CONFIG.MAP_SIZE.height);
         
         if (currentGraphics && currentGraphics.shadows) {
             ctx.shadowColor = '#ffffff';
@@ -2769,19 +2798,16 @@
         saveProgress();
     }
 
-    // NOVO: Funções do Menu de Pausa
     function updatePauseSummary() {
         if (!player) return;
-        DOM.pauseSummary.innerHTML = ''; // Limpa o conteúdo anterior
+        DOM.pauseSummary.innerHTML = ''; 
 
-        // Seção da Arma
         let weaponHtml = '<h3>Arma</h3><ul>';
         const weaponName = player.weapon.isEvolved ? `${player.weapon.stats.name} (EVO)` : player.weapon.stats.name;
         weaponHtml += `<li>${weaponName}</li>`;
         weaponHtml += '</ul>';
         DOM.pauseSummary.innerHTML += weaponHtml;
 
-        // Seção das Melhorias
         let abilitiesHtml = '<h3 class="mt-4">Melhorias</h3><ul>';
         const abilityNames = { ...CONFIG.GENERAL_ABILITIES.reduce((obj, item) => ({...obj, [item.id]: item.name }), {}),
             ...Object.values(CONFIG.WEAPON_UPGRADES).flat().reduce((obj, item) => ({...obj, [item.id]: item.name }), {})
