@@ -49,7 +49,6 @@
             height: 100%;
         }
         
-        /* ALTERAÇÃO APLICADA: Novo estilo para a barra inspirada no Minecraft */
         .hud-bar {
             position: relative;
             height: 1rem;
@@ -59,7 +58,6 @@
             border: 2px solid var(--dark-border);
         }
 
-        /* ALTERAÇÃO APLICADA: Adicionado pseudo-elemento para criar os segmentos */
         .hud-bar::after {
             content: '';
             position: absolute;
@@ -71,7 +69,7 @@
                 rgba(0,0,0,0.4) 8px,
                 rgba(0,0,0,0.4) 10px
             );
-            pointer-events: none; /* Garante que não interfira com o mouse */
+            pointer-events: none;
         }
         
         .hud-bar-fill {
@@ -82,7 +80,7 @@
         #health-bar-fill { background-color: var(--health-color); }
         #xp-bar-fill { background-color: var(--xp-color); }
         .modal {
-            position: fixed; /* CORREÇÃO: Mudei para 'fixed' para garantir que o modal sempre cubra a viewport inteira */
+            position: fixed;
             inset: 0;
             background-color: rgba(0,0,0,0.7);
             backdrop-filter: blur(5px);
@@ -112,12 +110,10 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        /* ALTERAÇÃO APLICADA AQUI: HUD movido mais para baixo */
         #hud {
             top: calc(2.5rem + env(safe-area-inset-top)); 
         }
 
-        /* ALTERAÇÃO APLICADA: Efeito de sombra e borda nos botões */
         .btn {
             padding: 0.75rem 1.5rem;
             font-size: 1rem;
@@ -133,7 +129,6 @@
         .btn:hover {
             background-color: #6a6a8e;
         }
-        /* ALTERAÇÃO APLICADA: Ajuste no estado ativo para o efeito de "pressionar" */
         .btn:active {
             transform: translateY(2px) scale(0.98);
             box-shadow: 0 2px 0 var(--dark-border);
@@ -146,14 +141,12 @@
             transform: translateY(2px);
         }
         
-        /* NOVO: Estilo para botão de qualidade ativo */
-        .quality-btn.active {
+        .quality-btn.active, .controls-btn.active {
             background-color: var(--player-color);
             box-shadow: 0 2px 0 var(--dark-border), inset 0 0 10px rgba(0,0,0,0.3);
             transform: translateY(2px);
         }
 
-        /* ALTERAÇÃO APLICADA: Efeito de brilho no título */
         #start-modal h1 {
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 15px rgba(138, 138, 255, 0.3);
         }
@@ -201,22 +194,30 @@
             top: 30px; left: 30px;
             pointer-events: none;
         }
-        /* ALTERAÇÃO APLICADA AQUI: Botão Dash movido mais para cima */
+
         #dash-button {
             display: none;
             position: absolute;
             width: 80px; height: 80px; background-color: var(--player-color);
             border-radius: 50%;
             align-items: center; justify-content: center;
-            color: var(--primary-bg); font-size: 1.2rem; font-weight: bold;
+            color: var(--primary-bg);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             overflow: hidden;
-            bottom: 4rem; /* Aumentado de 2rem */
-            right: 2rem;
-            bottom: calc(4rem + env(safe-area-inset-bottom)); /* Aumentado de 2rem */
-            right: calc(2rem + env(safe-area-inset-right));
+            bottom: 4rem;
             z-index: 5;
+            /* Posição Padrão (Direita) */
+            right: 2rem;
+            right: calc(2rem + env(safe-area-inset-right));
+            left: auto;
         }
+        /* Nova regra para controles invertidos */
+        .controls-inverted #dash-button {
+            right: auto;
+            left: 2rem;
+            left: calc(2rem + env(safe-area-inset-left));
+        }
+
         #dash-cooldown-overlay {
             position: absolute;
             bottom: 0;
@@ -255,10 +256,10 @@
             padding-bottom: 0.5rem;
             margin-bottom: -2px;
             border-radius: 0;
-            box-shadow: none; /* Remove a sombra dos botões de aba */
+            box-shadow: none;
         }
         .tab-btn:active {
-            transform: none; /* Remove o efeito de clique das abas */
+            transform: none;
             box-shadow: none;
         }
         .tab-btn.active-tab {
@@ -266,17 +267,13 @@
             color: var(--light-text);
         }
 
-        /* NOVO: Estilos para o resumo no menu de pausa */
         #pause-summary h3 {
             border-bottom: 2px solid var(--accent-bg);
             padding-bottom: 0.5rem;
             margin-bottom: 1rem;
             font-size: 1.1rem;
         }
-        #pause-summary ul {
-            list-style: none;
-            padding: 0;
-        }
+        #pause-summary ul { list-style: none; padding: 0; }
         #pause-summary li {
             background-color: var(--primary-bg);
             padding: 0.5rem 0.75rem;
@@ -285,68 +282,38 @@
             font-size: 0.9rem;
         }
         
-        /* Mostra controles em dispositivos com tela de toque */
         @media (pointer: coarse) {
             #dash-button { display: flex; }
             #joystick-container { display: block; }
         }
         
-        /* Ajustes para telas pequenas (geralmente mobile em modo retrato) */
         @media (max-width: 640px) {
-            .modal-content {
-                padding: 1.5rem 1rem;
-            }
-            .btn {
-                padding: 0.75rem 1rem;
-                font-size: 0.9rem;
-            }
-             #joystick-container { width: 100px; height: 100px; }
-             #joystick-thumb { width: 50px; height: 50px; top: 25px; left: 25px; }
-             #dash-button { width: 70px; height: 70px; font-size: 1rem; }
-             /* Ajusta o tamanho da fonte dos títulos dos modais */
-             .modal-content h1 { font-size: 1.8rem !important; }
-             .modal-content h2 { font-size: 1.5rem !important; }
+            .modal-content { padding: 1.5rem 1rem; }
+            .btn { padding: 0.75rem 1rem; font-size: 0.9rem; }
+            #joystick-container { width: 100px; height: 100px; }
+            #joystick-thumb { width: 50px; height: 50px; top: 25px; left: 25px; }
+            #dash-button { width: 70px; height: 70px; }
+            .modal-content h1 { font-size: 1.8rem !important; }
+            .modal-content h2 { font-size: 1.5rem !important; }
         }
         
-        /* NOVO: Ajustes para telas na horizontal (mobile em modo paisagem) */
         @media (orientation: landscape) and (max-height: 500px) {
             #hud {
                 left: 0.5rem; right: 0.5rem;
-                /* Adicionamos a correção para a área segura também aqui, com um valor menor */
                 top: calc(0.5rem + env(safe-area-inset-top)); 
             }
-            /* Reduz o texto do HUD para economizar espaço vertical */
             #level-text, #wave-timer { font-size: 0.75rem; }
             .hud-bar { height: 0.75rem; }
-
-            .modal-content {
-                padding: 1rem;
-                max-height: 95vh;
-            }
-             /* Reduz os títulos e margens dos modais */
-            .modal-content h1, .modal-content h2 {
-                font-size: 1.25rem !important;
-                margin-bottom: 0.75rem !important;
-            }
-            .modal-content p {
-                font-size: 0.8rem;
-                margin-bottom: 1rem !important;
-            }
-
+            .modal-content { padding: 1rem; max-height: 95vh; }
+            .modal-content h1, .modal-content h2 { font-size: 1.25rem !important; margin-bottom: 0.75rem !important; }
+            .modal-content p { font-size: 0.8rem; margin-bottom: 1rem !important; }
             #ability-modal h2 { font-size: 1.25rem !important; margin-bottom: 1rem !important; }
-            #ability-options {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.75rem;
-            }
+            #ability-options { grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
             #ability-options .card { padding: 0.75rem; }
             #ability-options .card h3 { font-size: 0.8rem; margin-bottom: 0.25rem; }
             #ability-options .card p { font-size: 0.65rem; }
-
-            #dash-button {
-                width: 65px; height: 65px;
-                font-size: 0.8rem;
-                bottom: 1rem; right: 1rem;
-            }
+            #dash-button { width: 65px; height: 65px; bottom: 1rem; right: 1rem; }
+            .controls-inverted #dash-button { right: auto; left: 1rem; }
         }
     </style>
 </head>
@@ -355,14 +322,12 @@
     <div id="game-container" class="relative w-screen h-screen">
         <canvas id="game-canvas"></canvas>
         <div id="hud" class="absolute left-4 right-4" style="display: none;">
-            
             <div id="boss-hud" class="w-full px-4 mb-4" style="display: none;">
                 <p id="boss-name" class="text-center text-xl mb-2 text-purple-300"></p>
                 <div class="hud-bar w-full h-6 border-4 border-purple-400 bg-purple-900/50">
                     <div id="boss-health-bar-fill" class="hud-bar-fill" style="background-color: #be4dff;"></div>
                 </div>
             </div>
-
             <div class="flex justify-between items-center mb-2">
                 <div id="level-text" class="text-base sm:text-lg">Nível 1</div>
                 <div id="gems-container" class="flex items-center gap-2">
@@ -371,7 +336,6 @@
                 </div>
                 <div id="wave-timer" class="text-base sm:text-lg"></div>
             </div>
-            
             <div class="flex w-full gap-2 mt-2">
                 <div class="hud-bar w-full">
                     <div id="health-bar-fill" class="hud-bar-fill"></div>
@@ -411,12 +375,10 @@
                     <button id="show-upgrades-tab" class="btn tab-btn active-tab">Melhorias</button>
                     <button id="show-weapons-tab" class="btn tab-btn">Armas</button>
                 </div>
-
                 <div class="flex-grow overflow-y-auto pr-2">
                     <div id="upgrades-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                     <div id="weapon-shop-container" class="grid grid-cols-1 md:grid-cols-2 gap-4" style="display: none;"></div>
                 </div>
-
                 <div class="mt-6 text-center">
                     <button id="upgrades-back-button" class="btn">Voltar</button>
                 </div>
@@ -426,24 +388,30 @@
         <div id="options-modal" class="modal" style="display: none;">
             <div class="modal-content text-center">
                 <h2 class="text-2xl sm:text-3xl mb-8">Opções</h2>
-                
-                <div id="audio-settings" class="flex flex-col items-center justify-center gap-6">
-                    <p class="text-lg">Volume</p>
-                    <div class="flex items-center justify-center gap-4">
-                        <button id="mute-button" class="btn text-xl p-2 leading-none">🔊</button>
-                        <input type="range" id="volume-slider" min="0" max="1" step="0.01" class="w-40">
+                <div class="flex flex-col gap-8">
+                    <div id="audio-settings" class="flex flex-col items-center justify-center gap-4">
+                        <p class="text-lg">Volume</p>
+                        <div class="flex items-center justify-center gap-4">
+                            <button id="mute-button" class="btn text-xl p-2 leading-none">🔊</button>
+                            <input type="range" id="volume-slider" min="0" max="1" step="0.01" class="w-40">
+                        </div>
+                    </div>
+                    <div id="graphics-settings" class="flex flex-col items-center justify-center gap-4">
+                        <p class="text-lg">Qualidade Gráfica</p>
+                        <div class="flex items-center justify-center gap-4">
+                            <button id="quality-low" class="btn quality-btn text-sm p-2">Baixa</button>
+                            <button id="quality-medium" class="btn quality-btn text-sm p-2">Média</button>
+                            <button id="quality-high" class="btn quality-btn text-sm p-2">Alta</button>
+                        </div>
+                    </div>
+                    <!-- Nova Seção de Controles -->
+                    <div id="controls-settings" class="flex flex-col items-center justify-center gap-4">
+                        <p class="text-lg">Layout dos Controles</p>
+                        <div class="flex items-center justify-center gap-4">
+                            <button id="invert-controls-btn" class="btn controls-btn text-sm p-2"></button>
+                        </div>
                     </div>
                 </div>
-
-                <div id="graphics-settings" class="mt-8 flex flex-col items-center justify-center gap-4">
-                    <p class="text-lg">Qualidade Gráfica</p>
-                    <div class="flex items-center justify-center gap-4">
-                        <button id="quality-low" class="btn quality-btn text-sm p-2">Baixa</button>
-                        <button id="quality-medium" class="btn quality-btn text-sm p-2">Média</button>
-                        <button id="quality-high" class="btn quality-btn text-sm p-2">Alta</button>
-                    </div>
-                </div>
-
                 <div class="mt-12 text-center">
                      <button id="options-back-button" class="btn w-full">Voltar</button>
                 </div>
@@ -460,10 +428,7 @@
         <div id="pause-modal" class="modal" style="display: none;">
             <div class="modal-content text-center">
                 <h2 class="text-3xl sm:text-4xl mb-6">Pausado</h2>
-
-                <div id="pause-summary" class="mb-8 text-left">
-                    </div>
-
+                <div id="pause-summary" class="mb-8 text-left"></div>
                 <div class="flex flex-col gap-4">
                     <button id="resume-button" class="btn">Continuar</button>
                     <button id="quit-button" class="btn">Sair para o Menu</button>
@@ -476,13 +441,11 @@
                 <h2 class="text-3xl sm:text-4xl mb-2 text-red-500">Fim de Jogo</h2>
                 <p class="text-xl mb-2">Você sobreviveu por <span id="time-survived"></span>.</p>
                 <p class="text-lg mb-4">Gemas Coletadas: <span id="final-gems-count"></span></p>
-                
                 <div class="my-6 text-left border-t border-b border-gray-600 py-4 px-2 text-sm sm:text-base">
                     <p class="flex justify-between"><span>Inimigos Derrotados:</span> <span id="enemies-defeated-stat">0</span></p>
                     <p class="flex justify-between mt-2"><span>Dano Total Causado:</span> <span id="damage-dealt-stat">0</span></p>
                     <p class="flex justify-between mt-2"><span>Nível Final:</span> <span id="level-reached-stat">0</span></p>
                 </div>
-                
                 <button id="restart-button" class="btn mt-6 w-full">Voltar ao Menu</button>
             </div>
         </div>
@@ -492,7 +455,10 @@
             <div id="joystick-thumb"></div>
         </div>
         <div id="dash-button">
-            Dash
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="var(--primary-bg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 12H20"/>
+                <path d="M12 6L18 12L12 18"/>
+            </svg>
             <div id="dash-cooldown-overlay"></div>
         </div>
     </div>
@@ -560,6 +526,7 @@
         qualityLowBtn: document.getElementById('quality-low'),
         qualityMediumBtn: document.getElementById('quality-medium'),
         qualityHighBtn: document.getElementById('quality-high'),
+        invertControlsBtn: document.getElementById('invert-controls-btn'), // Novo DOM
         pauseModal: document.getElementById('pause-modal'),
         resumeButton: document.getElementById('resume-button'),
         quitButton: document.getElementById('quit-button'),
@@ -583,7 +550,7 @@
     let animationFrameId;
     let bossWaveActive = false; 
     let currentGraphics; 
-    let isMobile = false; // NOVA: Variável para detectar se é mobile
+    let isMobile = false;
 
     let runStats = {
         enemiesDefeated: 0,
@@ -594,7 +561,8 @@
         totalSoulGems: 9999,
         purchasedUpgrades: {},
         audio: { volume: 0.5, isMuted: false },
-        graphics: { quality: 'medium' }, 
+        graphics: { quality: 'medium' },
+        controls: { inverted: false }, // Nova configuração
         unlockedWeapons: ['fireball'],
         equippedWeapon: 'fireball'
     };
@@ -728,45 +696,36 @@
     class Camera {
         constructor(target) {
             this.target = target;
-            this.zoom = 1; // Fator de zoom inicial
+            this.zoom = 1;
             this.targetZoom = 1;
             this.x = 0;
             this.y = 0;
             this.shakeDuration = 0;
             this.shakeIntensity = 0;
-            this.updateZoom(); // Define o zoom inicial com base no dispositivo
+            this.updateZoom();
         }
 
         updateZoom() {
-            // Se for mobile (tela pequena), afasta a câmera (zoom menor)
+            // Se for mobile, afasta mais a câmera
             if (isMobile) {
-                this.targetZoom = 0.8; 
+                this.targetZoom = 0.7; // Alterado de 0.8 para 0.7
             } else {
                 this.targetZoom = 1.0;
             }
         }
 
-        // ALTERAÇÃO APLICADA: Lógica da câmera simplificada para garantir centralização
         update() {
-            // Suaviza a transição do zoom
             this.zoom += (this.targetZoom - this.zoom) * 0.05;
-
             const lerpFactor = 0.1;
-            // A câmera segue suavemente o centro do alvo
             this.x += (this.target.x - this.x) * lerpFactor;
             this.y += (this.target.y - this.y) * lerpFactor;
-
-            // Limita a câmera ao mapa, garantindo que não mostre fora dos limites
             const visibleWidth = screenWidth / this.zoom;
             const visibleHeight = screenHeight / this.zoom;
-
             this.x = Math.max(visibleWidth / 2, Math.min(this.x, CONFIG.MAP_SIZE.width - visibleWidth / 2));
             this.y = Math.max(visibleHeight / 2, Math.min(this.y, CONFIG.MAP_SIZE.height - visibleHeight / 2));
-
             if (this.shakeDuration > 0) this.shakeDuration -= 1 / 60;
         }
         
-        // ALTERAÇÃO APLICADA: Lógica de renderização da câmera simplificada
         apply(context) {
             context.save();
             let shakeX = 0, shakeY = 0;
@@ -774,12 +733,8 @@
                 shakeX = (Math.random() - 0.5) * this.shakeIntensity;
                 shakeY = (Math.random() - 0.5) * this.shakeIntensity;
             }
-
-            // Centraliza a tela
             context.translate(screenWidth / 2, screenHeight / 2);
-            // Aplica o zoom a partir do centro
             context.scale(this.zoom, this.zoom);
-            // Move o mundo para que o ponto (this.x, this.y) fique no centro
             context.translate(-this.x + shakeX, -this.y + shakeY);
         }
 
@@ -795,12 +750,10 @@
             this.x = CONFIG.MAP_SIZE.width / 2;
             this.y = CONFIG.MAP_SIZE.height / 2;
             this.size = CONFIG.PLAYER.size;
-            
             this.maxHp = CONFIG.PLAYER.baseMaxHp * (1 + (playerData.purchasedUpgrades['hp_boost'] || 0) * 0.05);
             this.hp = this.maxHp;
             this.speed = CONFIG.PLAYER.baseSpeed * (1 + (playerData.purchasedUpgrades['speed_boost'] || 0) * 0.03);
             this.damageMultiplier = 1 + (playerData.purchasedUpgrades['damage_boost'] || 0) * 0.05;
-            
             this.level = 1; this.xp = 0; this.xpToNextLevel = 10;
             this.regen = 0; this.isDashing = false; this.dashCooldown = 0;
             this.invincibilityTimer = 0;
@@ -809,7 +762,6 @@
             this.lastMoveDirection = { x: 0, y: 1 };
             this.weaponUpgradeLuck = 0;
             this.isMoving = false;
-            
             this.fragments = [];
             this.orbitalAngle = 0; 
             for (let i = 0; i < 4; i++) {
@@ -823,17 +775,10 @@
                     rotationSpeed: (Math.random() - 0.5) * 4
                 });
             }
-
             switch (playerData.equippedWeapon) {
-                case 'hammer':
-                    this.weapon = new HammerWeapon(this);
-                    break;
-                case 'fireball':
-                default:
-                    this.weapon = new FireballWeapon(this);
-                    break;
+                case 'hammer': this.weapon = new HammerWeapon(this); break;
+                case 'fireball': default: this.weapon = new FireballWeapon(this); break;
             }
-
             this.abilityLevels = {};
             this.stepTimer = 0;
         }
@@ -846,11 +791,9 @@
             if (this.regen > 0 && this.hp < this.maxHp) {
                 this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
             }
-
             this.orbitalAngle += 1.5 * dt; 
             const lerpFactor = dt * 8;
             const moveAngle = Math.atan2(this.lastMoveDirection.y, this.lastMoveDirection.x);
-
             this.fragments.forEach((frag, i) => {
                 if (this.isDashing) {
                     frag.targetDistance = this.size * 0.8 + i * 5;
@@ -862,20 +805,16 @@
                     frag.targetDistance = this.size * 1.8;
                     frag.targetAngle = this.orbitalAngle + (Math.PI / 2) * i; 
                 }
-                
                 frag.distance += (frag.targetDistance - frag.distance) * lerpFactor;
-                
                 let angleDiff = frag.targetAngle - frag.angle;
                 while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
                 while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
                 frag.angle += angleDiff * lerpFactor;
-                
                 frag.rotation += frag.rotationSpeed * dt;
             });
         }
         handleMovement(dt) {
             if (this.stunTimer > 0) return;
-            
             if (this.isDashing) {
                 this.x += this.dashDirection.x * CONFIG.PLAYER.dashSpeed * dt;
                 this.y += this.dashDirection.y * CONFIG.PLAYER.dashSpeed * dt;
@@ -887,18 +826,13 @@
             if (keys['s'] || keys['arrowdown']) move.y = 1;
             if (keys['a'] || keys['arrowleft']) move.x = -1;
             if (keys['d'] || keys['arrowright']) move.x = 1;
-            
             this.isMoving = move.x !== 0 || move.y !== 0;
-
             if (this.isMoving) {
                 const mag = Math.sqrt(move.x**2 + move.y**2);
-                if (mag > 0) {
-                    move.x /= mag; move.y /= mag;
-                }
+                if (mag > 0) { move.x /= mag; move.y /= mag; }
                 this.lastMoveDirection = { ...move };
                 this.x += move.x * this.speed * dt;
                 this.y += move.y * this.speed * dt;
-
                 this.stepTimer -= dt;
                 if (this.stepTimer <= 0) {
                     this.stepTimer = 0.2;
@@ -914,12 +848,10 @@
             let playerColor = '#8a8aff';
             if (this.invincibilityTimer > 0) playerColor = 'rgba(200, 200, 255, 0.7)';
             if (this.stunTimer > 0) playerColor = '#ffff99';
-
             ctx.save();
             if (currentGraphics && currentGraphics.shadows) {
                 ctx.shadowColor = playerColor;
             }
-            
             this.fragments.forEach(frag => {
                 const fragX = this.x + Math.cos(frag.angle) * frag.distance;
                 const fragY = this.y + Math.sin(frag.angle) * frag.distance;
@@ -931,21 +863,17 @@
                 ctx.fillRect(-frag.size / 2, -frag.size / 2, frag.size, frag.size);
                 ctx.restore();
             });
-
             ctx.fillStyle = playerColor;
             if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 20;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size / 1.5, 0, Math.PI * 2);
             ctx.fill();
-            
             ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
             if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size / 3, 0, Math.PI * 2);
             ctx.fill();
-
             ctx.restore();
-
             const cooldownProgress = this.dashCooldown > 0 ? this.dashCooldown / CONFIG.PLAYER.dashCooldown : 0;
             if (cooldownProgress > 0) {
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
@@ -953,7 +881,6 @@
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size + 5, 0, Math.PI * 2);
                 ctx.stroke();
-                
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size + 5, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * (1 - cooldownProgress)));
@@ -971,14 +898,11 @@
             this.isDashing = true;
             this.dashCooldown = CONFIG.PLAYER.dashCooldown;
             soundManager.play('dash');
-
             let move = { x: joystickVector.x, y: joystickVector.y };
             if (keys['w'] || keys['arrowup']) move.y = -1; if (keys['s'] || keys['arrowdown']) move.y = 1;
             if (keys['a'] || keys['arrowleft']) move.x = -1; if (keys['d'] || keys['arrowright']) move.x = 1;
-            
             this.dashDirection = (move.x !== 0 || move.y !== 0) ? 
                 normalizeVector(move) : { ...this.lastMoveDirection };
-
             setTimeout(() => { this.isDashing = false; }, CONFIG.PLAYER.dashDuration * 1000);
         }
         takeDamage(amount) {
@@ -1021,21 +945,16 @@
             this.isChampion = false;
             this.isBoss = false; 
         }
-
         makeChampion() {
             this.isChampion = true;
-            this.hp *= 3;
-            this.maxHp *= 3;
-            this.damage *= 1.5;
-            this.size *= 1.3;
+            this.hp *= 3; this.maxHp *= 3; this.damage *= 1.5; this.size *= 1.3;
             this.meleeAttackRange = this.size / 2 + 5;
         }
-
         takeDamage(amount) {
             if (!this.isAlive) return;
             const finalDamage = Math.round(amount);
             this.hp -= finalDamage;
-            runStats.damageDealt += finalDamage; // NOVO: Rastreia o dano
+            runStats.damageDealt += finalDamage;
             this.flashTimer = 0.1;
             floatingTexts.push(new FloatingText(this.x, this.y - this.size / 2, finalDamage, '#ffffff'));
             if (this.hp <= 0) this.die();
@@ -1047,10 +966,9 @@
         }
         die() {
             this.isAlive = false;
-            runStats.enemiesDefeated++; // NOVO: Rastreia inimigos derrotados
+            runStats.enemiesDefeated++;
             createParticleBurst(this.x, this.y, 15, this.color);
             expOrbs.push(new ExpOrb(this.x, this.y, this.xpValue));
-            
             if (this.isChampion) {
                 for (let i = 0; i < 5; i++) {
                     soulGems.push(new SoulGem(this.x + (Math.random() - 0.5) * 20, this.y + (Math.random() - 0.5) * 20));
@@ -1124,25 +1042,19 @@
             ctx.beginPath();
             ctx.ellipse(this.x, this.y + shadowYOffset, shadowSize, shadowSize / 2, 0, 0, Math.PI * 2);
             ctx.fill();
-
             const jumpArc = Math.sin(jumpProgressRatio * Math.PI) * this.jumpHeight;
             const drawY = this.y - jumpArc;
-
             ctx.save();
             ctx.fillStyle = this.flashTimer > 0 ? '#ffffff' : 'rgba(77, 255, 77, 0.8)';
             ctx.strokeStyle = '#28a428'; ctx.lineWidth = 2;
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = this.color;
-                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color; ctx.shadowBlur = 10;
             }
-            
             ctx.beginPath();
             ctx.rect(this.x - width / 2, drawY - height / 2, width, height);
             ctx.fill(); ctx.stroke();
-            
             ctx.fillStyle = 'rgba(200, 255, 200, 0.6)';
             ctx.fillRect(this.x - width / 2 + 2, drawY - height / 2 + 2, width - 4, height / 3);
-
             if (this.isChampion) {
                 const glow = Math.abs(Math.sin(gameTime * 5));
                 if (currentGraphics && currentGraphics.shadows) {
@@ -1153,7 +1065,6 @@
                 ctx.lineWidth = 3;
                 ctx.strokeRect(this.x - width / 2, drawY - height / 2, width, height);
             }
-            
             ctx.restore();
         }
     }
@@ -1173,7 +1084,6 @@
             if(this.diveCooldown > 0) this.diveCooldown -= dt;
             const dx = player.x - this.x, dy = player.y - this.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-
             switch (this.state) {
                 case 'circling':
                     this.damage = 0;
@@ -1246,24 +1156,19 @@
             const wingColor = this.flashTimer > 0 ? '#DDDDDD' : '#c74283';
             const s = this.size;
             const bodyWidth = s, bodyHeight = s * 0.8, wingWidth = s * 1.5, wingHeight = s * 0.7;
-            
             ctx.save();
             ctx.translate(bodyWidth / 2.5, 0); ctx.rotate(flapAngle);
             ctx.fillStyle = wingColor; ctx.fillRect(0, -wingHeight / 2, wingWidth, wingHeight);
             ctx.restore();
-            
             ctx.save();
             ctx.translate(-bodyWidth / 2.5, 0); ctx.rotate(-flapAngle);
             ctx.fillStyle = wingColor; ctx.fillRect(-wingWidth, -wingHeight / 2, wingWidth, wingHeight);
             ctx.restore();
-            
             ctx.fillStyle = mainColor;
             ctx.fillRect(-bodyWidth / 2, -bodyHeight / 2, bodyWidth, bodyHeight);
-            
             const earSize = s * 0.3;
             ctx.fillRect(-bodyWidth / 2, -bodyHeight / 2 - earSize, earSize, earSize);
             ctx.fillRect(bodyWidth / 2 - earSize, -bodyHeight / 2 - earSize, earSize, earSize);
-            
             ctx.restore();
         }
     }
@@ -1271,17 +1176,13 @@
     class Mage extends Enemy {
         constructor(x, y) {
             super(x, y, 'mage');
-            this.attackCooldown = 3.5;
-            this.healCooldown = 10;
-            this.castingTime = 0.6; 
+            this.attackCooldown = 3.5; this.healCooldown = 10; this.castingTime = 0.6; 
             this.attackTimer = 2.0 + Math.random() * this.attackCooldown;
             this.healTimer = 5.0 + Math.random() * this.healCooldown;
             this.preferredDistance = 400;
             this.castingState = 'none'; this.castingTimer = 0;
             this.runes = [
-                { angle: 0, dist: this.size * 1.2 },
-                { angle: Math.PI * 2 / 3, dist: this.size * 1.2 },
-                { angle: Math.PI * 4 / 3, dist: this.size * 1.2 },
+                { angle: 0, dist: this.size * 1.2 }, { angle: Math.PI * 2 / 3, dist: this.size * 1.2 }, { angle: Math.PI * 4 / 3, dist: this.size * 1.2 },
             ];
         }
         update(dt) {
@@ -1309,7 +1210,6 @@
             }
             this.x += moveDirectionX * this.speed * dt;
             this.y += moveDirectionY * this.speed * dt;
-
             this.attackTimer -= dt; this.healTimer -= dt;
             if (this.attackTimer <= 0) {
                 this.castingState = 'attacking'; this.castingTimer = this.castingTime; this.attackTimer = this.attackCooldown;
@@ -1339,38 +1239,31 @@
             const s = this.size;
             const robeColor = this.flashTimer > 0 ? '#DDDDDD' : this.color;
             const bob = Math.sin(gameTime * 4) * 2;
-            
             ctx.fillStyle = robeColor;
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = this.color;
-                ctx.shadowBlur = 12;
+                ctx.shadowColor = this.color; ctx.shadowBlur = 12;
             }
             ctx.beginPath();
             ctx.moveTo(0, -s / 2 + bob);
             ctx.bezierCurveTo(s, -s / 2 + bob, s, s/2 + bob, 0, s + bob);
             ctx.bezierCurveTo(-s, s/2 + bob, -s, -s / 2 + bob, 0, -s / 2 + bob);
             ctx.fill();
-
             ctx.fillStyle = 'rgba(0,0,0,0.5)';
             ctx.beginPath(); ctx.arc(0, -s*0.1 + bob, s * 0.4, 0, Math.PI * 2); ctx.fill();
-            
             this.runes.forEach(rune => {
                 const runeX = Math.cos(rune.angle) * rune.dist, runeY = Math.sin(rune.angle) * rune.dist;
                 const runeSize = s * 0.15;
                 ctx.fillStyle = this.isChampion ? '#ffd700' : robeColor;
                 ctx.fillRect(runeX - runeSize, runeY - runeSize + bob, runeSize*2, runeSize*2);
             });
-            
             if (this.castingState !== 'none' || this.isChampion) {
                 const castingProgress = this.castingState !== 'none' ? 1 - (this.castingTimer / this.castingTime) : 1;
                 const glow = Math.sin(castingProgress * Math.PI);
-
                 if (currentGraphics && currentGraphics.shadows) {
                     if (this.isChampion) {
                         ctx.shadowColor = '#ffd700';
                         ctx.shadowBlur = 15 + Math.abs(Math.sin(gameTime * 5)) * 10;
                     }
-                    
                     if (this.castingState === 'attacking') {
                         ctx.fillStyle = 'rgba(255, 150, 255, 0.7)'; ctx.shadowColor = '#FFFFFF'; ctx.shadowBlur = 15 + glow * 20;
                         this.runes.forEach(rune => {
@@ -1394,8 +1287,7 @@
             this.aggroRange = 300; this.windupDuration = 0.5; this.chargeSpeed = 1000;
             this.chargeDuration = 0.30; this.slamRadius = 100;
             this.slamDamage = CONFIG.ENEMY.brute.slamDamage || 30;
-            this.slamKnockback = 30; this.recoverCooldown = 1.0;
-            this.stunDuration = 0.5;
+            this.slamKnockback = 30; this.recoverCooldown = 1.0; this.stunDuration = 0.5;
         }
         update(dt) {
             if (this.flashTimer > 0) this.flashTimer -= dt;
@@ -1464,7 +1356,6 @@
             let bodyColor = this.flashTimer > 0 ? '#ffffff' : this.color;
             let fistColor = this.flashTimer > 0 ? '#dddddd' : '#cc3d3d';
             let fistSize = s * 0.4, bodyWidth = s;
-            
             if (currentGraphics && currentGraphics.shadows) {
                 if (this.state === 'windup' || this.isChampion) {
                     const glow = Math.abs(Math.sin((this.windupDuration - this.stateTimer) * Math.PI / this.windupDuration * 5));
@@ -1473,10 +1364,8 @@
                     fistSize += glow * 5;
                 }
             }
-
             if (this.state === 'charging') bodyWidth = s * 1.2;
             else if (this.state === 'recovering') ctx.globalAlpha = 0.7;
-
             ctx.fillStyle = fistColor;
             ctx.fillRect(-bodyWidth / 2 - fistSize * 0.8, -s / 2, fistSize, s);
             ctx.fillRect(bodyWidth / 2 - fistSize * 0.2, -s / 2, fistSize, s);
@@ -1497,32 +1386,15 @@
     class SpectralElder extends Enemy {
         constructor(x, y) {
             super(x, y, 'spectral_elder');
-            this.maxHp = 10000;
-            this.hp = this.maxHp;
-            this.size = 80;
-            this.speed = 80;
-            this.damage = 0; 
-            this.xpValue = 500;
-            this.phase = 1;
-            this.isBoss = true;
-            this.castingInfo = null; 
-
+            this.maxHp = 10000; this.hp = this.maxHp; this.size = 80; this.speed = 80; this.damage = 0; 
+            this.xpValue = 500; this.phase = 1; this.isBoss = true; this.castingInfo = null; 
             this.orbitingSkulls = [
-                { angle: 0, dist: this.size * 1.5, size: 15 },
-                { angle: Math.PI, dist: this.size * 1.5, size: 15 },
-                { angle: Math.PI / 2, dist: this.size * 2.0, size: 12 },
-                { angle: 3 * Math.PI / 2, dist: this.size * 2.0, size: 12 },
+                { angle: 0, dist: this.size * 1.5, size: 15 }, { angle: Math.PI, dist: this.size * 1.5, size: 15 },
+                { angle: Math.PI / 2, dist: this.size * 2.0, size: 12 }, { angle: 3 * Math.PI / 2, dist: this.size * 2.0, size: 12 },
             ];
-            this.trail = [];
-            this.trailTimer = 0.05;
-
-            this.actionTimer = 2;
-            this.teleportCooldown = 7;
-            this.summonCooldown = 10;
-            this.soulBurstCooldown = 3;
-            this.soulHarvestCooldown = 12;
+            this.trail = []; this.trailTimer = 0.05; this.actionTimer = 2;
+            this.teleportCooldown = 7; this.summonCooldown = 10; this.soulBurstCooldown = 3; this.soulHarvestCooldown = 12;
         }
-
         update(dt) {
             this.trailTimer -= dt;
             if (this.trailTimer <= 0) {
@@ -1531,11 +1403,8 @@
             }
             for (let i = this.trail.length - 1; i >= 0; i--) {
                 this.trail[i].alpha -= dt * 2;
-                if (this.trail[i].alpha <= 0) {
-                    this.trail.splice(i, 1);
-                }
+                if (this.trail[i].alpha <= 0) { this.trail.splice(i, 1); }
             }
-
             if (this.castingInfo) {
                 this.castingInfo.progress += dt;
                 const coreColor = this.phase === 1 ? 'rgba(220, 240, 255, 0.9)' : 'rgba(255, 180, 180, 0.9)';
@@ -1547,67 +1416,41 @@
                         particles.push(new Particle(this.x + Math.cos(angle) * dist, this.y + Math.sin(angle) * dist, coreColor, 0.3, 3, -400));
                     }
                 }
-
                 if (this.castingInfo.progress >= this.castingInfo.duration) {
                     this.finishAction(this.castingInfo.type);
                     this.castingInfo = null;
                 }
                 return; 
             }
-
-
-            if (this.phase === 1 && this.hp / this.maxHp <= 0.5) {
-                this.enterPhase2();
-            }
-
-            this.actionTimer -= dt;
-            this.teleportCooldown -= dt;
-            this.summonCooldown -= dt;
+            if (this.phase === 1 && this.hp / this.maxHp <= 0.5) { this.enterPhase2(); }
+            this.actionTimer -= dt; this.teleportCooldown -= dt; this.summonCooldown -= dt;
             this.soulBurstCooldown -= dt;
             if (this.phase === 2) this.soulHarvestCooldown -= dt;
-
-            this.orbitingSkulls.forEach((skull, i) => {
-                skull.angle += (1 + i * 0.1) * dt;
-            });
-
-            const dx = player.x - this.x;
-            const dy = player.y - this.y;
+            this.orbitingSkulls.forEach((skull, i) => { skull.angle += (1 + i * 0.1) * dt; });
+            const dx = player.x - this.x, dy = player.y - this.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist > 300) { 
-                this.x += (dx / dist) * this.speed * dt;
-                this.y += (dy / dist) * this.speed * dt;
+                this.x += (dx / dist) * this.speed * dt; this.y += (dy / dist) * this.speed * dt;
             } else {
                  this.x -= (dx / dist) * this.speed * 0.5 * dt;
                  this.y -= (dy / dist) * this.speed * 0.5 * dt;
             }
-
-            if (this.actionTimer <= 0) {
-                this.performAction();
-            }
-
+            if (this.actionTimer <= 0) { this.performAction(); }
             if (this.flashTimer > 0) this.flashTimer -= dt;
         }
-
         performAction() {
             const actions = [];
             if (this.teleportCooldown <= 0) actions.push('teleport');
             if (this.summonCooldown <= 0) actions.push('summon');
             if (this.soulBurstCooldown <= 0) actions.push('soulBurst');
             if (this.phase === 2 && this.soulHarvestCooldown <= 0) actions.push('soulHarvest');
-
-            if (actions.length === 0) {
-                actions.push('soulBurst'); 
-            }
-
+            if (actions.length === 0) { actions.push('soulBurst'); }
             const chosenAction = actions[Math.floor(Math.random() * actions.length)];
             this.startAction(chosenAction);
         }
-
         startAction(type) {
              switch (type) {
-                case 'teleport':
-                    this.finishAction('teleport'); 
-                    break;
+                case 'teleport': this.finishAction('teleport'); break;
                 case 'summon':
                     this.castingInfo = { type: 'summon', duration: 1.5, progress: 0 };
                     this.actionTimer = 2;
@@ -1616,21 +1459,18 @@
                     this.castingInfo = { type: 'soulHarvest', duration: 2.5, progress: 0 };
                     this.actionTimer = this.castingInfo.duration;
                     break;
-                case 'soulBurst':
-                default:
+                case 'soulBurst': default:
                     this.castingInfo = { type: 'soulBurst', duration: 1.0, progress: 0 };
                     this.actionTimer = 1.5;
                     break;
             }
         }
-
         finishAction(type) {
              switch (type) {
                 case 'teleport':
                     this.ghostTeleport();
                     this.teleportCooldown = this.phase === 1 ? 8 : 5;
-                    if (this.phase === 2) this.actionTimer = 0.2; 
-                    else this.actionTimer = 1.0;
+                    this.actionTimer = this.phase === 2 ? 0.2 : 1.0;
                     break;
                 case 'summon':
                     this.summonEchoes();
@@ -1642,37 +1482,31 @@
                     this.soulHarvestCooldown = 15;
                     this.actionTimer = 2.0;
                     break;
-                case 'soulBurst':
-                default:
+                case 'soulBurst': default:
                     this.soulBurst();
                     this.soulBurstCooldown = this.phase === 1 ? 3 : 1.5;
                     this.actionTimer = this.soulBurstCooldown;
                     break;
             }
         }
-
         soulBurst() {
             const amount = this.phase === 1 ? 6 : 10;
             for (let i = 0; i < amount; i++) {
                 setTimeout(() => {
                     if (!this.isAlive) return;
-                    const proj = new HomingSoul(this.x, this.y, player, 220, 15);
-                    enemyProjectiles.push(proj);
+                    enemyProjectiles.push(new HomingSoul(this.x, this.y, player, 220, 15));
                 }, i * 150);
             }
         }
-
         summonEchoes() {
             const amount = this.phase === 1 ? 4 : 6;
             for (let i = 0; i < amount; i++) {
                 const angle = Math.random() * Math.PI * 2;
                 const spawnX = this.x + Math.cos(angle) * 100;
                 const spawnY = this.y + Math.sin(angle) * 100;
-                const echo = new SlimeEcho(spawnX, spawnY);
-                enemies.push(echo);
+                enemies.push(new SlimeEcho(spawnX, spawnY));
             }
         }
-
         ghostTeleport() {
             createParticleBurst(this.x, this.y, 50, 'rgba(150, 200, 255, 0.5)', 1, 5, 200);
             const angle = Math.random() * Math.PI * 2;
@@ -1683,7 +1517,6 @@
             this.y = Math.max(this.size, Math.min(this.y, CONFIG.MAP_SIZE.height - this.size));
             createParticleBurst(this.x, this.y, 50, 'rgba(150, 200, 255, 0.5)', 1, 5, 200);
         }
-
         soulHarvest() {
             const warningCircle = new WarningCircle(player.x, player.y, 400, 2.5, (circleX, circleY) => {
                 if (!this.isAlive) return;
@@ -1698,7 +1531,6 @@
             });
             effects.push(warningCircle);
         }
-
         enterPhase2() {
             this.phase = 2;
             floatingTexts.push(new FloatingText(this.x, this.y, 'ENFURECIDO!', '#ff4d4d', 3, 24));
@@ -1708,12 +1540,10 @@
             this.soulBurstCooldown = 1.5;
             this.soulHarvestCooldown = 10;
         }
-
         draw(ctx) {
             const phaseColor = this.phase === 1 ? 'rgba(150, 200, 255, 0.8)' : 'rgba(255, 100, 100, 0.9)';
             const coreColor = this.phase === 1 ? 'rgba(220, 240, 255, 0.9)' : 'rgba(255, 180, 180, 0.9)';
             const bob = Math.sin(gameTime * 2) * 10;
-
             for (const trailPart of this.trail) {
                 ctx.save();
                 ctx.globalAlpha = trailPart.alpha;
@@ -1721,7 +1551,6 @@
                 this.drawCloakedShape(ctx, trailPart.x, trailPart.y + bob, trailPart.size);
                 ctx.restore();
             }
-
             const auraPulse = Math.sin(gameTime * (this.phase === 1 ? 3 : 7));
             const auraColor = this.phase === 1 ? 'rgba(150, 200, 255,' : 'rgba(255, 80, 80,';
             const auraSize = this.size + 10 + auraPulse * 8;
@@ -1729,41 +1558,33 @@
             ctx.globalAlpha = 0.5;
             ctx.fillStyle = auraColor + '0.2)';
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = coreColor;
-                ctx.shadowBlur = 20;
+                ctx.shadowColor = coreColor; ctx.shadowBlur = 20;
             }
             ctx.beginPath();
             ctx.arc(this.x, this.y + bob, auraSize, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
-
             ctx.save();
             ctx.fillStyle = this.flashTimer > 0 ? '#ffffff' : phaseColor;
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = coreColor;
-                ctx.shadowBlur = 30;
+                ctx.shadowColor = coreColor; ctx.shadowBlur = 30;
             }
             this.drawCloakedShape(ctx, this.x, this.y + bob, this.size);
             ctx.restore();
-
-
             this.orbitingSkulls.forEach(skull => {
                 const x = this.x + Math.cos(skull.angle) * skull.dist;
                 const y = this.y + Math.sin(skull.angle) * skull.dist + bob;
-                
                 let skullGlow = 15;
                 if (this.castingInfo) {
                     const chargeProgress = this.castingInfo.progress / this.castingInfo.duration;
                     skullGlow = 15 + Math.sin(chargeProgress * Math.PI) * 30;
                 }
-
                 ctx.save();
                 ctx.fillStyle = coreColor;
                 if (currentGraphics && currentGraphics.shadows) {
                     ctx.shadowColor = this.phase === 2 && this.castingInfo ? 'red' : coreColor;
                     ctx.shadowBlur = skullGlow;
                 }
-
                 ctx.fillRect(x - skull.size / 2, y - skull.size / 2, skull.size, skull.size);
                 ctx.fillStyle = 'black';
                 ctx.fillRect(x - skull.size / 4, y - skull.size / 4, skull.size / 5, skull.size / 5); 
@@ -1771,7 +1592,6 @@
                 ctx.restore();
             });
         }
-        
         drawCloakedShape(ctx, x, y, size) {
             const s = size;
             ctx.beginPath();
@@ -1781,23 +1601,19 @@
             ctx.quadraticCurveTo(x - s, y - s * 0.2, x, y - s); 
             ctx.fill();
         }
-
         die() {
             this.isAlive = false;
             runStats.enemiesDefeated++;
             createParticleBurst(this.x, this.y, 300, 'rgba(150, 200, 255, 1)', 3, 10, 500);
             camera.startShake(30, 2);
-
             for (let i = 0; i < 20; i++) {
                 expOrbs.push(new ExpOrb(this.x + (Math.random() - 0.5) * 100, this.y + (Math.random() - 0.5) * 100, 50));
             }
             for (let i = 0; i < 50; i++) {
                 soulGems.push(new SoulGem(this.x + (Math.random() - 0.5) * 100, this.y + (Math.random() - 0.5) * 100));
             }
-
             bossWaveActive = false;
             floatingTexts.push(new FloatingText(player.x, player.y - 100, 'VITÓRIA!', '#ffd700', 5, 32));
-            
             setTimeout(() => {
                 DOM.bossHud.style.display = 'none';
                 gameState = 'playing';
@@ -1811,19 +1627,14 @@
     class SlimeEcho extends Slime {
         constructor(x, y) {
             super(x, y);
-            this.hp = 5;
-            this.maxHp = 5;
-            this.damage = 5;
-            this.xpValue = 0; 
+            this.hp = 5; this.maxHp = 5; this.damage = 5; this.xpValue = 0; 
         }
-
         draw(ctx) {
             ctx.save();
             ctx.globalAlpha = 0.6;
             super.draw(ctx);
             ctx.restore();
         }
-
         die() {
             this.isAlive = false;
             runStats.enemiesDefeated++;
@@ -1852,8 +1663,7 @@
             const glowColor = '#4dff9e';
             ctx.save();
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = glowColor;
-                ctx.shadowBlur = 8;
+                ctx.shadowColor = glowColor; ctx.shadowBlur = 8;
             }
             ctx.fillStyle = glowColor;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
@@ -1868,19 +1678,16 @@
             ctx.save();
             ctx.translate(this.x, this.y); ctx.rotate(gameTime * 2);
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = glowColor;
-                ctx.shadowBlur = 12;
+                ctx.shadowColor = glowColor; ctx.shadowBlur = 12;
             }
             ctx.fillStyle = glowColor;
             ctx.beginPath();
-            ctx.moveTo(0, -size * 1.2); ctx.lineTo(size, 0);
-            ctx.lineTo(0, size * 1.2); ctx.lineTo(-size, 0);
+            ctx.moveTo(0, -size * 1.2); ctx.lineTo(size, 0); ctx.lineTo(0, size * 1.2); ctx.lineTo(-size, 0);
             ctx.closePath(); ctx.fill();
             if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
             ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
             ctx.beginPath();
-            ctx.moveTo(0, -size * 0.5); ctx.lineTo(size * 0.4, 0);
-            ctx.lineTo(0, size * 0.5); ctx.lineTo(-size * 0.4, 0);
+            ctx.moveTo(0, -size * 0.5); ctx.lineTo(size * 0.4, 0); ctx.lineTo(0, size * 0.5); ctx.lineTo(-size * 0.4, 0);
             ctx.closePath(); ctx.fill();
             ctx.restore();
         }
@@ -1904,11 +1711,8 @@
     class FloatingText {
         constructor(x, y, text, color, lifespan = 1, size = 14) {
             this.x = x; this.y = y; this.text = text; this.color = color;
-            this.lifespan = lifespan;
-            this.size = size;
-            this.initialLifespan = lifespan;
-            this.vy = -50;
-            this.alpha = 1;
+            this.lifespan = lifespan; this.size = size; this.initialLifespan = lifespan;
+            this.vy = -50; this.alpha = 1;
         }
         update(dt) {
             this.y += this.vy * dt;
@@ -1925,8 +1729,7 @@
     class Shockwave {
         constructor(x, y, radius, damage) {
             this.x = x; this.y = y; this.maxRadius = radius; this.damage = damage;
-            this.lifespan = 0.4; this.life = this.lifespan;
-            this.hitEnemies = [];
+            this.lifespan = 0.4; this.life = this.lifespan; this.hitEnemies = [];
         }
         update(dt) {
             this.life -= dt;
@@ -1949,8 +1752,7 @@
             ctx.strokeStyle = `rgba(255, 255, 200, ${this.life / this.lifespan})`;
             ctx.lineWidth = 10 * (this.life / this.lifespan);
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = '#ffd700';
-                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 20;
             }
             ctx.beginPath();
             ctx.arc(this.x, this.y, currentRadius, 0, Math.PI * 2);
@@ -1961,19 +1763,15 @@
 
     class WarningCircle {
         constructor(x, y, radius, duration, onEndCallback) {
-            this.x = x; this.y = y; this.radius = radius;
-            this.lifespan = duration;
-            this.life = duration;
-            this.onEndCallback = onEndCallback;
+            this.x = x; this.y = y; this.radius = radius; this.lifespan = duration;
+            this.life = duration; this.onEndCallback = onEndCallback;
         }
-
         update(dt) {
             this.life -= dt;
             if (this.life <= 0) {
                 this.onEndCallback(this.x, this.y);
             }
         }
-
         draw(ctx) {
             const progress = 1 - (this.life / this.lifespan);
             ctx.save();
@@ -1981,18 +1779,15 @@
             ctx.fillStyle = `rgba(255, 50, 100, ${0.2 + progress * 0.3})`;
             ctx.strokeStyle = `rgba(255, 80, 120, 1)`;
             ctx.lineWidth = 5;
-
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
-
             ctx.strokeStyle = `rgba(255, 255, 255, 0.8)`;
             ctx.lineWidth = 10;
             ctx.beginPath();
             ctx.arc(this.x, this.y, 50 * (this.life / this.lifespan), 0, Math.PI * 2);
             ctx.stroke();
-
             ctx.restore();
         }
     }
@@ -2000,19 +1795,16 @@
     // --- Sistema de Armas ---
     class Projectile {
         constructor(x, y, target, speed, damage, pierce, size, color, options = {}) {
-            this.x = x; this.y = y; this.speed = speed; this.damage = damage;
-            this.pierce = pierce; this.size = size; this.color = color;
+            this.x = x; this.y = y; this.speed = speed; this.damage = damage; this.pierce = pierce; this.size = size; this.color = color;
             this.hitEnemies = []; this.lifetime = 3;
             const dir = target; 
-            this.vx = dir.x * speed; this.vy = dir.y * speed;
-            this.particleTimer = 0;
+            this.vx = dir.x * speed; this.vy = dir.y * speed; this.particleTimer = 0;
             this.explodes = options.explodes || false;
             this.explosionRadius = options.explosionRadius || 50;
         }
         update(dt) { 
             this.x += this.vx * dt; this.y += this.vy * dt; 
-            this.lifetime -= dt;
-            this.particleTimer -= dt;
+            this.lifetime -= dt; this.particleTimer -= dt;
             if (this.particleTimer <= 0) {
                 this.particleTimer = 0.03;
                 const particleColor = Math.random() < 0.5 ? 'rgba(255, 100, 0, 0.7)' : 'rgba(255, 200, 0, 0.7)';
@@ -2022,8 +1814,7 @@
         draw(ctx) {
             ctx.save();
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = '#ff6600';
-                ctx.shadowBlur = 12;
+                ctx.shadowColor = '#ff6600'; ctx.shadowBlur = 12;
             }
             ctx.fillStyle = 'rgba(255, 100, 0, 0.8)';
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
@@ -2052,8 +1843,7 @@
             this.vx = dir.x * speed; this.vy = dir.y * speed; this.particleTimer = 0;
         }
         update(dt) {
-            this.x += this.vx * dt; this.y += this.vy * dt; this.lifetime -= dt;
-            this.particleTimer -= dt;
+            this.x += this.vx * dt; this.y += this.vy * dt; this.lifetime -= dt; this.particleTimer -= dt;
             if (this.particleTimer <= 0) {
                 this.particleTimer = 0.03;
                 const particleColor = Math.random() < 0.5 ? 'rgba(190, 77, 255, 0.7)' : 'rgba(230, 180, 255, 0.7)';
@@ -2063,8 +1853,7 @@
         draw(ctx) {
             ctx.save();
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = '#be4dff';
-                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#be4dff'; ctx.shadowBlur = 15;
             }
             ctx.fillStyle = 'rgba(190, 77, 255, 0.8)';
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
@@ -2081,39 +1870,29 @@
             this.target = target;
             this.turnSpeed = Math.PI / 1.5; 
             this.color = 'rgba(150, 220, 255, 0.8)';
-            this.size = 12;
-            this.acceleration = 150; 
+            this.size = 12; this.acceleration = 150; 
         }
-
         update(dt) {
             this.speed += this.acceleration * dt;
-
             const targetAngle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
             let currentAngle = Math.atan2(this.vy, this.vx);
             let angleDiff = targetAngle - currentAngle;
-
             while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
             while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
-
             const turnAmount = this.turnSpeed * dt;
             if (Math.abs(angleDiff) < turnAmount) {
                 currentAngle = targetAngle;
             } else {
                 currentAngle += Math.sign(angleDiff) * turnAmount;
             }
-
             this.vx = Math.cos(currentAngle) * this.speed;
             this.vy = Math.sin(currentAngle) * this.speed;
-
-            this.x += this.vx * dt;
-            this.y += this.vy * dt;
-            this.lifetime -= dt;
+            this.x += this.vx * dt; this.y += this.vy * dt; this.lifetime -= dt;
         }
         draw(ctx){
             ctx.save();
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = this.color;
-                ctx.shadowBlur = 15;
+                ctx.shadowColor = this.color; ctx.shadowBlur = 15;
             }
             ctx.fillStyle = this.color;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
@@ -2139,7 +1918,6 @@
             if (!target) return;
             soundManager.play('shot');
             const totalDamage = this.stats.damage * this.player.damageMultiplier;
-
             if (this.isEvolved) {
                 const baseDir = normalizeVector({x: target.x - this.player.x, y: target.y - this.player.y});
                 const angle = Math.atan2(baseDir.y, baseDir.x);
@@ -2147,16 +1925,11 @@
                 for (let i = -1; i <= 1; i++) {
                     const currentAngle = angle + i * spread;
                     const dir = {x: Math.cos(currentAngle), y: Math.sin(currentAngle)};
-                    projectiles.push(new Projectile(
-                        this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size, this.stats.color,
-                        { explodes: true, explosionRadius: 75 }
-                    ));
+                    projectiles.push(new Projectile(this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size, this.stats.color, { explodes: true, explosionRadius: 75 }));
                 }
             } else {
                 const dir = normalizeVector({x: target.x - this.player.x, y: target.y - this.player.y});
-                projectiles.push(new Projectile(
-                    this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size, this.stats.color
-                ));
+                projectiles.push(new Projectile(this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size, this.stats.color));
             }
         }
         evolve() { this.isEvolved = true; this.stats.cooldown *= 1.2; }
@@ -2174,7 +1947,7 @@
         }
         recalculateHammers() {
             this.hammers = [];
-             for (let i = 0; i < this.stats.count; i++) {
+            for (let i = 0; i < this.stats.count; i++) {
                 this.hammers.push({ angle: (Math.PI * 2 / this.stats.count) * i });
             }
         }
@@ -2182,12 +1955,10 @@
         evolve() { this.isEvolved = true; }
         update(dt) {
             this.hammers.forEach(hammer => hammer.angle += this.stats.rotationSpeed * dt);
-
             for (const [enemy, timer] of this.hitEnemies.entries()) {
                 if (timer - dt <= 0) this.hitEnemies.delete(enemy);
                 else this.hitEnemies.set(enemy, timer - dt);
             }
-            
             if (this.isEvolved) {
                 this.shockwaveTimer -= dt;
                 if (this.shockwaveTimer <= 0) {
@@ -2196,14 +1967,11 @@
                     camera.startShake(8, 0.2);
                 }
             }
-            
             const s = this.stats.size, handleLength = s * 1.2, headHeight = s * 0.7, headWidth = s;
             const effectiveRadius = this.stats.radius + handleLength + (headHeight / 2);
-
             for (const hammer of this.hammers) {
                 const hammerHeadX = this.player.x + Math.cos(hammer.angle) * effectiveRadius;
                 const hammerHeadY = this.player.y + Math.sin(hammer.angle) * effectiveRadius;
-
                 for (const enemy of enemies) {
                     if (this.hitEnemies.has(enemy)) continue;
                     const distSq = (hammerHeadX - enemy.x)**2 + (hammerHeadY - enemy.y)**2;
@@ -2226,21 +1994,17 @@
                 const handleLength = s * 1.2, handleWidth = s * 0.2;
                 let headWidth = s, headHeight = s * 0.7;
                 let handleColor = '#8B4513', headColor = this.stats.color;
-
                 if (this.isEvolved) {
                     headWidth *= 1.5; headHeight *= 1.5;
                     headColor = '#ffd700';
                 }
-                
                 ctx.fillStyle = handleColor;
                 ctx.fillRect(-handleWidth / 2, -handleLength, handleWidth, handleLength);
                 ctx.fillStyle = headColor;
                 if (currentGraphics && currentGraphics.shadows) {
-                    ctx.shadowColor = headColor;
-                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = headColor; ctx.shadowBlur = 10;
                 }
                 ctx.fillRect(-headWidth / 2, -handleLength - headHeight, headWidth, headHeight);
-
                 ctx.restore();
             });
         }
@@ -2259,15 +2023,12 @@
             this.frequencyY = Math.random() * 0.5 + 0.2; 
             this.color = `rgba(200, 220, 255, ${Math.random() * 0.4 + 0.2})`;
         }
-
         update(dt) {
             this.x += this.speedX * dt;
             this.y = this.baseY + Math.sin(gameTime * this.frequencyY) * this.amplitudeY;
-
             if (this.x < 0) this.x = CONFIG.MAP_SIZE.width;
             if (this.x > CONFIG.MAP_SIZE.width) this.x = 0;
         }
-
         draw(ctx) {
             ctx.fillStyle = this.color;
             ctx.beginPath();
@@ -2332,7 +2093,6 @@
         }
         screenWidth = canvas.width;
         screenHeight = canvas.height;
-        // Atualiza a flag de mobile e o zoom da câmera no redimensionamento
         isMobile = screenWidth < 768;
         if(camera) camera.updateZoom();
     }
@@ -2350,9 +2110,7 @@
     function startGame() {
         DOM.startModal.style.display = 'none'; 
         DOM.hud.style.display = 'block';
-
         runStats = { enemiesDefeated: 0, damageDealt: 0 };
-
         player = new Player();
         camera = new Camera(player);
         enemies = []; expOrbs = []; projectiles = []; enemyProjectiles = []; soulGems = []; particles = []; floatingTexts = []; effects = [];
@@ -2371,14 +2129,12 @@
             const radius = Math.max(screenWidth, screenHeight) / (camera ? camera.zoom : 1) * 0.7;
             const x = player.x + Math.cos(angle) * radius;
             const y = player.y + Math.sin(angle) * radius;
-            
             let enemyType;
             const rand = Math.random();
             if (wave > 3 && rand < 0.15) enemyType = 'mage';
             else if (wave > 2 && rand < 0.4) enemyType = 'brute';
             else if (rand > 0.6) enemyType = 'bat';
             else enemyType = 'slime';
-
             let newEnemy;
             switch(enemyType) {
                 case 'mage': newEnemy = new Mage(x, y); break;
@@ -2387,11 +2143,9 @@
                 case 'brute': newEnemy = new Brute(x, y); break;
                 default: newEnemy = new Enemy(x, y, enemyType);
             }
-
             if (wave >= 5 && Math.random() < 0.05) {
                 newEnemy.makeChampion();
             }
-
             enemies.push(newEnemy);
         }
     }
@@ -2399,7 +2153,6 @@
     function startBossWave() {
         bossWaveActive = true;
         enemies.forEach(e => e.takeDamage(9999)); 
-        
         setTimeout(() => {
             const boss = new SpectralElder(player.x, player.y - 600);
             enemies.push(boss);
@@ -2429,7 +2182,6 @@
                  }
             }
         };
-
         for (let i = projectiles.length - 1; i >= 0; i--) {
             const proj = projectiles[i];
             for (const enemy of enemies) {
@@ -2446,7 +2198,6 @@
                 }
             }
         }
-        
         for (let i = enemyProjectiles.length - 1; i >= 0; i--) {
             const proj = enemyProjectiles[i];
             if ((player.x - proj.x)**2 + (player.y - proj.y)**2 < (player.size / 2 + proj.size / 2)**2) {
@@ -2455,7 +2206,6 @@
                 enemyProjectiles.splice(i, 1);
             }
         }
-
         const collectRadiusSq = (player.size + 10)**2;
         for (let i = expOrbs.length - 1; i >= 0; i--) {
             if ((player.x - expOrbs[i].x)**2 + (player.y - expOrbs[i].y)**2 < collectRadiusSq) {
@@ -2476,33 +2226,23 @@
         gameState = 'paused_ability'; 
         const weaponId = player.weapon.id;
         let evolutionAvailable = null;
-
         const evolution = CONFIG.WEAPON_EVOLUTIONS[weaponId];
         if (evolution && !player.weapon.isEvolved) {
             const allReqsMet = evolution.requires.every(reqId => {
                 const reqUpgrade = CONFIG.WEAPON_UPGRADES[weaponId].find(u => u.id === reqId);
                 return (player.abilityLevels[reqId] || 0) >= reqUpgrade.max;
             });
-            if (allReqsMet) {
-                evolutionAvailable = evolution;
-            }
+            if (allReqsMet) { evolutionAvailable = evolution; }
         }
-
         const generalAbilities = CONFIG.GENERAL_ABILITIES.filter(a => (player.abilityLevels[a.id] || 0) < (a.max || 99));
         const weaponAbilities = (CONFIG.WEAPON_UPGRADES[weaponId] || []).filter(a => (player.abilityLevels[a.id] || 0) < (a.max || 99));
-        
         let weightedPool = [...generalAbilities];
         for (let i = 0; i <= player.weaponUpgradeLuck; i++) {
             weightedPool.push(...weaponAbilities);
         }
-        
         let chosen = [];
-        if (evolutionAvailable) {
-            chosen.push(evolutionAvailable);
-        }
-        
+        if (evolutionAvailable) { chosen.push(evolutionAvailable); }
         const uniquePool = [...new Set(weightedPool)];
-
         while(chosen.length < 3 && uniquePool.length > 0) {
             const randomIndex = Math.floor(Math.random() * uniquePool.length);
             const selected = uniquePool.splice(randomIndex, 1)[0];
@@ -2510,12 +2250,10 @@
                 chosen.push(selected);
             }
         }
-        
         if (chosen.length === 0) {
             chosen.push({id: 'gem_cache', name: 'Tesouro', desc: 'Ganhe 25 gemas.', apply: () => { runGems += 25; player.weaponUpgradeLuck++; } });
             chosen.push({id: 'health_potion', name: 'Poção', desc: 'Recupere 30% da vida máxima.', apply: () => { player.hp = Math.min(player.maxHp, player.hp + player.maxHp * 0.3); player.weaponUpgradeLuck++; } });
         }
-        
         DOM.abilityOptions.innerHTML = '';
         chosen.forEach(ability => {
             const card = document.createElement('div');
@@ -2531,13 +2269,11 @@
     function selectAbility(ability) {
         const weaponId = player.weapon.id;
         const isWeaponUpgrade = (CONFIG.WEAPON_UPGRADES[weaponId] || []).some(w => w.id === ability.id);
-
         if (isWeaponUpgrade || ability.id.startsWith('evolve')) {
             player.weaponUpgradeLuck = 0;
         } else {
             player.weaponUpgradeLuck++;
         }
-
         if (!ability.id.startsWith('evolve')) {
             player.abilityLevels[ability.id] = (player.abilityLevels[ability.id] || 0) + 1;
         }
@@ -2555,39 +2291,31 @@
         const minutes = Math.floor(gameTime / 60), seconds = Math.floor(gameTime % 60).toString().padStart(2, '0');
         DOM.timeSurvived.textContent = `${minutes}:${seconds}`;
         DOM.finalGems.textContent = runGems;
-        
         DOM.enemiesDefeatedStat.textContent = runStats.enemiesDefeated;
         DOM.damageDealtStat.textContent = Math.round(runStats.damageDealt);
         DOM.levelReachedStat.textContent = player.level;
-        
         DOM.gameOverModal.style.display = 'flex';
     }
     
     // --- Loop Principal e Funções de Desenho ---
     function update(dt) {
         if (gameState !== 'playing') return;
-
         gameTime += dt;
-
-        if (bossWaveActive) {
-        } else {
+        if (!bossWaveActive) {
             waveTimer -= dt;
             if (waveTimer <= 0) {
                 if (wave === 9) { 
                     wave++;
                     startBossWave();
                 } else {
-                    wave++;
-                    waveTimer = 30;
+                    wave++; waveTimer = 30;
                     giveWaveCompletionBonus();
                     spawnWave();
                 }
             }
         }
-        
         player.update(dt);
         camera.update();
-        
         for(const e of enemies) e.update(dt);
         for(const p of projectiles) p.update(dt);
         for(const p of enemyProjectiles) p.update(dt);
@@ -2596,9 +2324,7 @@
         for(const p of particles) p.update(dt);
         for(const t of floatingTexts) t.update(dt);
         for(const e of effects) e.update(dt);
-
         handleCollisions();
-        
         for (let i = projectiles.length - 1; i >= 0; i--) {
             if (projectiles[i].lifetime <= 0) {
                 projectiles[i].handleExplosion();
@@ -2610,42 +2336,32 @@
         for (let i = floatingTexts.length - 1; i >= 0; i--) if (floatingTexts[i].lifespan <= 0) floatingTexts.splice(i, 1);
         for (let i = enemies.length - 1; i >= 0; i--) if (!enemies[i].isAlive) enemies.splice(i, 1);
         for (let i = effects.length - 1; i >= 0; i--) if (effects[i].life <= 0) effects.splice(i, 1);
-
         for(const p of ambientParticles) p.update(dt);
     }
     
     function draw() {
         ctx.clearRect(0, 0, screenWidth, screenHeight);
         if (!camera) return;
-        
         camera.apply(ctx);
-        
         ctx.fillStyle = gridPattern;
         ctx.fillRect(0, 0, CONFIG.MAP_SIZE.width, CONFIG.MAP_SIZE.height);
-        
         if (currentGraphics && currentGraphics.shadows) {
-            ctx.shadowColor = '#ffffff';
-            ctx.shadowBlur = 5;
+            ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 5;
         }
         for(const p of ambientParticles) p.draw(ctx);
         if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
-
         for(const o of expOrbs) o.draw(ctx);
         for(const g of soulGems) g.draw(ctx);
-
         ctx.save();
         if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
         for(const p of particles) p.draw(ctx);
         ctx.restore();
-
         if(player) player.weapon?.draw(ctx);
         if(player) player.draw(ctx);
-
         for(const e of enemies) e.draw(ctx);
         for(const p of projectiles) p.draw(ctx);
         for(const p of enemyProjectiles) p.draw(ctx);
         for(const e of effects) e.draw(ctx);
-        
         ctx.save();
         ctx.font = '14px "Press Start 2P"';
         ctx.textAlign = 'center';
@@ -2654,7 +2370,6 @@
             t.draw(ctx);
         }
         ctx.restore();
-        
         camera.restore(ctx);
     }
 
@@ -2664,7 +2379,6 @@
         DOM.xpBar.style.width = `${(player.xp / player.xpToNextLevel) * 100}%`;
         DOM.levelText.textContent = `Nível ${player.level}`;
         DOM.runGemsCount.textContent = runGems;
-
         if (bossWaveActive) {
             DOM.waveTimerText.textContent = `DERROTE O CHEFE!`;
             const boss = enemies.find(e => e.isBoss);
@@ -2677,7 +2391,6 @@
              DOM.bossHud.style.display = 'none';
              DOM.waveTimerText.textContent = `Onda ${wave}: ${Math.ceil(waveTimer)}s`;
         }
-
         const dashCooldownProgress = player.dashCooldown > 0 ? player.dashCooldown / CONFIG.PLAYER.dashCooldown : 0;
         DOM.dashCooldownOverlay.style.height = `${dashCooldownProgress * 100}%`;
         DOM.dashButton.style.opacity = dashCooldownProgress > 0 ? '0.7' : '1';
@@ -2769,10 +2482,14 @@
             Object.assign(playerData, loadedData);
             if (loadedData.audio) Object.assign(playerData.audio, loadedData.audio);
             if (loadedData.graphics) Object.assign(playerData.graphics, loadedData.graphics);
+            // Compatibilidade para saves antigos sem a opção de controles
+            if (!playerData.controls) playerData.controls = { inverted: false };
+            if (loadedData.controls) Object.assign(playerData.controls, loadedData.controls);
         }
         updateGemDisplays();
         applyAudioSettings();
         applyGraphicsSettings();
+        applyControlsLayout(); // Aplicar layout de controles ao carregar
     }
     function applyAudioSettings() {
         DOM.volumeSlider.value = playerData.audio.volume;
@@ -2782,14 +2499,25 @@
     function applyGraphicsSettings() {
         const quality = playerData.graphics.quality || 'medium';
         currentGraphics = CONFIG.GRAPHICS[quality];
-        
         [DOM.qualityLowBtn, DOM.qualityMediumBtn, DOM.qualityHighBtn].forEach(btn => btn.classList.remove('active'));
         if (quality === 'low') DOM.qualityLowBtn.classList.add('active');
         else if (quality === 'medium') DOM.qualityMediumBtn.classList.add('active');
         else if (quality === 'high') DOM.qualityHighBtn.classList.add('active');
-
         ambientParticles = [];
         createAmbientParticles();
+    }
+    // Nova função para aplicar o layout dos controles
+    function applyControlsLayout() {
+        const gameContainer = document.getElementById('game-container');
+        if (playerData.controls.inverted) {
+            gameContainer.classList.add('controls-inverted');
+            DOM.invertControlsBtn.textContent = 'Invertido';
+            DOM.invertControlsBtn.classList.add('active');
+        } else {
+            gameContainer.classList.remove('controls-inverted');
+            DOM.invertControlsBtn.textContent = 'Padrão';
+            DOM.invertControlsBtn.classList.remove('active');
+        }
     }
 
     function setGraphicsQuality(quality) {
@@ -2801,18 +2529,15 @@
     function updatePauseSummary() {
         if (!player) return;
         DOM.pauseSummary.innerHTML = ''; 
-
         let weaponHtml = '<h3>Arma</h3><ul>';
         const weaponName = player.weapon.isEvolved ? `${player.weapon.stats.name} (EVO)` : player.weapon.stats.name;
         weaponHtml += `<li>${weaponName}</li>`;
         weaponHtml += '</ul>';
         DOM.pauseSummary.innerHTML += weaponHtml;
-
         let abilitiesHtml = '<h3 class="mt-4">Melhorias</h3><ul>';
         const abilityNames = { ...CONFIG.GENERAL_ABILITIES.reduce((obj, item) => ({...obj, [item.id]: item.name }), {}),
             ...Object.values(CONFIG.WEAPON_UPGRADES).flat().reduce((obj, item) => ({...obj, [item.id]: item.name }), {})
         };
-        
         const sortedAbilities = Object.keys(player.abilityLevels).sort();
         if (sortedAbilities.length > 0) {
             sortedAbilities.forEach(id => {
@@ -2823,16 +2548,13 @@
         } else {
             abilitiesHtml += '<li>Nenhuma melhoria adquirida.</li>';
         }
-        
         abilitiesHtml += '</ul>';
         DOM.pauseSummary.innerHTML += abilitiesHtml;
     }
 
     function togglePause(isManual = true) {
         if (gameState === 'gameOver' || (gameState === 'paused_ability' && isManual)) return;
-
         const shouldPause = gameState === 'playing';
-
         if (shouldPause) {
             gameState = 'paused';
             updatePauseSummary();
@@ -2850,7 +2572,6 @@
         document.body.addEventListener('click', (e) => {
             if (e.target.closest('button, .card:not(.locked)')) soundManager.play('uiClick');
         });
-
         DOM.startButton.addEventListener('click', startGame);
         DOM.upgradesButton.addEventListener('click', () => {
             renderUpgradesModal(); renderWeaponShop();
@@ -2867,7 +2588,6 @@
             DOM.optionsModal.style.display = 'none';
             DOM.startModal.style.display = 'flex';
         });
-
         DOM.restartButton.addEventListener('click', () => {
             DOM.gameOverModal.style.display = 'none'; 
             DOM.hud.style.display = 'none';
@@ -2893,11 +2613,15 @@
             if(!playerData.audio.isMuted && playerData.audio.volume === 0) playerData.audio.volume = 0.5;
             applyAudioSettings(); saveProgress();
         });
-        
         DOM.qualityLowBtn.addEventListener('click', () => setGraphicsQuality('low'));
         DOM.qualityMediumBtn.addEventListener('click', () => setGraphicsQuality('medium'));
         DOM.qualityHighBtn.addEventListener('click', () => setGraphicsQuality('high'));
-        
+        // Novo listener para inverter controles
+        DOM.invertControlsBtn.addEventListener('click', () => {
+            playerData.controls.inverted = !playerData.controls.inverted;
+            applyControlsLayout();
+            saveProgress();
+        });
         DOM.resumeButton.addEventListener('click', () => togglePause(true));
         DOM.quitButton.addEventListener('click', () => {
             togglePause(false); 
@@ -2908,7 +2632,6 @@
             updateGemDisplays(); 
             gameState = 'start';
         });
-
         window.addEventListener('keydown', e => {
             keys[e.key.toLowerCase()] = true;
             if (e.key === ' ' || e.key === 'Shift') { e.preventDefault(); player?.dash(); }
@@ -2919,29 +2642,30 @@
                 }
             }
         });
-
         window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
-        
         window.addEventListener('popstate', (event) => {
             if (gameState === 'playing') {
                 togglePause(true);
                 history.pushState({ inGame: true }, "");
             }
         });
-
         window.addEventListener('resize', resizeCanvas);
-        
         let joystickID = null;
         let joystickCenter = { x: 0, y: 0 };
         const joystickMaxDist = 50;
         window.addEventListener('touchstart', e => {
             if (joystickID !== null || gameState !== 'playing') return;
-
             const touch = e.changedTouches[0];
             const dashRect = DOM.dashButton.getBoundingClientRect();
             if (touch.clientX >= dashRect.left && touch.clientX <= dashRect.right &&
                 touch.clientY >= dashRect.top && touch.clientY <= dashRect.bottom) return;
-            if (touch.clientX < window.innerWidth / 2) {
+            
+            // Lógica de joystick atualizada para suportar inversão
+            const joystickSideCondition = playerData.controls.inverted ?
+                (touch.clientX > window.innerWidth / 2) :
+                (touch.clientX < window.innerWidth / 2);
+
+            if (joystickSideCondition) {
                 e.preventDefault();
                 joystickID = touch.identifier;
                 joystickCenter.x = touch.clientX; joystickCenter.y = touch.clientY;
@@ -2988,3 +2712,4 @@
     </script>
 </body>
 </html>
+
