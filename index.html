@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
-    <title>Sobrevivente 2D Otimizado</title>
+    <title>Final Vertex</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,7 +22,6 @@
             --gem-color: #ffff4d;
         }
 
-        /* Estrutura base para preencher a tela e evitar barras de rolagem */
         html, body {
             width: 100%;
             height: 100%;
@@ -44,7 +43,6 @@
             background-color: var(--secondary-bg);
             display: block;
             image-rendering: pixelated;
-            /* Garante que o canvas preencha seu container responsivamente */
             width: 100%; 
             height: 100%;
         }
@@ -91,10 +89,8 @@
             z-index: 10;
             animation: fadeIn 0.3s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         .modal-content {
             background-color: var(--secondary-bg);
             border: 4px solid var(--light-text);
@@ -105,10 +101,7 @@
             overflow-y: auto;
             animation: scaleUp 0.3s ease;
         }
-        @keyframes scaleUp {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         #hud {
             top: calc(2.5rem + env(safe-area-inset-top)); 
@@ -126,9 +119,7 @@
             cursor: pointer;
             box-shadow: 0 4px 0 var(--dark-border), 0 5px 5px rgba(0,0,0,0.4);
         }
-        .btn:hover {
-            background-color: #6a6a8e;
-        }
+        .btn:hover { background-color: #6a6a8e; }
         .btn:active {
             transform: translateY(2px) scale(0.98);
             box-shadow: 0 2px 0 var(--dark-border);
@@ -183,8 +174,7 @@
             pointer-events: none;
         }
         #joystick-base {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             background-color: rgba(240, 240, 255, 0.4);
             border-radius: 50%;
         }
@@ -206,12 +196,10 @@
             overflow: hidden;
             bottom: 4rem;
             z-index: 5;
-            /* Posição Padrão (Direita) */
             right: 2rem;
             right: calc(2rem + env(safe-area-inset-right));
             left: auto;
         }
-        /* Nova regra para controles invertidos */
         .controls-inverted #dash-button {
             right: auto;
             left: 2rem;
@@ -220,10 +208,8 @@
 
         #dash-cooldown-overlay {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            bottom: 0; left: 0;
+            width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             transition: height 0.1s linear;
             pointer-events: none;
@@ -298,10 +284,7 @@
         }
         
         @media (orientation: landscape) and (max-height: 500px) {
-            #hud {
-                left: 0.5rem; right: 0.5rem;
-                top: calc(0.5rem + env(safe-area-inset-top)); 
-            }
+            #hud { left: 0.5rem; right: 0.5rem; top: calc(0.5rem + env(safe-area-inset-top)); }
             #level-text, #wave-timer { font-size: 0.75rem; }
             .hud-bar { height: 0.75rem; }
             .modal-content { padding: 1rem; max-height: 95vh; }
@@ -348,12 +331,12 @@
 
         <div id="start-modal" class="modal">
             <div class="modal-content text-center">
-                <h1 class="text-3xl sm:text-4xl mb-4">Sobrevivente 2D</h1>
+                <h1 class="text-3xl sm:text-4xl mb-4">Final Vertex</h1>
                 <p class="mb-8">Derrote hordas de inimigos e fique mais forte.</p>
                 <div class="flex flex-col gap-4">
                     <button id="start-button" class="btn">Iniciar Jogo</button>
                     <button id="upgrades-button" class="btn">Arsenal</button>
-                    <button id="options-button" class="btn">Opções</button>
+                    <button id="options-button" class="btn">Ajustes</button>
                 </div>
                  <div class="absolute top-4 right-4 flex items-center gap-2 text-lg">
                     <span class="text-yellow-400">♦</span>
@@ -386,34 +369,39 @@
         </div>
 
         <div id="options-modal" class="modal" style="display: none;">
-            <div class="modal-content text-center">
-                <h2 class="text-2xl sm:text-3xl mb-8">Opções</h2>
-                <div class="flex flex-col gap-8">
-                    <div id="audio-settings" class="flex flex-col items-center justify-center gap-4">
-                        <p class="text-lg">Volume</p>
-                        <div class="flex items-center justify-center gap-4">
-                            <button id="mute-button" class="btn text-xl p-2 leading-none">🔊</button>
-                            <input type="range" id="volume-slider" min="0" max="1" step="0.01" class="w-40">
+            <div class="modal-content w-[95%] max-w-xl h-[95vh] flex flex-col p-4 sm:p-6">
+                <h2 class="text-2xl sm:text-3xl mb-6 text-center">Ajustes</h2>
+                <div class="flex border-b-2 border-gray-600 mb-6">
+                    <button id="show-general-tab" class="btn tab-btn active-tab flex-1">Geral</button>
+                    <button id="show-graphics-tab" class="btn tab-btn flex-1">Gráficos</button>
+                    <button id="show-audio-tab" class="btn tab-btn flex-1">Som</button>
+                </div>
+                <div class="flex-grow overflow-y-auto pr-2 text-center">
+                    <div id="general-settings-tab">
+                        <div class="flex flex-col items-center justify-center gap-4">
+                            <p class="text-lg mb-2">Layout dos Controles</p>
+                            <button id="invert-controls-btn" class="btn controls-btn text-sm p-2 w-40"></button>
                         </div>
                     </div>
-                    <div id="graphics-settings" class="flex flex-col items-center justify-center gap-4">
-                        <p class="text-lg">Qualidade Gráfica</p>
-                        <div class="flex items-center justify-center gap-4">
-                            <button id="quality-low" class="btn quality-btn text-sm p-2">Baixa</button>
-                            <button id="quality-medium" class="btn quality-btn text-sm p-2">Média</button>
-                            <button id="quality-high" class="btn quality-btn text-sm p-2">Alta</button>
+                    <div id="graphics-settings-tab" style="display: none;">
+                        <div class="flex flex-col items-center justify-center gap-4">
+                            <p class="text-lg mb-2">Qualidade Gráfica</p>
+                            <div class="flex items-center justify-center gap-4">
+                                <button id="quality-low" class="btn quality-btn text-sm p-2">Baixa</button>
+                                <button id="quality-medium" class="btn quality-btn text-sm p-2">Média</button>
+                                <button id="quality-high" class="btn quality-btn text-sm p-2">Alta</button>
+                            </div>
                         </div>
                     </div>
-                    <!-- Nova Seção de Controles -->
-                    <div id="controls-settings" class="flex flex-col items-center justify-center gap-4">
-                        <p class="text-lg">Layout dos Controles</p>
-                        <div class="flex items-center justify-center gap-4">
-                            <button id="invert-controls-btn" class="btn controls-btn text-sm p-2"></button>
+                    <div id="audio-settings-tab" style="display: none;">
+                        <div class="flex flex-col items-center justify-center gap-4">
+                             <p class="text-lg mb-2">Volume</p>
+                             <input type="range" id="volume-slider" min="0" max="1" step="0.01" class="w-48">
                         </div>
                     </div>
                 </div>
-                <div class="mt-12 text-center">
-                     <button id="options-back-button" class="btn w-full">Voltar</button>
+                <div class="mt-8 text-center">
+                    <button id="options-back-button" class="btn">Voltar</button>
                 </div>
             </div>
         </div>
@@ -515,18 +503,12 @@
         joystickThumb: document.getElementById('joystick-thumb'),
         dashButton: document.getElementById('dash-button'),
         dashCooldownOverlay: document.getElementById('dash-cooldown-overlay'),
-        muteButton: document.getElementById('mute-button'),
-        volumeSlider: document.getElementById('volume-slider'),
         showUpgradesTab: document.getElementById('show-upgrades-tab'),
         showWeaponsTab: document.getElementById('show-weapons-tab'),
         weaponShopContainer: document.getElementById('weapon-shop-container'),
         optionsModal: document.getElementById('options-modal'),
         optionsButton: document.getElementById('options-button'),
         optionsBackButton: document.getElementById('options-back-button'),
-        qualityLowBtn: document.getElementById('quality-low'),
-        qualityMediumBtn: document.getElementById('quality-medium'),
-        qualityHighBtn: document.getElementById('quality-high'),
-        invertControlsBtn: document.getElementById('invert-controls-btn'), // Novo DOM
         pauseModal: document.getElementById('pause-modal'),
         resumeButton: document.getElementById('resume-button'),
         quitButton: document.getElementById('quit-button'),
@@ -534,6 +516,19 @@
         enemiesDefeatedStat: document.getElementById('enemies-defeated-stat'),
         damageDealtStat: document.getElementById('damage-dealt-stat'),
         levelReachedStat: document.getElementById('level-reached-stat'),
+        
+        // Novos elementos das opções
+        showGeneralTab: document.getElementById('show-general-tab'),
+        showGraphicsTab: document.getElementById('show-graphics-tab'),
+        showAudioTab: document.getElementById('show-audio-tab'),
+        generalSettingsTab: document.getElementById('general-settings-tab'),
+        graphicsSettingsTab: document.getElementById('graphics-settings-tab'),
+        audioSettingsTab: document.getElementById('audio-settings-tab'),
+        invertControlsBtn: document.getElementById('invert-controls-btn'),
+        qualityLowBtn: document.getElementById('quality-low'),
+        qualityMediumBtn: document.getElementById('quality-medium'),
+        qualityHighBtn: document.getElementById('quality-high'),
+        volumeSlider: document.getElementById('volume-slider'),
     };
     
     // --- Variáveis Globais do Jogo ---
@@ -562,7 +557,7 @@
         purchasedUpgrades: {},
         audio: { volume: 0.5, isMuted: false },
         graphics: { quality: 'medium' },
-        controls: { inverted: false }, // Nova configuração
+        controls: { inverted: false },
         unlockedWeapons: ['fireball'],
         equippedWeapon: 'fireball'
     };
@@ -659,7 +654,7 @@
                         uiClick: new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 2, envelope: { attack: 0.001, decay: 0.15, sustain: 0 }, volume: -15 }).toDestination(),
                     };
                     this.isInitialized = true;
-                    this.setVolume(playerData.audio.volume, playerData.audio.isMuted);
+                    this.setVolume(playerData.audio.volume);
                 } catch (e) { console.error("Erro ao inicializar o áudio:", e); }
             })();
             return this.initPromise;
@@ -684,10 +679,9 @@
             if (sound === 'hit') this.hitPlayedThisFrame = true;
         }
         reset() { this.hitPlayedThisFrame = false; }
-        setVolume(level, isMuted = false) {
+        setVolume(level) {
             if (this.isInitialized) {
-                const isEffectivelyMuted = isMuted || level === 0;
-                Tone.Master.volume.value = isEffectivelyMuted ? -Infinity : Tone.gainToDb(level);
+                Tone.Master.volume.value = level === 0 ? -Infinity : Tone.gainToDb(level);
             }
         }
     }
@@ -706,9 +700,8 @@
         }
 
         updateZoom() {
-            // Se for mobile, afasta mais a câmera
             if (isMobile) {
-                this.targetZoom = 0.7; // Alterado de 0.8 para 0.7
+                this.targetZoom = 0.7;
             } else {
                 this.targetZoom = 1.0;
             }
@@ -2474,27 +2467,25 @@
         DOM.totalGems.textContent = playerData.totalSoulGems;
         DOM.upgradesGems.textContent = playerData.totalSoulGems;
     }
-    function saveProgress() { localStorage.setItem('survivor2D_save', JSON.stringify(playerData)); }
+    function saveProgress() { localStorage.setItem('finalVertexSave', JSON.stringify(playerData)); }
     function loadProgress() {
-        const saved = localStorage.getItem('survivor2D_save');
+        const saved = localStorage.getItem('finalVertexSave');
         if (saved) {
             const loadedData = JSON.parse(saved);
             Object.assign(playerData, loadedData);
             if (loadedData.audio) Object.assign(playerData.audio, loadedData.audio);
             if (loadedData.graphics) Object.assign(playerData.graphics, loadedData.graphics);
-            // Compatibilidade para saves antigos sem a opção de controles
             if (!playerData.controls) playerData.controls = { inverted: false };
             if (loadedData.controls) Object.assign(playerData.controls, loadedData.controls);
         }
         updateGemDisplays();
         applyAudioSettings();
         applyGraphicsSettings();
-        applyControlsLayout(); // Aplicar layout de controles ao carregar
+        applyControlsLayout();
     }
     function applyAudioSettings() {
         DOM.volumeSlider.value = playerData.audio.volume;
-        DOM.muteButton.textContent = playerData.audio.isMuted || playerData.audio.volume === 0 ? '🔇' : '🔊';
-        if (soundManager) soundManager.setVolume(playerData.audio.volume, playerData.audio.isMuted);
+        if (soundManager) soundManager.setVolume(playerData.audio.volume);
     }
     function applyGraphicsSettings() {
         const quality = playerData.graphics.quality || 'medium';
@@ -2506,7 +2497,6 @@
         ambientParticles = [];
         createAmbientParticles();
     }
-    // Nova função para aplicar o layout dos controles
     function applyControlsLayout() {
         const gameContainer = document.getElementById('game-container');
         if (playerData.controls.inverted) {
@@ -2603,20 +2593,31 @@
             DOM.upgradesContainer.style.display = 'none'; DOM.weaponShopContainer.style.display = 'grid';
             DOM.showUpgradesTab.classList.remove('active-tab'); DOM.showWeaponsTab.classList.add('active-tab');
         });
+
+        // Listeners para as abas de opções
+        const tabs = [
+            { btn: DOM.showGeneralTab, content: DOM.generalSettingsTab },
+            { btn: DOM.showGraphicsTab, content: DOM.graphicsSettingsTab },
+            { btn: DOM.showAudioTab, content: DOM.audioSettingsTab }
+        ];
+        tabs.forEach(tab => {
+            tab.btn.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.btn.classList.remove('active-tab');
+                    t.content.style.display = 'none';
+                });
+                tab.btn.classList.add('active-tab');
+                tab.content.style.display = 'block';
+            });
+        });
+
         DOM.volumeSlider.addEventListener('input', () => {
             playerData.audio.volume = parseFloat(DOM.volumeSlider.value);
-            if(playerData.audio.volume > 0) playerData.audio.isMuted = false;
-            applyAudioSettings(); saveProgress();
-        });
-        DOM.muteButton.addEventListener('click', () => {
-            playerData.audio.isMuted = !playerData.audio.isMuted;
-            if(!playerData.audio.isMuted && playerData.audio.volume === 0) playerData.audio.volume = 0.5;
             applyAudioSettings(); saveProgress();
         });
         DOM.qualityLowBtn.addEventListener('click', () => setGraphicsQuality('low'));
         DOM.qualityMediumBtn.addEventListener('click', () => setGraphicsQuality('medium'));
         DOM.qualityHighBtn.addEventListener('click', () => setGraphicsQuality('high'));
-        // Novo listener para inverter controles
         DOM.invertControlsBtn.addEventListener('click', () => {
             playerData.controls.inverted = !playerData.controls.inverted;
             applyControlsLayout();
@@ -2659,12 +2660,9 @@
             const dashRect = DOM.dashButton.getBoundingClientRect();
             if (touch.clientX >= dashRect.left && touch.clientX <= dashRect.right &&
                 touch.clientY >= dashRect.top && touch.clientY <= dashRect.bottom) return;
-            
-            // Lógica de joystick atualizada para suportar inversão
             const joystickSideCondition = playerData.controls.inverted ?
                 (touch.clientX > window.innerWidth / 2) :
                 (touch.clientX < window.innerWidth / 2);
-
             if (joystickSideCondition) {
                 e.preventDefault();
                 joystickID = touch.identifier;
@@ -2712,4 +2710,3 @@
     </script>
 </body>
 </html>
-
