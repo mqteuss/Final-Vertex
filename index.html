@@ -21,7 +21,6 @@
             --player-color: #8a8aff;
             --gem-color: #ffff4d;
         }
-
         html, body {
             width: 100%;
             height: 100%;
@@ -29,7 +28,6 @@
             padding: 0;
             overflow: hidden;
         }
-
         body {
             font-family: 'Press Start 2P', cursive;
             touch-action: none;
@@ -46,7 +44,6 @@
             width: 100%; 
             height: 100%;
         }
-        
         .hud-bar {
             position: relative;
             height: 1rem;
@@ -55,7 +52,6 @@
             overflow: hidden;
             border: 2px solid var(--dark-border);
         }
-
         .hud-bar::after {
             content: '';
             position: absolute;
@@ -69,12 +65,10 @@
             );
             pointer-events: none;
         }
-        
         .hud-bar-fill {
             height: 100%;
             transition: width 0.3s ease-in-out;
         }
-
         #health-bar-fill { background-color: var(--health-color); }
         #xp-bar-fill { background-color: var(--xp-color); }
         .modal {
@@ -90,7 +84,6 @@
             animation: fadeIn 0.3s ease;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
         .modal-content {
             background-color: var(--secondary-bg);
             border: 4px solid var(--light-text);
@@ -102,11 +95,9 @@
             animation: scaleUp 0.3s ease;
         }
         @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
         #hud {
             top: calc(2.5rem + env(safe-area-inset-top)); 
         }
-
         .btn {
             padding: 0.75rem 1.5rem;
             font-size: 1rem;
@@ -131,17 +122,14 @@
             box-shadow: 0 2px 0 var(--dark-border);
             transform: translateY(2px);
         }
-        
-        .quality-btn.active, .controls-btn.active {
+        .quality-btn.active, .controls-btn.active, .toggle-btn.active {
             background-color: var(--player-color);
             box-shadow: 0 2px 0 var(--dark-border), inset 0 0 10px rgba(0,0,0,0.3);
             transform: translateY(2px);
         }
-
         #start-modal h1 {
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 15px rgba(138, 138, 255, 0.3);
         }
-        
         .card {
             background-color: #3a3a5e;
             border: 3px solid var(--light-text);
@@ -184,7 +172,6 @@
             top: 30px; left: 30px;
             pointer-events: none;
         }
-
         #dash-button {
             display: none;
             position: absolute;
@@ -205,7 +192,6 @@
             left: 2rem;
             left: calc(2rem + env(safe-area-inset-left));
         }
-
         #dash-cooldown-overlay {
             position: absolute;
             bottom: 0; left: 0;
@@ -214,22 +200,22 @@
             transition: height 0.1s linear;
             pointer-events: none;
         }
-        #volume-slider {
+        .volume-slider {
             -webkit-appearance: none; appearance: none;
             height: 8px; background: var(--primary-bg);
             border: 2px solid var(--light-text); border-radius: 4px;
             outline: none; cursor: pointer;
             transition: box-shadow 0.2s ease;
         }
-        #volume-slider:hover { box-shadow: 0 0 8px var(--player-color); }
-        #volume-slider::-webkit-slider-thumb {
+        .volume-slider:hover { box-shadow: 0 0 8px var(--player-color); }
+        .volume-slider::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
             width: 20px; height: 20px;
             background: var(--player-color);
             border: 2px solid var(--light-text);
             border-radius: 50%;
         }
-        #volume-slider::-moz-range-thumb {
+        .volume-slider::-moz-range-thumb {
             width: 20px; height: 20px;
             background: var(--player-color);
             border: 2px solid var(--light-text);
@@ -252,27 +238,41 @@
             border-bottom-color: var(--player-color);
             color: var(--light-text);
         }
-
-        #pause-summary h3 {
+        #pause-summary h3, #changelog-content h3 {
             border-bottom: 2px solid var(--accent-bg);
             padding-bottom: 0.5rem;
             margin-bottom: 1rem;
             font-size: 1.1rem;
         }
-        #pause-summary ul { list-style: none; padding: 0; }
-        #pause-summary li {
+        #pause-summary ul, #changelog-content ul { 
+            list-style: none; 
+            padding: 0; 
+            padding-left: 0.5rem;
+        }
+        #pause-summary li, #changelog-content li {
             background-color: var(--primary-bg);
             padding: 0.5rem 0.75rem;
             border-radius: 4px;
             margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
-        
+         #changelog-content li {
+            background-color: transparent;
+            padding-left: 0;
+            position: relative;
+            padding-left: 1.5rem; /* Space for the icon */
+        }
+        #changelog-content li::before {
+            content: '♦';
+            color: var(--gem-color);
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+        }
         @media (pointer: coarse) {
             #dash-button { display: flex; }
             #joystick-container { display: block; }
         }
-        
         @media (max-width: 640px) {
             .modal-content { padding: 1.5rem 1rem; }
             .btn { padding: 0.75rem 1rem; font-size: 0.9rem; }
@@ -282,7 +282,6 @@
             .modal-content h1 { font-size: 1.8rem !important; }
             .modal-content h2 { font-size: 1.5rem !important; }
         }
-        
         @media (orientation: landscape) and (max-height: 500px) {
             #hud { left: 0.5rem; right: 0.5rem; top: calc(0.5rem + env(safe-area-inset-top)); }
             #level-text, #wave-timer { font-size: 0.75rem; }
@@ -301,7 +300,6 @@
     </style>
 </head>
 <body class="text-white">
-
     <div id="game-container" class="relative w-screen h-screen">
         <canvas id="game-canvas"></canvas>
         <div id="hud" class="absolute left-4 right-4" style="display: none;">
@@ -328,7 +326,6 @@
                 </div>
             </div>
         </div>
-
         <div id="start-modal" class="modal">
             <div class="modal-content text-center">
                 <h1 class="text-3xl sm:text-4xl mb-4">Final Vertex</h1>
@@ -336,6 +333,7 @@
                 <div class="flex flex-col gap-4">
                     <button id="start-button" class="btn">Iniciar Jogo</button>
                     <button id="upgrades-button" class="btn">Arsenal</button>
+                    <button id="quests-button" class="btn">Missões</button>
                     <button id="options-button" class="btn">Ajustes</button>
                 </div>
                  <div class="absolute top-4 right-4 flex items-center gap-2 text-lg">
@@ -344,7 +342,69 @@
                 </div>
             </div>
         </div>
+        <div id="changelog-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2 class="text-2xl sm:text-3xl mb-6 text-center">Novidades da Versão</h2>
+                <div id="changelog-content" class="mb-8 text-left max-h-72 overflow-y-auto pr-2">
+                    <h3 class="text-xl">O Fim de Jogo Chegou!</h3>
+<ul>
+    <li>Um novo chefe final, o <strong>Colosso de Magma</strong>, espera por você na Onda 20!</li>
+    <li><strong>4 novos inimigos</strong> (Assombração, Golem de Cristal, Verme do Abismo e Sentinela Arcana) substituem os antigos a partir da Onda 10.</li>
+    <li>Derrote o Ancião Espectral (Chefe da Onda 10) para desbloquear <strong>3 novas armas poderosas</strong> no Arsenal!</li>
+</ul>
 
+<h3 class="mt-4 text-xl">Novos Sistemas e Mecânicas</h3>
+<ul>
+    <li>Uma nova aba de <strong>Missões</strong> está disponível no menu principal para ganhar grandes recompensas em gemas.</li>
+    <li><strong>Santuários</strong> raros agora aparecem com mais frequência pelo mapa, concedendo bônus temporários de Fúria, Proteção ou Riqueza.</li>
+    <li>Na tela de melhorias, agora é possível <strong>Rerrolar</strong> as opções gastando gemas da partida.</li>
+    <li>Efeitos visuais de <strong>auras</strong> foram adicionados ao jogador para indicar bônus ativos.</li>
+</ul>
+
+<h3 class="mt-4 text-xl">Novos Itens e Drops</h3>
+<ul>
+    <li>Adicionado drop raro: <strong>Fragmento de Cura</strong>! Recupera 25% da vida.</li>
+    <li>Adicionado drop raro: <strong>Fragmento de Ímã</strong>! Puxa todos os orbes e gemas.</li>
+</ul>
+
+<h3 class="mt-4 text-xl">Balanceamento e Mudanças Gerais</h3>
+<ul>
+    <li>Um <strong>Fragmento de Ímã</strong> garantido agora aparece no centro do mapa a cada 2 ondas completadas.</li>
+    <li>A melhoria "Vigor" agora concede 17% de vida máxima e não cura mais o jogador totalmente.</li>
+    <li>A melhoria "Regeneração" foi retrabalhada com 3 níveis distintos de eficácia.</li>
+    <li>A <strong>Bola de Fogo</strong> agora tem um alcance inicial limitado.</li>
+    <li>Os projéteis teleguiados do <strong>Ancião Espectral</strong> duram mais tempo e ele agora invoca Ecos de Magos em vez de Ecos de Slimes.</li>
+</ul>
+                </div>
+                <div class="text-center">
+                    <button id="close-changelog-button" class="btn">Fechar</button>
+                </div>
+            </div>
+        </div>
+        <div id="quests-modal" class="modal" style="display: none;">
+            <div class="modal-content w-[95%] max-w-4xl h-[95vh] flex flex-col p-4 sm:p-6">
+                <div class="flex justify-between items-center mb-6">
+                     <h2 class="text-2xl sm:text-3xl">Missões</h2>
+                     <div class="flex items-center gap-2 text-lg">
+                        <span class="text-yellow-400">♦</span>
+                        <span id="quests-gems-count">0</span>
+                    </div>
+                </div>
+                 <div class="flex border-b-2 border-gray-600 mb-4">
+                    <button id="show-easy-quests-tab" class="btn tab-btn active-tab">Fácil</button>
+                    <button id="show-medium-quests-tab" class="btn tab-btn">Média</button>
+                    <button id="show-hard-quests-tab" class="btn tab-btn">Difícil</button>
+                </div>
+                <div class="flex-grow overflow-y-auto pr-2">
+                    <div id="easy-quests-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    <div id="medium-quests-container" class="grid grid-cols-1 md:grid-cols-2 gap-4" style="display: none;"></div>
+                    <div id="hard-quests-container" class="grid grid-cols-1 md:grid-cols-2 gap-4" style="display: none;"></div>
+                </div>
+                <div class="mt-6 text-center">
+                    <button id="quests-back-button" class="btn">Voltar</button>
+                </div>
+            </div>
+        </div>
         <div id="upgrades-modal" class="modal" style="display: none;">
             <div class="modal-content w-[95%] max-w-4xl h-[95vh] flex flex-col p-4 sm:p-6">
                 <div class="flex justify-between items-center mb-6">
@@ -367,7 +427,6 @@
                 </div>
             </div>
         </div>
-
         <div id="options-modal" class="modal" style="display: none;">
             <div class="modal-content w-[95%] max-w-xl h-[95vh] flex flex-col p-4 sm:p-6">
                 <h2 class="text-2xl sm:text-3xl mb-6 text-center">Ajustes</h2>
@@ -378,25 +437,47 @@
                 </div>
                 <div class="flex-grow overflow-y-auto pr-2 text-center">
                     <div id="general-settings-tab">
-                        <div class="flex flex-col items-center justify-center gap-4">
-                            <p class="text-lg mb-2">Layout dos Controles</p>
-                            <button id="invert-controls-btn" class="btn controls-btn text-sm p-2 w-40"></button>
+                        <div class="flex flex-col items-center justify-center gap-6">
+                            <div class="w-full">
+                                <p class="text-lg mb-2">Layout dos Controles</p>
+                                <button id="invert-controls-btn" class="btn controls-btn text-sm p-2 w-40"></button>
+                            </div>
+                            <div class="w-full">
+                                <p class="text-lg mb-2">Indicador de Alvo</p>
+                                <button id="target-indicator-btn" class="btn toggle-btn text-sm p-2 w-40"></button>
+                            </div>
                         </div>
                     </div>
                     <div id="graphics-settings-tab" style="display: none;">
-                        <div class="flex flex-col items-center justify-center gap-4">
-                            <p class="text-lg mb-2">Qualidade Gráfica</p>
-                            <div class="flex items-center justify-center gap-4">
-                                <button id="quality-low" class="btn quality-btn text-sm p-2">Baixa</button>
-                                <button id="quality-medium" class="btn quality-btn text-sm p-2">Média</button>
-                                <button id="quality-high" class="btn quality-btn text-sm p-2">Alta</button>
+                        <div class="flex flex-col items-center justify-center gap-6">
+                            <div class="w-full">
+                                <p class="text-lg mb-2">Qualidade Gráfica</p>
+                                <div class="flex items-center justify-center gap-4">
+                                    <button id="quality-low" class="btn quality-btn text-sm p-2">Baixa</button>
+                                    <button id="quality-medium" class="btn quality-btn text-sm p-2">Média</button>
+                                    <button id="quality-high" class="btn quality-btn text-sm p-2">Alta</button>
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <p class="text-lg mb-2">Tremor de Tela</p>
+                                <button id="screen-shake-btn" class="btn toggle-btn text-sm p-2 w-40"></button>
+                            </div>
+                            <div class="w-full">
+                                <p class="text-lg mb-2">Opacidade dos Efeitos</p>
+                                <input type="range" id="effects-opacity-slider" min="0.1" max="1" step="0.05" class="volume-slider w-48">
                             </div>
                         </div>
                     </div>
                     <div id="audio-settings-tab" style="display: none;">
-                        <div class="flex flex-col items-center justify-center gap-4">
-                             <p class="text-lg mb-2">Volume</p>
-                             <input type="range" id="volume-slider" min="0" max="1" step="0.01" class="w-48">
+                        <div class="flex flex-col items-center justify-center gap-6">
+                             <div class="w-full">
+                                 <p class="text-lg mb-2">Volume Geral</p>
+                                 <input type="range" id="master-volume-slider" min="0" max="1" step="0.01" class="volume-slider w-48">
+                             </div>
+                             <div class="w-full">
+                                 <p class="text-lg mb-2">Efeitos Sonoros</p>
+                                 <input type="range" id="sfx-volume-slider" min="0" max="1" step="0.01" class="volume-slider w-48">
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -405,25 +486,25 @@
                 </div>
             </div>
         </div>
-
         <div id="ability-modal" class="modal" style="display: none;">
-            <div class="w-full max-w-5xl">
+             <div class="modal-content w-full max-w-5xl bg-transparent border-none p-0">
                 <h2 class="text-2xl sm:text-3xl mb-8 text-center">Escolha uma Melhoria!</h2>
                 <div id="ability-options" class="grid grid-cols-1 md:grid-cols-3 gap-6 px-4"></div>
+                <div id="ability-controls" class="mt-8 text-center">
+                    <button id="reroll-button" class="btn text-sm p-3"></button>
+                </div>
             </div>
         </div>
-        
         <div id="pause-modal" class="modal" style="display: none;">
             <div class="modal-content text-center">
                 <h2 class="text-3xl sm:text-4xl mb-6">Pausado</h2>
-                <div id="pause-summary" class="mb-8 text-left"></div>
+                <div id="pause-summary" class="mb-8 text-left max-h-60 overflow-y-auto pr-2"></div>
                 <div class="flex flex-col gap-4">
                     <button id="resume-button" class="btn">Continuar</button>
                     <button id="quit-button" class="btn">Sair para o Menu</button>
                 </div>
             </div>
         </div>
-
         <div id="game-over-modal" class="modal" style="display: none;">
             <div class="modal-content text-center">
                 <h2 class="text-3xl sm:text-4xl mb-2 text-red-500">Fim de Jogo</h2>
@@ -437,20 +518,17 @@
                 <button id="restart-button" class="btn mt-6 w-full">Voltar ao Menu</button>
             </div>
         </div>
-        
         <div id="joystick-container">
             <div id="joystick-base"></div>
             <div id="joystick-thumb"></div>
         </div>
         <div id="dash-button">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="var(--primary-bg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 12H20"/>
-                <path d="M12 6L18 12L12 18"/>
+             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="var(--primary-bg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
             </svg>
             <div id="dash-cooldown-overlay"></div>
         </div>
     </div>
-
     <template id="upgrade-card-template">
         <div class="card p-4 flex flex-col justify-between">
             <div>
@@ -463,18 +541,33 @@
                 <button class="card-button btn w-full text-sm"></button>
             </div>
         </div>
-    </template>    
+    </template>
+    <template id="quest-card-template">
+        <div class="card p-4 flex flex-col justify-between text-left">
+            <div>
+                <h4 class="quest-title text-base mb-2"></h4>
+                <div class="flex justify-between items-center text-sm mb-1">
+                    <span class="quest-progress-text"></span>
+                    <span class="quest-reward flex items-center gap-1"></span>
+                </div>
+                <div class="hud-bar h-4">
+                    <div class="quest-progress-bar hud-bar-fill" style="background-color: var(--xp-color);"></div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button class="quest-claim-button btn w-full text-sm"></button>
+            </div>
+        </div>
+    </template>
 	<script>
     // --- Configuração Inicial e Elementos do DOM ---
+    const GAME_VERSION = "7.2";
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
     let screenWidth, screenHeight; 
-
-    // --- Otimização: Cache do background ---
     const gridCanvas = document.createElement('canvas');
     const gridCtx = gridCanvas.getContext('2d');
     let gridPattern;
-
     const DOM = {
         hud: document.getElementById('hud'),
         healthBar: document.getElementById('health-bar-fill'),
@@ -487,6 +580,7 @@
         bossHealthBar: document.getElementById('boss-health-bar-fill'),
         abilityModal: document.getElementById('ability-modal'),
         abilityOptions: document.getElementById('ability-options'),
+        rerollButton: document.getElementById('reroll-button'),
         startModal: document.getElementById('start-modal'),
         gameOverModal: document.getElementById('game-over-modal'),
         upgradesModal: document.getElementById('upgrades-modal'),
@@ -516,8 +610,6 @@
         enemiesDefeatedStat: document.getElementById('enemies-defeated-stat'),
         damageDealtStat: document.getElementById('damage-dealt-stat'),
         levelReachedStat: document.getElementById('level-reached-stat'),
-        
-        // Novos elementos das opções
         showGeneralTab: document.getElementById('show-general-tab'),
         showGraphicsTab: document.getElementById('show-graphics-tab'),
         showAudioTab: document.getElementById('show-audio-tab'),
@@ -528,12 +620,27 @@
         qualityLowBtn: document.getElementById('quality-low'),
         qualityMediumBtn: document.getElementById('quality-medium'),
         qualityHighBtn: document.getElementById('quality-high'),
-        volumeSlider: document.getElementById('volume-slider'),
+        masterVolumeSlider: document.getElementById('master-volume-slider'),
+        sfxVolumeSlider: document.getElementById('sfx-volume-slider'),
+        targetIndicatorBtn: document.getElementById('target-indicator-btn'),
+        screenShakeBtn: document.getElementById('screen-shake-btn'),
+        effectsOpacitySlider: document.getElementById('effects-opacity-slider'),
+        changelogModal: document.getElementById('changelog-modal'),
+        closeChangelogButton: document.getElementById('close-changelog-button'),
+        questsButton: document.getElementById('quests-button'),
+        questsModal: document.getElementById('quests-modal'),
+        questsBackButton: document.getElementById('quests-back-button'),
+        questsGemsCount: document.getElementById('quests-gems-count'),
+        showEasyQuestsTab: document.getElementById('show-easy-quests-tab'),
+        showMediumQuestsTab: document.getElementById('show-medium-quests-tab'),
+        showHardQuestsTab: document.getElementById('show-hard-quests-tab'),
+        easyQuestsContainer: document.getElementById('easy-quests-container'),
+        mediumQuestsContainer: document.getElementById('medium-quests-container'),
+        hardQuestsContainer: document.getElementById('hard-quests-container'),
     };
-    
     // --- Variáveis Globais do Jogo ---
     let player, camera, soundManager;
-    let enemies = [], expOrbs = [], projectiles = [], enemyProjectiles = [], soulGems = [], particles = [], floatingTexts = [], effects = [];
+    let enemies = [], expOrbs = [], projectiles = [], enemyProjectiles = [], soulGems = [], particles = [], floatingTexts = [], effects = [], powerups = [], shrines = [];
     let ambientParticles = []; 
     let keys = {}, joystickVector = { x: 0, y: 0 };
     let gameState = 'start';
@@ -546,39 +653,56 @@
     let bossWaveActive = false; 
     let currentGraphics; 
     let isMobile = false;
-
     let runStats = {
         enemiesDefeated: 0,
         damageDealt: 0,
     };
-
     let playerData = {
-        totalSoulGems: 9999,
+        totalSoulGems: 0, // Gemas para teste
         purchasedUpgrades: {},
-        audio: { volume: 0.5, isMuted: false },
-        graphics: { quality: 'medium' },
-        controls: { inverted: false },
         unlockedWeapons: ['fireball'],
-        equippedWeapon: 'fireball'
+        equippedWeapon: 'fireball',
+        audio: { masterVolume: 0.5, sfxVolume: 0.8 },
+        graphics: { quality: 'medium', screenShake: true, effectsOpacity: 1.0 },
+        controls: { inverted: false },
+        general: { showTargetIndicator: true },
+        persistentStats: {},
+        questProgress: {},
+        spectralElderDefeated: false,
     };
-
     // --- Constantes de Configuração ---
     const CONFIG = {
-        MAP_SIZE: { width: 3000, height: 3000 },
+        MAP_SIZE: { width: 4000, height: 4000 },
         PLAYER: {
             baseMaxHp: 100, baseSpeed: 250, dashSpeed: 1200,
             dashDuration: 0.15, dashCooldown: 1, size: 20,
         },
         ENEMY: {
-            'slime': { size: 18, color: '#4dff4d', hp: 20, maxHp: 20, speed: 250, damage: 10, xp: 2 },
-            'bat':   { size: 12, color: '#ff4da6', hp: 20, maxHp: 20, speed: 230, damage: 12, xp: 4, aggroRange: 350, diveSpeed: 1200, diveWindup: 0.3, diveCooldown: 2.5, circlingDist: 200 },
-            'brute': { size: 30, color: '#ff4d4d', hp: 100, maxHp: 100, speed: 120, damage: 20, xp: 8, slamDamage: 30 },
-            'mage':  { size: 22, color: '#be4dff', hp: 40, maxHp: 40, speed: 130, damage: 8, xp: 12 },
-            'spectral_elder': {}, 
+            // Inimigos Iniciais (Onda 1-9)
+            'slime': { size: 18, color: '#4dff4d', hp: 20, maxHp: 20, speed: 250, damage: 10, xp: 2, stunDuration: 0.5 },
+            'bat':   { size: 12, color: '#ff4da6', hp: 20, maxHp: 20, speed: 230, damage: 12, xp: 4, aggroRange: 350, diveSpeed: 1000, diveWindup: 0.3, diveCooldown: 2.5, circlingDist: 200, stunDuration: 0.5 },
+            'brute': { size: 30, color: '#ff4d4d', hp: 100, maxHp: 100, speed: 120, damage: 20, xp: 8, slamDamage: 30, stunDuration: 0.2 },
+            'mage':  { size: 22, color: '#be4dff', hp: 40, maxHp: 40, speed: 130, damage: 8, xp: 12, stunDuration: 0.5 },
+            
+            // Inimigos Avançados (Onda 10+)
+            'wraith': { size: 20, color: '#a2a2d0', hp: 80, maxHp: 80, speed: 300, damage: 18, xp: 15, stunDuration: 0.5 },
+            'crystal_golem': { size: 35, color: '#87cefa', hp: 250, maxHp: 250, speed: 80, damage: 25, xp: 20, stunDuration: 0.1 },
+            'abyss_worm': { size: 25, color: '#663399', hp: 120, maxHp: 120, speed: 400, damage: 30, xp: 18, stunDuration: 0.3 },
+            'arcane_sentry': { size: 28, color: '#ffdf00', hp: 150, maxHp: 150, speed: 0, damage: 15, xp: 22, stunDuration: 0 },
+
+            // Chefes
+            'spectral_elder': { name: 'Ancião Espectral', hp: 10000, size: 80, xp: 500},
+            'magma_colossus': { name: 'Colosso de Magma', hp: 25000, size: 120, xp: 1000},
+            'lava_spawn': { hp: 50, size: 15, speed: 200, damage: 15, xp: 1 }
         },
         WEAPONS: {
-            'fireball': { name: 'Bola de Fogo', desc: 'Dispara uma bola de fogo que perfura inimigos.', cooldown: 0.8, damage: 15, speed: 400, pierce: 1, size: 8, color: '#ff8c1a', cost: 0 },
-            'hammer': { name: 'Martelo Giratório', desc: 'Um martelo que gira ao seu redor.', cooldown: 0.2, damage: 8, radius: 80, rotationSpeed: 4, size: 20, count: 1, color: '#cccccc', cost: 150 }
+            'fireball': { name: 'Bola de Fogo', desc: 'Dispara uma bola de fogo que perfura inimigos.', cooldown: 0.8, damage: 15, speed: 400, pierce: 1, size: 8, color: '#ff8c1a', cost: 0, initialRange: 400 },
+            'hammer': { name: 'Martelo Giratório', desc: 'Um martelo que gira ao seu redor.', cooldown: 0.2, damage: 8, radius: 80, rotationSpeed: 4, size: 20, count: 1, color: '#cccccc', cost: 150 },
+            'lightning_chain': { name: 'Corrente Elétrica', desc: 'Raio que salta entre inimigos. Dano reduzido a cada salto.', cooldown: 1.5, damage: 12, chains: 2, chainRadius: 125, damageFalloff: 0.75, initialRange: 500, color: '#4dffff', cost: 300 },
+            // Novas Armas (desbloqueáveis)
+            'spectral_blades': { name: 'Lâminas Espectrais', desc: 'Corta inimigos em um arco rápido à sua frente.', cooldown: 0.4, damage: 12, range: 100, arc: Math.PI / 2, count: 2, color: '#aaffff', cost: 500 },
+            'singularity_cannon': { name: 'Canhão de Singularidade', desc: 'Dispara um orbe que atrai inimigos antes de explodir.', cooldown: 3.5, damage: 50, speed: 150, size: 15, pullRadius: 200, explosionRadius: 150, color: '#9400d3', cost: 800 },
+            'runic_orb': { name: 'Orbe Rúnico', desc: 'Um orbe passivo que atira projéteis teleguiados.', cooldown: 1.0, damage: 8, speed: 300, size: 6, color: '#ff69b4', cost: 650 },
         },
         PERMANENT_UPGRADES: {
             'hp_boost': { name: 'Vitalidade', desc: 'Aumenta a vida máxima inicial em 5%.', maxLevel: 20, cost: l => 5 + l * 5, format: v => `+${v * 5}% HP` },
@@ -586,25 +710,90 @@
             'damage_boost': { name: 'Força', desc: 'Aumenta o dano inicial em 5%.', maxLevel: 20, cost: l => 8 + l * 8, format: v => `+${v * 5}% Dano` },
             'greed_boost': { name: 'Sorte', desc: 'Aumenta a chance de Gemas em 1%.', maxLevel: 10, cost: l => 20 + l * 20, format: v => `+${v}% Chance` },
         },
+        QUESTS: {
+            easy: [
+                { id: 'play_1_game', desc: 'Jogue sua primeira partida.', stat: 'gamesPlayed', target: 1, reward: 25 },
+                { id: 'kill_100_slimes', desc: 'Derrote 100 Slimes.', stat: 'slime_defeated', target: 100, reward: 50 },
+                { id: 'collect_250_gems', desc: 'Colete 250 gemas no total.', stat: 'gemsCollected', target: 250, reward: 75 },
+                { id: 'reach_level_10', desc: 'Atinja o nível 10 em uma partida.', stat: 'maxLevelReached', target: 10, reward: 40 },
+                { id: 'survive_5_min', desc: 'Sobreviva por 5 minutos.', stat: 'maxTimeSurvived', target: 300, reward: 60 },
+            ],
+            medium: [
+                { id: 'kill_500_enemies', desc: 'Derrote 500 inimigos no total.', stat: 'totalEnemiesDefeated', target: 500, reward: 150 },
+                { id: 'kill_250_bats', desc: 'Derrote 250 Morcegos.', stat: 'bat_defeated', target: 250, reward: 125 },
+                { id: 'deal_100k_damage', desc: 'Cause 100,000 de dano total.', stat: 'totalDamageDealt', target: 500000, reward: 200 },
+                { id: 'collect_1000_gems', desc: 'Colete 1000 gemas no total.', stat: 'gemsCollected', target: 1000, reward: 180 },
+                { id: 'buy_5_upgrades', desc: 'Compre 5 melhorias permanentes.', stat: 'upgradesPurchased', target: 5, reward: 100 },
+            ],
+            hard: [
+                { id: 'kill_100_brutes', desc: 'Derrote 100 Brutos.', stat: 'brute_defeated', target: 100, reward: 250 },
+                { id: 'kill_75_mages', desc: 'Derrote 75 Magos.', stat: 'mage_defeated', target: 75, reward: 150 },
+                { id: 'reach_wave_10', desc: 'Sobreviva até a onda 10.', stat: 'maxWaveReached', target: 10, reward: 300 },
+                { id: 'evolve_weapon', desc: 'Evolua uma arma pela primeira vez.', stat: 'weaponsEvolved', target: 1, reward: 400 },
+                { id: 'defeat_spectral_elder', desc: 'Derrote o Ancião Espectral.', stat: 'spectral_elder_defeated', target: 1, reward: 500 },
+            ]
+        },
         GENERAL_ABILITIES: [
-            { id: 'hp_boost', name: 'Vigor', desc: 'Aumenta a vida máxima em 25%.', max: 5, apply: p => { p.maxHp *= 1.25; p.hp = p.maxHp; }},
+            { id: 'hp_boost', name: 'Vigor', desc: 'Aumenta a vida máxima em 17%.', max: 5, 
+              apply: p => { 
+                const oldMaxHp = p.maxHp;
+                p.maxHp *= 1.17;
+                p.hp += p.maxHp - oldMaxHp;
+              }
+            },
             { id: 'speed_boost', name: 'Pés Ligeiros', desc: 'Aumenta a velocidade em 15%.', max: 5, apply: p => { p.speed *= 1.15; }},
-            { id: 'health_regen', name: 'Regeneração', desc: 'Recupera 1 HP por segundo.', max: 3, apply: p => { p.regen = (p.regen || 0) + 1; }},
+            { 
+              id: 'health_regen', name: 'Regeneração', 
+              desc: [
+                  'Recupera 1 HP a cada 3 segundos.',
+                  'Recupera 1 HP a cada 2 segundos.',
+                  'Recupera 1 HP por segundo.',
+              ],
+              max: 3, 
+              apply: p => { 
+                const level = p.abilityLevels['health_regen'] || 1;
+                const regenValues = [1/3, 0.5, 1];
+                p.regen = regenValues[level - 1];
+              }
+            },
         ],
         WEAPON_UPGRADES: {
             fireball: [
-                { id: 'fireball_damage', name: 'Dano de Fogo +20%', desc: 'Aumenta o dano base.', max: 5, apply: p => p.weapon.stats.damage *= 1.2 },
-                { id: 'fireball_cooldown', name: 'Recarga de Fogo -10%', desc: 'Dispara com mais frequência.', max: 4, apply: p => p.weapon.stats.cooldown *= 0.9 },
-                { id: 'fireball_size', name: 'Tamanho do Fogo +20%', desc: 'Aumenta a área do projétil.', max: 4, apply: p => p.weapon.stats.size *= 1.2 },
-                { id: 'fireball_pierce', name: '+1 Perfuração de Fogo', desc: 'Projéteis atingem mais inimigos.', max: 2, apply: p => p.weapon.stats.pierce++ },
+                { id: 'fireball_damage', name: 'Dano de Fogo +20%', desc: 'Aumenta o dano base da Bola de Fogo.', max: 5, apply: p => p.weapon.stats.damage *= 1.2 },
+                { id: 'fireball_cooldown', name: 'Recarga de Fogo -10%', desc: 'Dispara Bolas de Fogo com mais frequência.', max: 4, apply: p => p.weapon.stats.cooldown *= 0.9 },
+                { id: 'fireball_size', name: 'Tamanho do Fogo +20%', desc: 'Aumenta a área do projétil da Bola de Fogo.', max: 4, apply: p => p.weapon.stats.size *= 1.2 },
+                { id: 'fireball_pierce', name: '+1 Perfuração de Fogo', desc: 'Projéteis da Bola de Fogo atingem mais inimigos.', max: 2, apply: p => p.weapon.stats.pierce++ },
             ],
             hammer: [
-                { id: 'hammer_damage', name: 'Dano do Martelo +25%', desc: 'Aumenta o dano base.', max: 5, apply: p => p.weapon.stats.damage *= 1.25 },
-                { id: 'hammer_radius', name: 'Raio do Martelo +15%', desc: 'Aumenta o alcance.', max: 3, apply: p => p.weapon.stats.radius *= 1.15 },
-                { id: 'hammer_count', name: '+1 Martelo', desc: 'Adiciona um martelo extra.', max: 1, apply: p => { p.weapon.stats.count++; p.weapon.addHammer(); } },
-                { id: 'hammer_rotation_speed', name: 'Velocidade do Martelo +15%', desc: 'Martelos giram mais rápido.', max: 4, apply: p => p.weapon.stats.rotationSpeed *= 1.15 },
-                { id: 'hammer_size', name: 'Tamanho do Martelo +15%', desc: 'Aumenta a área de acerto.', max: 4, apply: p => p.weapon.stats.size *= 1.15 },
-            ]
+                { id: 'hammer_damage', name: 'Dano do Martelo +25%', desc: 'Aumenta o dano base do Martelo Giratório.', max: 5, apply: p => p.weapon.stats.damage *= 1.25 },
+                { id: 'hammer_radius', name: 'Raio do Martelo +15%', desc: 'Aumenta o alcance do Martelo Giratório.', max: 3, apply: p => p.weapon.stats.radius *= 1.15 },
+                { id: 'hammer_count', name: '+1 Martelo', desc: 'Adiciona um Martelo Giratório extra.', max: 1, apply: p => { p.weapon.stats.count++; p.weapon.addHammer(); } },
+                { id: 'hammer_rotation_speed', name: 'Velocidade do Martelo +15%', desc: 'Martelos Giratórios giram mais rápido.', max: 4, apply: p => p.weapon.stats.rotationSpeed *= 1.15 },
+                { id: 'hammer_size', name: 'Tamanho do Martelo +15%', desc: 'Aumenta a área de acerto do Martelo Giratório.', max: 4, apply: p => p.weapon.stats.size *= 1.15 },
+            ],
+            lightning_chain: [
+                { id: 'lightning_damage', name: 'Alta Tensão +25%', desc: 'Aumenta o dano base do raio.', max: 5, apply: p => p.weapon.stats.damage *= 1.25 },
+                { id: 'lightning_cooldown', name: 'Recarga Elétrica -12%', desc: 'Dispara raios com mais frequência.', max: 4, apply: p => p.weapon.stats.cooldown *= 0.88 },
+                { id: 'lightning_chains', name: 'Condutividade +1', desc: 'O raio atinge +1 inimigo.', max: 4, apply: p => p.weapon.stats.chains++ },
+                { id: 'lightning_radius', name: 'Alcance do Salto +25%', desc: 'O raio pode saltar para inimigos mais distantes.', max: 3, apply: p => p.weapon.stats.chainRadius *= 1.25 },
+                { id: 'lightning_range', name: 'Alcance Inicial +20%', desc: 'Aumenta o alcance para atingir o primeiro alvo.', max: 3, apply: p => p.weapon.stats.initialRange *= 1.20 }
+            ],
+            spectral_blades: [
+                { id: 'sb_damage', name: 'Dano Espectral +20%', desc: 'Aumenta o dano das lâminas.', max: 5, apply: p => p.weapon.stats.damage *= 1.2 },
+                { id: 'sb_cooldown', name: 'Recarga Espectral -10%', desc: 'Ataca com mais frequência.', max: 4, apply: p => p.weapon.stats.cooldown *= 0.9 },
+                { id: 'sb_range', name: 'Alcance Espectral +15%', desc: 'Aumenta o alcance do corte.', max: 3, apply: p => p.weapon.stats.range *= 1.15 },
+                { id: 'sb_arc', name: 'Arco Espectral +20°', desc: 'Aumenta a área do corte.', max: 3, apply: p => p.weapon.stats.arc += Math.PI / 9 },
+            ],
+            singularity_cannon: [
+                { id: 'sc_damage', name: 'Dano de Singularidade +20%', desc: 'Aumenta o dano da explosão.', max: 5, apply: p => p.weapon.stats.damage *= 1.2 },
+                { id: 'sc_cooldown', name: 'Recarga de Singularidade -10%', desc: 'Dispara com mais frequência.', max: 4, apply: p => p.weapon.stats.cooldown *= 0.9 },
+                { id: 'sc_radius', name: 'Raio de Efeito +20%', desc: 'Aumenta o raio de atração e explosão.', max: 4, apply: p => { p.weapon.stats.pullRadius *= 1.2; p.weapon.stats.explosionRadius *= 1.2; } },
+            ],
+            runic_orb: [
+                { id: 'ro_damage', name: 'Dano Rúnico +25%', desc: 'Aumenta o dano dos projéteis.', max: 5, apply: p => p.weapon.stats.damage *= 1.25 },
+                { id: 'ro_cooldown', name: 'Recarga Rúnica -12%', desc: 'O orbe dispara mais rápido.', max: 4, apply: p => p.weapon.stats.cooldown *= 0.88 },
+                { id: 'ro_speed', name: 'Velocidade Rúnica +20%', desc: 'Projéteis rúnicos mais rápidos.', max: 3, apply: p => p.weapon.stats.speed *= 1.2 },
+            ],
         },
         WEAPON_EVOLUTIONS: {
             fireball: {
@@ -618,7 +807,31 @@
                 desc: 'Os martelos se tornam gigantes e liberam ondas de choque devastadoras.',
                 requires: ['hammer_damage', 'hammer_radius', 'hammer_count', 'hammer_rotation_speed', 'hammer_size'],
                 apply: p => p.weapon.evolve()
-            }
+            },
+            lightning_chain: {
+                id: 'evolve_lightning', name: 'EVOLUIR: TEMPESTADE ESTÁTICA',
+                desc: 'Atinge todos os alvos instantaneamente, sempre os atordoa e não perde mais dano por salto.',
+                requires: ['lightning_damage', 'lightning_cooldown', 'lightning_chains', 'lightning_radius', 'lightning_range'],
+                apply: p => p.weapon.evolve()
+            },
+            spectral_blades: {
+                id: 'evolve_sb', name: 'EVOLUIR: DANÇA FANTASMA',
+                desc: 'Cria uma tempestade de lâminas em 360° ao seu redor.',
+                requires: ['sb_damage', 'sb_cooldown', 'sb_range', 'sb_arc'],
+                apply: p => p.weapon.evolve()
+            },
+            singularity_cannon: {
+                id: 'evolve_sc', name: 'EVOLUIR: EMISSOR DE BURACO NEGRO',
+                desc: 'A singularidade dura mais, puxa mais forte e causa uma explosão cataclísmica.',
+                requires: ['sc_damage', 'sc_cooldown', 'sc_radius'],
+                apply: p => p.weapon.evolve()
+            },
+            runic_orb: {
+                id: 'evolve_ro', name: 'EVOLUIR: OLHO DO ARCONTE',
+                desc: 'Adiciona um segundo orbe e ambos disparam projéteis perfurantes.',
+                requires: ['ro_damage', 'ro_cooldown', 'ro_speed'],
+                apply: p => p.weapon.evolve()
+            },
         },
         GRAPHICS: {
             'low':    { particleMultiplier: 0.2, shadows: false, ambientParticles: 20 },
@@ -626,7 +839,6 @@
             'high':   { particleMultiplier: 1.0, shadows: true,  ambientParticles: 150 }
         }
     };
-
     // --- Gerenciador de Som ---
     class SoundManager {
         constructor() {
@@ -640,21 +852,17 @@
                 try {
                     await Tone.start();
                     this.synths = {
-                        shot: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.05, sustain: 0, release: 0.1 }, volume: -15 }).toDestination(),
-                        hit: new Tone.MembraneSynth({ pitchDecay: 0.08, octaves: 4, envelope: { attack: 0.001, decay: 0.2, sustain: 0 }, volume: -10 }).toDestination(),
-                        dash: new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.01, decay: 0.15, sustain: 0 }, volume: -20 }).toDestination(),
-                        collect: new Tone.PluckSynth({ attackNoise: 0.5, dampening: 4000, resonance: 0.7, volume: -15 }).toDestination(),
-                        levelUp: new Tone.PolySynth(Tone.Synth, { 
-                            oscillator: { type: 'triangle8' },
-                            envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.5 },
-                            volume: -10
-                        }).toDestination(),
-                        gameOver: new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.1, decay: 0.8, sustain: 0.1, release: 1 }, volume: -10 }).toDestination(),
-                        buy: new Tone.MetalSynth({ frequency: 200, envelope: { attack: 0.001, decay: 0.4, release: 0.2 }, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5, volume: -20 }).toDestination(),
-                        uiClick: new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 2, envelope: { attack: 0.001, decay: 0.15, sustain: 0 }, volume: -15 }).toDestination(),
+                        shot: { synth: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.05, sustain: 0, release: 0.1 }}).toDestination(), baseVolume: -15 },
+                        hit: { synth: new Tone.MembraneSynth({ pitchDecay: 0.08, octaves: 4, envelope: { attack: 0.001, decay: 0.2, sustain: 0 }}).toDestination(), baseVolume: -10 },
+                        dash: { synth: new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.01, decay: 0.15, sustain: 0 }}).toDestination(), baseVolume: -20 },
+                        collect: { synth: new Tone.PluckSynth({ attackNoise: 0.5, dampening: 4000, resonance: 0.7 }).toDestination(), baseVolume: -15 },
+                        levelUp: { synth: new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle8' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.5 }}).toDestination(), baseVolume: -10 },
+                        gameOver: { synth: new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.1, decay: 0.8, sustain: 0.1, release: 1 }}).toDestination(), baseVolume: -10 },
+                        buy: { synth: new Tone.MetalSynth({ frequency: 200, envelope: { attack: 0.001, decay: 0.4, release: 0.2 }, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 }).toDestination(), baseVolume: -20 },
+                        uiClick: { synth: new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 2, envelope: { attack: 0.001, decay: 0.15, sustain: 0 }}).toDestination(), baseVolume: -15 },
                     };
                     this.isInitialized = true;
-                    this.setVolume(playerData.audio.volume);
+                    this.setMasterVolume(playerData.audio.masterVolume);
                 } catch (e) { console.error("Erro ao inicializar o áudio:", e); }
             })();
             return this.initPromise;
@@ -662,8 +870,10 @@
         play(sound) {
             if (sound === 'hit' && this.hitPlayedThisFrame) return;
             if (!this.isInitialized || !this.synths[sound]) return;
-            
-            const synth = this.synths[sound];
+            const { synth, baseVolume } = this.synths[sound];
+            const sfxGain = playerData.audio.sfxVolume;
+            const finalVolume = baseVolume + (sfxGain > 0.01 ? Tone.gainToDb(sfxGain) : -Infinity);
+            synth.volume.value = finalVolume;
             try {
                 switch (sound) {
                     case 'shot': synth.triggerAttackRelease('G5', '16n'); break;
@@ -679,13 +889,12 @@
             if (sound === 'hit') this.hitPlayedThisFrame = true;
         }
         reset() { this.hitPlayedThisFrame = false; }
-        setVolume(level) {
+        setMasterVolume(level) {
             if (this.isInitialized) {
-                Tone.Master.volume.value = level === 0 ? -Infinity : Tone.gainToDb(level);
+                Tone.Master.volume.value = level > 0.01 ? Tone.gainToDb(level) : -Infinity;
             }
         }
     }
-    
     // --- Classes de Entidades do Jogo ---
     class Camera {
         constructor(target) {
@@ -698,7 +907,6 @@
             this.shakeIntensity = 0;
             this.updateZoom();
         }
-
         updateZoom() {
             if (isMobile) {
                 this.targetZoom = 0.7;
@@ -706,7 +914,6 @@
                 this.targetZoom = 1.0;
             }
         }
-
         update() {
             this.zoom += (this.targetZoom - this.zoom) * 0.05;
             const lerpFactor = 0.1;
@@ -718,7 +925,6 @@
             this.y = Math.max(visibleHeight / 2, Math.min(this.y, CONFIG.MAP_SIZE.height - visibleHeight / 2));
             if (this.shakeDuration > 0) this.shakeDuration -= 1 / 60;
         }
-        
         apply(context) {
             context.save();
             let shakeX = 0, shakeY = 0;
@@ -730,14 +936,13 @@
             context.scale(this.zoom, this.zoom);
             context.translate(-this.x + shakeX, -this.y + shakeY);
         }
-
         restore(context) { context.restore(); }
         startShake(intensity, duration) {
+            if (!playerData.graphics.screenShake) return;
             this.shakeIntensity = intensity;
             this.shakeDuration = duration;
         }
     }
-    
     class Player {
         constructor() {
             this.x = CONFIG.MAP_SIZE.width / 2;
@@ -756,7 +961,14 @@
             this.weaponUpgradeLuck = 0;
             this.isMoving = false;
             this.fragments = [];
-            this.orbitalAngle = 0; 
+            this.orbitalAngle = 0;
+            // Buffs de Santuário
+            this.furyShrineTimer = 0;
+            this.protectionShrineTimer = 0;
+            this.wealthShrineTimer = 0;
+            // Controles de Melhoria
+            this.rerollCost = 5;
+
             for (let i = 0; i < 4; i++) {
                 this.fragments.push({
                     size: 8 + Math.random() * 4,
@@ -770,6 +982,10 @@
             }
             switch (playerData.equippedWeapon) {
                 case 'hammer': this.weapon = new HammerWeapon(this); break;
+                case 'lightning_chain': this.weapon = new LightningChainWeapon(this); break;
+                case 'spectral_blades': this.weapon = new SpectralBladesWeapon(this); break;
+                case 'singularity_cannon': this.weapon = new SingularityCannonWeapon(this); break;
+                case 'runic_orb': this.weapon = new RunicOrbWeapon(this); break;
                 case 'fireball': default: this.weapon = new FireballWeapon(this); break;
             }
             this.abilityLevels = {};
@@ -778,9 +994,16 @@
         update(dt) {
             this.handleMovement(dt);
             this.weapon.update(dt);
+            // Contagem dos timers
             if (this.dashCooldown > 0) this.dashCooldown -= dt;
             if (this.invincibilityTimer > 0) this.invincibilityTimer -= dt;
-            if (this.stunTimer > 0) this.stunTimer -= dt;
+            if (this.protectionShrineTimer > 0) this.protectionShrineTimer -= dt;
+            if (this.furyShrineTimer > 0) this.furyShrineTimer -= dt;
+            if (this.wealthShrineTimer > 0) this.wealthShrineTimer -= dt;
+            if (this.stunTimer > 0) {
+                this.stunTimer -= dt;
+                return; 
+            }
             if (this.regen > 0 && this.hp < this.maxHp) {
                 this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
             }
@@ -807,7 +1030,6 @@
             });
         }
         handleMovement(dt) {
-            if (this.stunTimer > 0) return;
             if (this.isDashing) {
                 this.x += this.dashDirection.x * CONFIG.PLAYER.dashSpeed * dt;
                 this.y += this.dashDirection.y * CONFIG.PLAYER.dashSpeed * dt;
@@ -838,8 +1060,32 @@
             this.y = Math.max(this.size, Math.min(this.y, CONFIG.MAP_SIZE.height - this.size));
         }
         draw(ctx) {
+            // Auras de Buffs
+            ctx.save();
+            ctx.globalAlpha = 0.4 * playerData.graphics.effectsOpacity;
+            const pulse = 1 + Math.sin(gameTime * 10) * 0.1;
+            if (this.protectionShrineTimer > 0) {
+                ctx.fillStyle = '#ffd700';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 1.2 * pulse, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            if (this.furyShrineTimer > 0) {
+                ctx.fillStyle = '#ff4d4d';
+                 ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 1.4 * pulse, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            if (this.wealthShrineTimer > 0) {
+                 ctx.fillStyle = '#ffff4d';
+                 ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 1.6 * pulse, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+
             let playerColor = '#8a8aff';
-            if (this.invincibilityTimer > 0) playerColor = 'rgba(200, 200, 255, 0.7)';
+            if (this.invincibilityTimer > 0 || this.protectionShrineTimer > 0) playerColor = 'rgba(200, 200, 255, 0.7)';
             if (this.stunTimer > 0) playerColor = '#ffff99';
             ctx.save();
             if (currentGraphics && currentGraphics.shadows) {
@@ -866,6 +1112,12 @@
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size / 3, 0, Math.PI * 2);
             ctx.fill();
+            if (this.stunTimer > 0) {
+                ctx.fillStyle = 'rgba(255, 255, 0, 0.8)';
+                ctx.font = '10px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.fillText("STUN", this.x, this.y - this.size * 1.5);
+            }
             ctx.restore();
             const cooldownProgress = this.dashCooldown > 0 ? this.dashCooldown / CONFIG.PLAYER.dashCooldown : 0;
             if (cooldownProgress > 0) {
@@ -899,12 +1151,18 @@
             setTimeout(() => { this.isDashing = false; }, CONFIG.PLAYER.dashDuration * 1000);
         }
         takeDamage(amount) {
-            if (this.invincibilityTimer > 0) return;
+            if (this.invincibilityTimer > 0 || this.protectionShrineTimer > 0) return;
             this.hp -= amount;
             this.invincibilityTimer = 0.5;
             camera.startShake(8, 0.2);
             floatingTexts.push(new FloatingText(this.x, this.y - this.size, `-${Math.round(amount)}`, '#ff4d4d'));
             if (this.hp <= 0) { this.hp = 0; gameOver(); }
+        }
+        heal(amount) {
+            if (this.hp >= this.maxHp) return;
+            const realHeal = Math.min(amount, this.maxHp - this.hp);
+            this.hp += realHeal;
+            floatingTexts.push(new FloatingText(this.x, this.y + this.size, `+${Math.round(realHeal)}`, '#4dff9e'));
         }
         addXp(amount) {
             this.xp += amount;
@@ -923,7 +1181,6 @@
             this.stunTimer = Math.max(this.stunTimer, duration);
         }
     }
-    
     class Enemy {
         constructor(x, y, type) {
             this.x = x; this.y = y; this.type = type;
@@ -932,11 +1189,20 @@
             this.hp = config.hp; this.maxHp = config.maxHp;
             this.speed = config.speed;
             this.damage = config.damage; this.xpValue = config.xp;
+            this.stunDuration = config.stunDuration || 0.5;
             this.flashTimer = 0;
             this.isAlive = true;
             this.meleeAttackRange = this.size / 2 + 5;
             this.isChampion = false;
-            this.isBoss = false; 
+            this.isBoss = false;
+            this.stunTimer = 0;
+        }
+        update(dt) {
+            if (this.stunTimer > 0) {
+                this.stunTimer -= dt;
+                createParticleBurst(this.x, this.y, 1, '#ffff00', 0.1, 2, 20);
+                return;
+            }
         }
         makeChampion() {
             this.isChampion = true;
@@ -960,26 +1226,39 @@
         die() {
             this.isAlive = false;
             runStats.enemiesDefeated++;
+            const statKey = `${this.type}_defeated`;
+            playerData.persistentStats[statKey] = (playerData.persistentStats[statKey] || 0) + 1;
+            playerData.persistentStats.totalEnemiesDefeated = (playerData.persistentStats.totalEnemiesDefeated || 0) + 1;
             createParticleBurst(this.x, this.y, 15, this.color);
             expOrbs.push(new ExpOrb(this.x, this.y, this.xpValue));
-            if (this.isChampion) {
-                for (let i = 0; i < 5; i++) {
-                    soulGems.push(new SoulGem(this.x + (Math.random() - 0.5) * 20, this.y + (Math.random() - 0.5) * 20));
-                }
-            } else {
-                const gemChance = 0.05 + ((playerData.purchasedUpgrades['greed_boost'] || 0) * 0.01);
-                if (Math.random() < gemChance) soulGems.push(new SoulGem(this.x, this.y));
+            
+            const gemChance = 0.05 + ((playerData.purchasedUpgrades['greed_boost'] || 0) * 0.01);
+            if (this.isChampion || (player && player.wealthShrineTimer > 0)) {
+                 if(this.isChampion) {
+                    for (let i = 0; i < 5; i++) soulGems.push(new SoulGem(this.x + (Math.random() - 0.5) * 20, this.y + (Math.random() - 0.5) * 20));
+                 } else {
+                    soulGems.push(new SoulGem(this.x, this.y));
+                 }
+            } else if (Math.random() < gemChance) {
+                soulGems.push(new SoulGem(this.x, this.y));
+            }
+
+            if (Math.random() < 0.03) {
+                 if (Math.random() < 0.5) powerups.push(new HealingFragment(this.x, this.y));
+                 else powerups.push(new MagnetFragment(this.x, this.y));
             }
         }
+        applyStun() {
+            this.stunTimer = this.stunDuration;
+        }
     }
-
-    class Slime extends Enemy {
+	class Slime extends Enemy {
         constructor(x, y) {
             super(x, y, 'slime');
             this.moveState = 'waiting';
             this.jumpCooldown = 1.5;
             this.jumpTimer = Math.random() * this.jumpCooldown;
-            this.jumpDuration = 0.4;
+            this.jumpDuration = 0.3;
             this.jumpProgress = 0;
             this.jumpHeight = 40;
             this.jumpStartX = x; this.jumpStartY = y;
@@ -987,6 +1266,8 @@
             this.scale = { x: 1, y: 1 };
         }
         update(dt) {
+            super.update(dt);
+            if (this.stunTimer > 0) return;
             if (this.moveState === 'waiting') {
                 this.jumpTimer -= dt;
                 this.scale.x = Math.max(1, this.scale.x - dt * 4);
@@ -1038,7 +1319,8 @@
             const jumpArc = Math.sin(jumpProgressRatio * Math.PI) * this.jumpHeight;
             const drawY = this.y - jumpArc;
             ctx.save();
-            ctx.fillStyle = this.flashTimer > 0 ? '#ffffff' : 'rgba(77, 255, 77, 0.8)';
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
+            ctx.fillStyle = this.flashTimer > 0 ? '#ffffff' : (this.stunTimer > 0 ? '#ffff99' : 'rgba(77, 255, 77, 0.8)');
             ctx.strokeStyle = '#28a428'; ctx.lineWidth = 2;
             if (currentGraphics && currentGraphics.shadows) {
                 ctx.shadowColor = this.color; ctx.shadowBlur = 10;
@@ -1061,7 +1343,6 @@
             ctx.restore();
         }
     }
-    
     class Bat extends Enemy {
         constructor(x, y) {
             super(x, y, 'bat');
@@ -1073,6 +1354,8 @@
         }
         getStat(stat) { return CONFIG.ENEMY.bat[stat]; }
         update(dt) {
+            super.update(dt);
+            if (this.stunTimer > 0) return;
             if(this.flashTimer > 0) this.flashTimer -= dt;
             if(this.diveCooldown > 0) this.diveCooldown -= dt;
             const dx = player.x - this.x, dy = player.y - this.y;
@@ -1133,6 +1416,7 @@
         }
         draw(ctx) {
             ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
             if (currentGraphics && currentGraphics.shadows) {
                 ctx.shadowColor = this.color;
                 ctx.shadowBlur = 10;
@@ -1140,12 +1424,12 @@
                     const glow = Math.abs(Math.sin(gameTime * 5));
                     ctx.shadowBlur = (this.isChampion ? 15 : 10) + glow * 10;
                     ctx.shadowColor = this.isChampion ? '#ffd700' : this.color;
-                    ctx.globalAlpha = 0.5 + glow * 0.5;
+                    ctx.globalAlpha *= 0.5 + glow * 0.5;
                 }
             }
             ctx.translate(this.x, this.y);
             const flapAngle = Math.sin(gameTime * 30) * 0.5;
-            const mainColor = this.flashTimer > 0 ? '#FFFFFF' : this.color;
+            const mainColor = this.flashTimer > 0 ? '#FFFFFF' : (this.stunTimer > 0 ? '#ffff99' : this.color);
             const wingColor = this.flashTimer > 0 ? '#DDDDDD' : '#c74283';
             const s = this.size;
             const bodyWidth = s, bodyHeight = s * 0.8, wingWidth = s * 1.5, wingHeight = s * 0.7;
@@ -1165,7 +1449,6 @@
             ctx.restore();
         }
     }
-
     class Mage extends Enemy {
         constructor(x, y) {
             super(x, y, 'mage');
@@ -1179,6 +1462,11 @@
             ];
         }
         update(dt) {
+            super.update(dt);
+            if (this.stunTimer > 0) {
+                 this.castingState = 'none';
+                 return;
+            }
             if (this.flashTimer > 0) this.flashTimer -= dt;
             if (this.castingState !== 'none') {
                 this.castingTimer -= dt;
@@ -1228,9 +1516,10 @@
         }
         draw(ctx) {
             ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
             ctx.translate(this.x, this.y);
             const s = this.size;
-            const robeColor = this.flashTimer > 0 ? '#DDDDDD' : this.color;
+            const robeColor = this.flashTimer > 0 ? '#DDDDDD' : (this.stunTimer > 0 ? '#ffff99' : this.color);
             const bob = Math.sin(gameTime * 4) * 2;
             ctx.fillStyle = robeColor;
             if (currentGraphics && currentGraphics.shadows) {
@@ -1272,17 +1561,18 @@
             ctx.restore();
         }
     }
-
     class Brute extends Enemy {
         constructor(x, y) {
             super(x, y, 'brute');
             this.state = 'chasing'; this.stateTimer = 0; this.chargeTarget = { x: 0, y: 0 };
-            this.aggroRange = 300; this.windupDuration = 0.5; this.chargeSpeed = 1000;
+            this.aggroRange = 300; this.windupDuration = 0.5; this.chargeSpeed = 900;
             this.chargeDuration = 0.30; this.slamRadius = 100;
             this.slamDamage = CONFIG.ENEMY.brute.slamDamage || 30;
-            this.slamKnockback = 30; this.recoverCooldown = 1.0; this.stunDuration = 0.5;
+            this.slamKnockback = 30; this.recoverCooldown = 1.0;
         }
         update(dt) {
+            super.update(dt);
+            if (this.stunTimer > 0) return;
             if (this.flashTimer > 0) this.flashTimer -= dt;
             const dx = player.x - this.x, dy = player.y - this.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
@@ -1344,9 +1634,10 @@
         }
         draw(ctx) {
             ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
             ctx.translate(this.x, this.y);
             const s = this.size;
-            let bodyColor = this.flashTimer > 0 ? '#ffffff' : this.color;
+            let bodyColor = this.flashTimer > 0 ? '#ffffff' : (this.stunTimer > 0 ? '#ffff99' : this.color);
             let fistColor = this.flashTimer > 0 ? '#dddddd' : '#cc3d3d';
             let fistSize = s * 0.4, bodyWidth = s;
             if (currentGraphics && currentGraphics.shadows) {
@@ -1358,7 +1649,7 @@
                 }
             }
             if (this.state === 'charging') bodyWidth = s * 1.2;
-            else if (this.state === 'recovering') ctx.globalAlpha = 0.7;
+            else if (this.state === 'recovering') ctx.globalAlpha *= 0.7;
             ctx.fillStyle = fistColor;
             ctx.fillRect(-bodyWidth / 2 - fistSize * 0.8, -s / 2, fistSize, s);
             ctx.fillRect(bodyWidth / 2 - fistSize * 0.2, -s / 2, fistSize, s);
@@ -1375,12 +1666,11 @@
             ctx.restore();
         }
     }
-
-    class SpectralElder extends Enemy {
+	class SpectralElder extends Enemy {
         constructor(x, y) {
             super(x, y, 'spectral_elder');
-            this.maxHp = 10000; this.hp = this.maxHp; this.size = 80; this.speed = 80; this.damage = 0; 
-            this.xpValue = 500; this.phase = 1; this.isBoss = true; this.castingInfo = null; 
+            this.maxHp = CONFIG.ENEMY.spectral_elder.hp; this.hp = this.maxHp; this.size = CONFIG.ENEMY.spectral_elder.size; this.speed = 80; this.damage = 0; 
+            this.xpValue = CONFIG.ENEMY.spectral_elder.xp; this.phase = 1; this.isBoss = true; this.castingInfo = null; 
             this.orbitingSkulls = [
                 { angle: 0, dist: this.size * 1.5, size: 15 }, { angle: Math.PI, dist: this.size * 1.5, size: 15 },
                 { angle: Math.PI / 2, dist: this.size * 2.0, size: 12 }, { angle: 3 * Math.PI / 2, dist: this.size * 2.0, size: 12 },
@@ -1389,6 +1679,8 @@
             this.teleportCooldown = 7; this.summonCooldown = 10; this.soulBurstCooldown = 3; this.soulHarvestCooldown = 12;
         }
         update(dt) {
+            super.update(dt);
+            if (this.stunTimer > 0) return;
             this.trailTimer -= dt;
             if (this.trailTimer <= 0) {
                 this.trail.push({ x: this.x, y: this.y, size: this.size, alpha: 0.5 });
@@ -1497,7 +1789,7 @@
                 const angle = Math.random() * Math.PI * 2;
                 const spawnX = this.x + Math.cos(angle) * 100;
                 const spawnY = this.y + Math.sin(angle) * 100;
-                enemies.push(new SlimeEcho(spawnX, spawnY));
+                enemies.push(new MageEcho(spawnX, spawnY));
             }
         }
         ghostTeleport() {
@@ -1534,12 +1826,14 @@
             this.soulHarvestCooldown = 10;
         }
         draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
             const phaseColor = this.phase === 1 ? 'rgba(150, 200, 255, 0.8)' : 'rgba(255, 100, 100, 0.9)';
             const coreColor = this.phase === 1 ? 'rgba(220, 240, 255, 0.9)' : 'rgba(255, 180, 180, 0.9)';
             const bob = Math.sin(gameTime * 2) * 10;
             for (const trailPart of this.trail) {
                 ctx.save();
-                ctx.globalAlpha = trailPart.alpha;
+                ctx.globalAlpha = trailPart.alpha * playerData.graphics.effectsOpacity;
                 ctx.fillStyle = phaseColor;
                 this.drawCloakedShape(ctx, trailPart.x, trailPart.y + bob, trailPart.size);
                 ctx.restore();
@@ -1548,7 +1842,7 @@
             const auraColor = this.phase === 1 ? 'rgba(150, 200, 255,' : 'rgba(255, 80, 80,';
             const auraSize = this.size + 10 + auraPulse * 8;
             ctx.save();
-            ctx.globalAlpha = 0.5;
+            ctx.globalAlpha = 0.5 * playerData.graphics.effectsOpacity;
             ctx.fillStyle = auraColor + '0.2)';
             if (currentGraphics && currentGraphics.shadows) {
                 ctx.shadowColor = coreColor; ctx.shadowBlur = 20;
@@ -1558,6 +1852,7 @@
             ctx.fill();
             ctx.restore();
             ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
             ctx.fillStyle = this.flashTimer > 0 ? '#ffffff' : phaseColor;
             if (currentGraphics && currentGraphics.shadows) {
                 ctx.shadowColor = coreColor; ctx.shadowBlur = 30;
@@ -1573,6 +1868,7 @@
                     skullGlow = 15 + Math.sin(chargeProgress * Math.PI) * 30;
                 }
                 ctx.save();
+                ctx.globalAlpha = playerData.graphics.effectsOpacity;
                 ctx.fillStyle = coreColor;
                 if (currentGraphics && currentGraphics.shadows) {
                     ctx.shadowColor = this.phase === 2 && this.castingInfo ? 'red' : coreColor;
@@ -1584,6 +1880,7 @@
                 ctx.fillRect(x + skull.size / 8, y - skull.size / 4, skull.size / 5, skull.size / 5); 
                 ctx.restore();
             });
+            ctx.restore();
         }
         drawCloakedShape(ctx, x, y, size) {
             const s = size;
@@ -1595,8 +1892,11 @@
             ctx.fill();
         }
         die() {
+            gameState = 'paused';
             this.isAlive = false;
             runStats.enemiesDefeated++;
+            playerData.persistentStats['spectral_elder_defeated'] = (playerData.persistentStats['spectral_elder_defeated'] || 0) + 1;
+            playerData.spectralElderDefeated = true;
             createParticleBurst(this.x, this.y, 300, 'rgba(150, 200, 255, 1)', 3, 10, 500);
             camera.startShake(30, 2);
             for (let i = 0; i < 20; i++) {
@@ -1609,14 +1909,483 @@
             floatingTexts.push(new FloatingText(player.x, player.y - 100, 'VITÓRIA!', '#ffd700', 5, 32));
             setTimeout(() => {
                 DOM.bossHud.style.display = 'none';
-                gameState = 'playing';
-                wave++;
-                waveTimer = 30;
-                spawnWave();
+                floatingTexts.push(new FloatingText(player.x, player.y - 120, 'A próxima onda se aproxima...', '#ffffff', 8, 22));
+                setTimeout(() => {
+                    gameState = 'playing';
+                    wave++;
+                    waveTimer = 30;
+                    spawnWave();
+                }, 8000); 
             }, 5000); 
         }
     }
-    
+    // --- NOVOS INIMIGOS E CHEFE FINAL ---
+    class Wraith extends Enemy {
+        constructor(x, y) {
+            super(x, y, 'wraith');
+            this.state = 'chasing';
+            this.stateTimer = 0;
+            this.phaseCooldown = 2;
+            this.phaseSpeed = 500;
+            this.phaseDuration = 0.8;
+            this.alpha = 1;
+        }
+
+        update(dt) {
+            super.update(dt);
+            if (this.stunTimer > 0) return;
+            if (this.flashTimer > 0) this.flashTimer -= dt;
+
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            switch (this.state) {
+                case 'chasing':
+                    this.alpha = 1;
+                    this.damage = CONFIG.ENEMY.wraith.damage;
+                    this.stateTimer -= dt;
+                    if (dist > 1) {
+                        this.x += (dx / dist) * this.speed * dt;
+                        this.y += (dy / dist) * this.speed * dt;
+                    }
+                    if (this.stateTimer <= 0) {
+                        this.state = 'phasing';
+                        this.stateTimer = this.phaseDuration;
+                    }
+                    break;
+                case 'phasing':
+                    this.alpha = 0.4;
+                    this.damage = 0; // No damage while phasing through
+                    this.stateTimer -= dt;
+                    if (dist > 1) {
+                        this.x += (dx / dist) * this.phaseSpeed * dt;
+                        this.y += (dy / dist) * this.phaseSpeed * dt;
+                        createParticleBurst(this.x, this.y, 1, 'rgba(162, 162, 208, 0.5)', 0.3, 2, 20);
+                    }
+                    if (this.stateTimer <= 0) {
+                        this.state = 'cooldown';
+                        this.stateTimer = this.phaseCooldown;
+                    }
+                    break;
+                case 'cooldown':
+                    this.alpha = 1;
+                    this.damage = CONFIG.ENEMY.wraith.damage;
+                    this.stateTimer -= dt;
+                     if (dist > 150) { // Keep some distance
+                        this.x += (dx / dist) * this.speed * 0.5 * dt;
+                        this.y += (dy / dist) * this.speed * 0.5 * dt;
+                    }
+                    if (this.stateTimer <= 0) {
+                        this.state = 'chasing';
+                        this.stateTimer = 1.5; // Chase for a bit before phasing again
+                    }
+                    break;
+            }
+        }
+        draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = this.alpha * playerData.graphics.effectsOpacity;
+            const mainColor = this.flashTimer > 0 ? '#FFFFFF' : (this.stunTimer > 0 ? '#ffff99' : this.color);
+            const bob = Math.sin(gameTime * 5) * 3;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 15;
+            }
+            ctx.fillStyle = mainColor;
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y - this.size + bob);
+            ctx.bezierCurveTo(this.x + this.size, this.y, this.x, this.y + this.size + bob, this.x - this.size, this.y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = 'rgba(0,0,0,0.7)';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y - this.size * 0.2 + bob, this.size * 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+    class CrystalGolem extends Enemy {
+        constructor(x, y) {
+            super(x, y, 'crystal_golem');
+            this.slamCooldown = 4.0;
+            this.slamTimer = this.slamCooldown;
+            this.slamRadius = 120;
+            this.isWindingUp = false;
+            this.windupTimer = 0;
+            this.windupDuration = 1.2;
+        }
+        update(dt) {
+            super.update(dt);
+            if (this.stunTimer > 0) { this.isWindingUp = false; return; }
+            if (this.flashTimer > 0) this.flashTimer -= dt;
+
+            if (this.isWindingUp) {
+                this.windupTimer -= dt;
+                if (this.windupTimer <= 0) {
+                    this.performSlam();
+                    this.isWindingUp = false;
+                }
+                return;
+            }
+
+            this.slamTimer -= dt;
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist > this.size) {
+                this.x += (dx / dist) * this.speed * dt;
+                this.y += (dy / dist) * this.speed * dt;
+            }
+
+            if (this.slamTimer <= 0 && dist < this.slamRadius * 1.5) {
+                this.isWindingUp = true;
+                this.windupTimer = this.windupDuration;
+                this.slamTimer = this.slamCooldown;
+            }
+        }
+        performSlam() {
+            camera.startShake(12, 0.3);
+            soundManager.play('hit');
+            effects.push(new Shockwave(this.x, this.y, this.slamRadius, this.damage * 1.5));
+        }
+        draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
+            ctx.translate(this.x, this.y);
+
+            const mainColor = this.flashTimer > 0 ? '#FFFFFF' : (this.stunTimer > 0 ? '#ffff99' : this.color);
+            const s = this.size;
+            let armHeight = 0;
+
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 15;
+            }
+
+            if (this.isWindingUp) {
+                const windupProgress = 1 - (this.windupTimer / this.windupDuration);
+                armHeight = Math.sin(windupProgress * Math.PI) * (-s * 0.5);
+                const glow = Math.sin(windupProgress * Math.PI) * 20;
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowBlur += glow;
+                    ctx.shadowColor = '#FFFFFF';
+                }
+            }
+
+            // Body
+            ctx.fillStyle = mainColor;
+            ctx.fillRect(-s / 2, -s / 2, s, s);
+            // Arms
+            ctx.fillStyle = '#65c2f0';
+            ctx.fillRect(-s * 0.8, -s * 0.4 + armHeight, s * 0.3, s * 0.8);
+            ctx.fillRect(s * 0.5, -s * 0.4 + armHeight, s * 0.3, s * 0.8);
+            // Head
+            ctx.fillStyle = '#a8e0ff';
+            ctx.fillRect(-s * 0.2, -s * 0.8, s * 0.4, s * 0.3);
+
+            ctx.restore();
+        }
+    }
+    class AbyssWorm extends Enemy {
+        constructor(x, y) {
+            super(x, y, 'abyss_worm');
+            this.state = 'burrowed';
+            this.stateTimer = 2.0; // Time to stay burrowed
+            this.isVulnerable = false;
+        }
+        update(dt) {
+            super.update(dt);
+            if (this.stunTimer > 0 && this.isVulnerable) return;
+            if (this.flashTimer > 0) this.flashTimer -= dt;
+
+            this.stateTimer -= dt;
+
+            switch (this.state) {
+                case 'burrowed':
+                    this.isVulnerable = false;
+                    this.damage = 0;
+                    const dx = player.x - this.x;
+                    const dy = player.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > 1) {
+                        this.x += (dx / dist) * this.speed * 1.5 * dt; // Faster while burrowed
+                        this.y += (dy / dist) * this.speed * 1.5 * dt;
+                    }
+                    createParticleBurst(this.x, this.y, 1, 'rgba(100, 50, 150, 0.4)', 0.5, 3, 20);
+                    if (this.stateTimer <= 0) {
+                        this.state = 'emerging';
+                        this.stateTimer = 0.5; // Warning time
+                        effects.push(new WarningCircle(this.x, this.y, this.size * 2, 0.5, () => {}));
+                    }
+                    break;
+                case 'emerging':
+                    if (this.stateTimer <= 0) {
+                        this.state = 'attacking';
+                        this.isVulnerable = true;
+                        this.damage = CONFIG.ENEMY.abyss_worm.damage;
+                        this.stateTimer = 2.5; // Time to stay above ground
+                    }
+                    break;
+                case 'attacking':
+                    const adx = player.x - this.x;
+                    const ady = player.y - this.y;
+                    const adist = Math.sqrt(adx * adx + ady * ady);
+                     if (adist > this.size) {
+                        this.x += (adx / adist) * this.speed * 0.5 * dt;
+                        this.y += (ady / adist) * this.speed * 0.5 * dt;
+                    }
+                    if (this.stateTimer <= 0) {
+                        this.state = 'burrowed';
+                        this.stateTimer = 3.0;
+                    }
+                    break;
+            }
+        }
+        takeDamage(amount) {
+            if (this.isVulnerable) {
+                super.takeDamage(amount);
+            }
+        }
+        draw(ctx) {
+            if (this.state === 'burrowed') return;
+
+            ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
+            const mainColor = this.flashTimer > 0 ? '#FFFFFF' : (this.stunTimer > 0 ? '#ffff99' : this.color);
+            if (this.state === 'emerging') {
+                const emergeProgress = 1 - (this.stateTimer / 0.5);
+                ctx.globalAlpha *= emergeProgress;
+            }
+             if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+            }
+            ctx.fillStyle = mainColor;
+            ctx.beginPath();
+            ctx.ellipse(this.x, this.y, this.size, this.size / 2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#4b0082';
+            ctx.beginPath();
+            ctx.ellipse(this.x, this.y, this.size*0.7, this.size/3, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+    class ArcaneSentry extends Enemy {
+        constructor(x, y) {
+            super(x, y, 'arcane_sentry');
+            this.attackCooldown = 2.5;
+            this.attackTimer = this.attackCooldown;
+            this.isFiring = false;
+        }
+        update(dt) {
+            super.update(dt);
+            if (this.flashTimer > 0) this.flashTimer -= dt;
+            this.attackTimer -= dt;
+
+            if (this.attackTimer <= 0) {
+                this.attack();
+                this.attackTimer = this.attackCooldown;
+            }
+        }
+        attack() {
+            this.isFiring = true;
+            setTimeout(() => this.isFiring = false, 300);
+            for(let i=0; i < 3; i++) {
+                setTimeout(() => {
+                     if (!this.isAlive) return;
+                     enemyProjectiles.push(new EnergyBall(this.x, this.y, player, 350, this.damage));
+                }, i * 100);
+            }
+        }
+        draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
+            ctx.translate(this.x, this.y);
+
+            const mainColor = this.flashTimer > 0 ? '#FFFFFF' : (this.stunTimer > 0 ? '#ffff99' : this.color);
+            const bob = Math.sin(gameTime * 3) * 4;
+            const s = this.size;
+            let glow = 15;
+            
+            if (this.isFiring) {
+                glow = 30;
+            }
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = glow;
+            }
+            
+            ctx.fillStyle = mainColor;
+            ctx.beginPath();
+            ctx.moveTo(0, -s / 2 + bob);
+            ctx.lineTo(s / 2, s / 2 + bob);
+            ctx.lineTo(-s / 2, s / 2 + bob);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = '#f0e68c';
+             if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#FFFFFF';
+                ctx.shadowBlur = this.isFiring ? 20 : 5;
+            }
+            ctx.beginPath();
+            ctx.arc(0, bob, s*0.3, 0, Math.PI*2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+    }
+    class MagmaColossus extends Enemy {
+        constructor(x, y) {
+            super(x, y, 'magma_colossus');
+            this.maxHp = CONFIG.ENEMY.magma_colossus.hp; this.hp = this.maxHp; this.size = CONFIG.ENEMY.magma_colossus.size;
+            this.speed = 40; this.damage = 50; this.xpValue = CONFIG.ENEMY.magma_colossus.xp;
+            this.isBoss = true; this.phase = 1;
+
+            this.magmaBallCooldown = 4;
+            this.lavaPoolCooldown = 8;
+            this.summonCooldown = 12;
+            this.eruptionCooldown = 15;
+            this.actionTimer = 3;
+        }
+        update(dt) {
+            super.update(dt);
+            if (this.stunTimer > 0) return;
+            if (this.flashTimer > 0) this.flashTimer -= dt;
+            
+            if (this.phase === 1 && this.hp <= this.maxHp / 2) {
+                this.enterPhase2();
+            }
+
+            this.actionTimer -= dt;
+            if (this.actionTimer <= 0) {
+                this.performAction();
+            }
+
+            const dx = player.x - this.x, dy = player.y - this.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > this.size) {
+                this.x += (dx / dist) * this.speed * dt;
+                this.y += (dy / dist) * this.speed * dt;
+            }
+        }
+        performAction() {
+            const actions = ['magmaBall', 'lavaPool'];
+            if (this.phase === 2) {
+                actions.push('summon', 'eruption');
+            }
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            
+            switch(action) {
+                case 'magmaBall':
+                    this.actionTimer = this.magmaBallCooldown;
+                    enemyProjectiles.push(new MagmaBall(this.x, this.y, player, 180, this.damage));
+                    break;
+                case 'lavaPool':
+                    this.actionTimer = this.lavaPoolCooldown;
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 100 + Math.random() * 200;
+                    const targetX = player.x + Math.cos(angle) * dist;
+                    const targetY = player.y + Math.sin(angle) * dist;
+                    effects.push(new WarningCircle(targetX, targetY, 80, 1.5, (tx, ty) => {
+                        effects.push(new LavaPool(tx, ty, 80, 10, 8)); // 10 damage per second for 8 seconds
+                    }));
+                    break;
+                case 'summon':
+                    this.actionTimer = this.summonCooldown;
+                     for (let i = 0; i < 4; i++) {
+                        const angle = Math.random() * Math.PI * 2;
+                        enemies.push(new LavaSpawn(this.x + Math.cos(angle) * 100, this.y + Math.sin(angle) * 100));
+                    }
+                    break;
+                case 'eruption':
+                    this.actionTimer = this.eruptionCooldown;
+                    effects.push(new WarningCircle(this.x, this.y, 400, 3, (tx, ty) => {
+                         if ((player.x - tx)**2 + (player.y - ty)**2 < 400**2) {
+                             player.takeDamage(100);
+                         }
+                         camera.startShake(25, 1);
+                    }));
+                    break;
+            }
+        }
+        enterPhase2() {
+            this.phase = 2;
+            this.speed *= 1.5;
+            this.magmaBallCooldown = 3;
+            this.lavaPoolCooldown = 6;
+            floatingTexts.push(new FloatingText(this.x, this.y, 'NÚCLEO EXPOSTO!', '#ff4500', 3, 24));
+        }
+        draw(ctx) {
+            ctx.save();
+            const s = this.size;
+            const color = this.flashTimer > 0 ? '#FFFFFF' : '#4a2a2a';
+            const lavaColor = this.phase === 1 ? '#ff8c00' : '#ff4500';
+            const pulse = Math.sin(gameTime * 5) * 5;
+
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = lavaColor;
+                ctx.shadowBlur = 30 + pulse;
+            }
+            
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, s, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = lavaColor;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, s * 0.8 + pulse, 0, Math.PI * 2);
+            ctx.fill();
+
+            if(this.phase === 2) {
+                ctx.fillStyle = '#ffff00';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, s * 0.4 + pulse, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+        die() {
+            this.isAlive = false;
+            gameState = 'gameOver'; // Or a victory state
+            floatingTexts.push(new FloatingText(this.x, this.y, 'FIM DE JOGO!', '#ffd700', 5, 40));
+            // Trigger victory screen instead of standard game over
+            gameOver();
+        }
+    }
+    class LavaSpawn extends Enemy {
+        constructor(x, y) {
+            super(x, y, 'lava_spawn');
+            this.color = '#ff4500';
+        }
+        update(dt) {
+            super.update(dt);
+            if (this.stunTimer > 0) return;
+            if (this.flashTimer > 0) this.flashTimer -= dt;
+            const dx = player.x - this.x, dy = player.y - this.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist > this.size) {
+                this.x += (dx/dist) * this.speed * dt;
+                this.y += (dy/dist) * this.speed * dt;
+            }
+        }
+        draw(ctx) {
+            ctx.save();
+            ctx.fillStyle = this.flashTimer > 0 ? '#FFFFFF' : this.color;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+            }
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
     class SlimeEcho extends Slime {
         constructor(x, y) {
             super(x, y);
@@ -1624,7 +2393,7 @@
         }
         draw(ctx) {
             ctx.save();
-            ctx.globalAlpha = 0.6;
+            ctx.globalAlpha = 0.6 * playerData.graphics.effectsOpacity;
             super.draw(ctx);
             ctx.restore();
         }
@@ -1634,7 +2403,24 @@
             createParticleBurst(this.x, this.y, 5, 'rgba(150, 200, 255, 0.5)');
         }
     }
-
+    class MageEcho extends Mage {
+        constructor(x, y) {
+            super(x, y);
+            this.hp = 15; this.maxHp = 15; this.damage = 8; this.xpValue = 0; 
+        }
+        performHeal() { /* Os ecos não podem curar */ }
+        draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = 0.6 * playerData.graphics.effectsOpacity;
+            super.draw(ctx);
+            ctx.restore();
+        }
+        die() {
+            this.isAlive = false;
+            runStats.enemiesDefeated++;
+            createParticleBurst(this.x, this.y, 5, 'rgba(190, 77, 255, 0.5)');
+        }
+    }
     // --- Classes de Coletáveis e Efeitos ---
     class Collectible {
         constructor(x, y, size) { this.x = x; this.y = y; this.size = size; this.isCollected = false; }
@@ -1685,6 +2471,174 @@
             ctx.restore();
         }
     }
+    class Powerup extends Collectible {
+        constructor(x, y, size) {
+            super(x, y, size);
+        }
+        update(dt) {
+            super.update(dt, 250, 500); 
+        }
+    }
+    class HealingFragment extends Powerup {
+        constructor(x, y) {
+            super(x, y, 10);
+            this.healAmount = 0.25;
+        }
+        draw(ctx) {
+            const s = this.size;
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.fillStyle = '#ff4d4d';
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 2;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#ff8d8d';
+                ctx.shadowBlur = 15;
+            }
+            ctx.beginPath();
+            ctx.moveTo(0, -s / 4);
+            ctx.quadraticCurveTo(s / 2, -s / 2, s / 2, 0);
+            ctx.quadraticCurveTo(s / 2, s / 2, 0, s / 2);
+            ctx.quadraticCurveTo(-s / 2, s / 2, -s / 2, 0);
+            ctx.quadraticCurveTo(-s / 2, -s / 2, 0, -s / 4);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+    class MagnetFragment extends Powerup {
+        constructor(x, y) {
+            super(x, y, 12);
+        }
+        draw(ctx) {
+            const s = this.size;
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(-Math.PI / 4);
+            ctx.strokeStyle = '#c0c0c0';
+            ctx.lineWidth = s / 2.5;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 15;
+            }
+            ctx.beginPath();
+            ctx.arc(0, 0, s / 2, Math.PI, 0);
+            ctx.stroke();
+            ctx.fillStyle = '#ff4d4d';
+            ctx.fillRect(s/2, -s/5, s/4, s/2.5);
+            ctx.fillStyle = '#8a8aff';
+            ctx.fillRect(-s/2 - s/4, -s/5, s/4, s/2.5);
+            ctx.restore();
+        }
+    }
+    class Shrine {
+        constructor(x, y, type) {
+            this.x = x; this.y = y; this.type = type;
+            this.size = 30;
+            this.activationRadius = 100;
+            this.activationTime = 2.5;
+            this.activationProgress = 0;
+            this.isDepleted = false;
+            this.pulse = 0;
+            
+            const types = {
+                fury: { color: '#ff4d4d', symbol: '⚔️' },
+                protection: { color: '#ffd700', symbol: '🛡️' },
+                wealth: { color: '#ffff4d', symbol: '♦' }
+            };
+            this.config = types[type];
+        }
+
+        update(dt) {
+            if (this.isDepleted) return;
+            
+            this.pulse = Math.sin(gameTime * 4);
+            const distSq = (player.x - this.x)**2 + (player.y - this.y)**2;
+            
+            if (distSq < this.activationRadius**2) {
+                this.activationProgress += dt;
+                if (this.activationProgress >= this.activationTime) {
+                    this.activate();
+                }
+            } else {
+                this.activationProgress = Math.max(0, this.activationProgress - dt * 2); 
+            }
+        }
+        
+        activate() {
+            if (this.isDepleted) return;
+            this.isDepleted = true;
+            soundManager.play('levelUp');
+            createParticleBurst(this.x, this.y, 50, this.config.color, 1, 5, 200);
+
+            switch (this.type) {
+                case 'fury':
+                    player.furyShrineTimer = 30;
+                    floatingTexts.push(new FloatingText(player.x, player.y - 30, 'FÚRIA!', this.config.color, 3, 20));
+                    break;
+                case 'protection':
+                    player.protectionShrineTimer = 8;
+                    floatingTexts.push(new FloatingText(player.x, player.y - 30, 'PROTEÇÃO!', this.config.color, 3, 20));
+                    break;
+                case 'wealth':
+                    player.wealthShrineTimer = 15;
+                    floatingTexts.push(new FloatingText(player.x, player.y - 30, 'RIQUEZA!', this.config.color, 3, 20));
+                    break;
+            }
+        }
+
+        draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
+            
+            if (!this.isDepleted) {
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(240, 240, 255, ${0.1 + this.pulse * 0.1})`;
+                ctx.lineWidth = 3;
+                ctx.arc(this.x, this.y, this.activationRadius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                if (this.activationProgress > 0) {
+                    ctx.beginPath();
+                    ctx.fillStyle = `rgba(240, 240, 255, 0.2)`;
+                    const angle = (this.activationProgress / this.activationTime) * Math.PI * 2;
+                    ctx.moveTo(this.x, this.y);
+                    ctx.arc(this.x, this.y, this.activationRadius, -Math.PI / 2, -Math.PI / 2 + angle);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+            
+            const s = this.size;
+            const yOffset = Math.sin(gameTime * 2) * 5;
+            ctx.translate(this.x, this.y + yOffset);
+            
+            if(this.isDepleted) ctx.globalAlpha *= 0.3;
+
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.config.color;
+                ctx.shadowBlur = 15 + this.pulse * 8;
+            }
+            
+            ctx.fillStyle = this.config.color;
+            ctx.beginPath();
+            ctx.moveTo(0, -s);
+            ctx.lineTo(s, 0);
+            ctx.lineTo(0, s);
+            ctx.lineTo(-s, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
+
+            ctx.fillStyle = this.isDepleted ? '#333' : '#1a1a2a';
+            ctx.beginPath();
+            ctx.arc(0, 0, s * 0.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+    }
     class Particle {
         constructor(x, y, color, lifespan, size, speed) {
             this.x = x; this.y = y; this.color = color; this.lifespan = lifespan; this.size = size;
@@ -1697,7 +2651,8 @@
             this.lifespan -= dt; this.alpha = this.lifespan;
         }
         draw(ctx) {
-            ctx.globalAlpha = Math.max(0, this.alpha); ctx.fillStyle = this.color;
+            ctx.globalAlpha = Math.max(0, this.alpha * playerData.graphics.effectsOpacity); 
+            ctx.fillStyle = this.color;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
         }
     }
@@ -1713,7 +2668,7 @@
             this.alpha = this.lifespan / this.initialLifespan;
         }
         draw(ctx) {
-            ctx.globalAlpha = Math.max(0, this.alpha);
+            ctx.globalAlpha = Math.max(0, this.alpha * playerData.graphics.effectsOpacity);
             ctx.fillStyle = this.color;
             ctx.font = `${this.size}px "Press Start 2P"`;
             ctx.fillText(this.text, this.x, this.y);
@@ -1729,7 +2684,7 @@
             const progress = 1 - (this.life / this.lifespan);
             const currentRadius = this.maxRadius * progress;
             enemies.forEach(enemy => {
-                if (!this.hitEnemies.includes(enemy) && !enemy.isBoss) { 
+                if (!this.hitEnemies.includes(enemy)) { 
                     const distSq = (enemy.x - this.x)**2 + (enemy.y - this.y)**2;
                     if (distSq < currentRadius**2) {
                         enemy.takeDamage(this.damage);
@@ -1742,6 +2697,7 @@
             const progress = 1 - (this.life / this.lifespan);
             const currentRadius = this.maxRadius * progress;
             ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
             ctx.strokeStyle = `rgba(255, 255, 200, ${this.life / this.lifespan})`;
             ctx.lineWidth = 10 * (this.life / this.lifespan);
             if (currentGraphics && currentGraphics.shadows) {
@@ -1753,7 +2709,6 @@
             ctx.restore();
         }
     }
-
     class WarningCircle {
         constructor(x, y, radius, duration, onEndCallback) {
             this.x = x; this.y = y; this.radius = radius; this.lifespan = duration;
@@ -1768,7 +2723,7 @@
         draw(ctx) {
             const progress = 1 - (this.life / this.lifespan);
             ctx.save();
-            ctx.globalAlpha = 0.5 + Math.sin(progress * Math.PI) * 0.3;
+            ctx.globalAlpha = (0.5 + Math.sin(progress * Math.PI) * 0.3) * playerData.graphics.effectsOpacity;
             ctx.fillStyle = `rgba(255, 50, 100, ${0.2 + progress * 0.3})`;
             ctx.strokeStyle = `rgba(255, 80, 120, 1)`;
             ctx.lineWidth = 5;
@@ -1784,50 +2739,193 @@
             ctx.restore();
         }
     }
-    
+    class LavaPool {
+        constructor(x, y, radius, dps, duration) {
+            this.x = x; this.y = y; this.radius = radius; this.dps = dps;
+            this.lifespan = duration; this.life = duration;
+            this.damageTimer = 0.5; // Apply damage every 0.5s
+        }
+        update(dt) {
+            this.life -= dt;
+            this.damageTimer -= dt;
+            if (this.damageTimer <= 0) {
+                if ((player.x - this.x)**2 + (player.y - this.y)**2 < this.radius**2) {
+                    player.takeDamage(this.dps * 0.5);
+                }
+                this.damageTimer = 0.5;
+            }
+        }
+        draw(ctx) {
+            const alpha = Math.min(1, this.life / this.lifespan * 2);
+            ctx.save();
+            ctx.globalAlpha = alpha * playerData.graphics.effectsOpacity;
+            const color = `rgba(255, 100, 0, ${0.4 + Math.sin(gameTime * 10) * 0.1})`;
+            ctx.fillStyle = color;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#ff4500';
+                ctx.shadowBlur = 20;
+            }
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+    class LightningBolt {
+        constructor(points, isEvolved) {
+            this.points = points;
+            this.lifespan = isEvolved ? 0.4 : 0.2;
+            this.life = this.lifespan;
+            this.isEvolved = isEvolved;
+        }
+        update(dt) {
+            this.life -= dt;
+        }
+        draw(ctx) {
+            const alpha = this.life / this.lifespan;
+            ctx.save();
+            ctx.globalAlpha = alpha * playerData.graphics.effectsOpacity;
+            ctx.lineWidth = this.isEvolved ? 5 : 3;
+            ctx.strokeStyle = '#87cefa';
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#4dffff';
+                ctx.shadowBlur = 20;
+            }
+            for (let i = 0; i < this.points.length - 1; i++) {
+                const start = this.points[i];
+                const end = this.points[i + 1];
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                const segments = 10;
+                for (let j = 1; j <= segments; j++) {
+                    const t = j / segments;
+                    const x = start.x * (1 - t) + end.x * t;
+                    const y = start.y * (1 - t) + end.y * t;
+                    const offsetX = (Math.random() - 0.5) * (this.isEvolved ? 15 : 10) * Math.sin(t * Math.PI);
+                    const offsetY = (Math.random() - 0.5) * (this.isEvolved ? 15 : 10) * Math.sin(t * Math.PI);
+                    ctx.lineTo(x + offsetX, y + offsetY);
+                }
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+    }
+    class SpectralArc {
+        constructor(x, y, angle, arc, range, damage, isEvolved = false) {
+            this.x = x; this.y = y; this.angle = angle;
+            this.arc = isEvolved ? Math.PI * 2 : arc;
+            this.range = range; this.damage = damage;
+            this.lifespan = 0.2; this.life = this.lifespan;
+            this.hitEnemies = [];
+            this.isEvolved = isEvolved;
+        }
+        update(dt) {
+            this.life -= dt;
+            const startAngle = this.angle - this.arc / 2;
+            const endAngle = this.angle + this.arc / 2;
+
+            enemies.forEach(enemy => {
+                if (!this.hitEnemies.includes(enemy)) {
+                    const dx = enemy.x - this.x;
+                    const dy = enemy.y - this.y;
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq < this.range * this.range) {
+                        if (this.isEvolved) { // Full circle check
+                            enemy.takeDamage(this.damage);
+                            this.hitEnemies.push(enemy);
+                            return;
+                        }
+                        let enemyAngle = Math.atan2(dy, dx);
+                        let angleDiff = enemyAngle - startAngle;
+                        while(angleDiff < 0) angleDiff += Math.PI * 2;
+                        while(angleDiff > Math.PI*2) angleDiff -= Math.PI * 2;
+
+                        if (angleDiff <= this.arc) {
+                             enemy.takeDamage(this.damage);
+                             this.hitEnemies.push(enemy);
+                        }
+                    }
+                }
+            });
+        }
+        draw(ctx) {
+            const progress = this.life / this.lifespan;
+            ctx.save();
+            ctx.globalAlpha = progress * playerData.graphics.effectsOpacity;
+            ctx.translate(this.x, this.y);
+            ctx.fillStyle = this.isEvolved ? 'rgba(255, 255, 255, 0.4)' : 'rgba(170, 255, 255, 0.5)';
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#aaffff';
+                ctx.shadowBlur = 20;
+            }
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, this.range, this.angle - this.arc / 2, this.angle + this.arc / 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+    }
     // --- Sistema de Armas ---
     class Projectile {
         constructor(x, y, target, speed, damage, pierce, size, color, options = {}) {
             this.x = x; this.y = y; this.speed = speed; this.damage = damage; this.pierce = pierce; this.size = size; this.color = color;
-            this.hitEnemies = []; this.lifetime = 3;
+            this.hitEnemies = []; this.lifetime = options.lifetime || 3;
             const dir = target; 
             this.vx = dir.x * speed; this.vy = dir.y * speed; this.particleTimer = 0;
             this.explodes = options.explodes || false;
             this.explosionRadius = options.explosionRadius || 50;
+			this.pulls = options.pulls || false;
+            this.pullRadius = options.pullRadius || 0;
+            this.pullStrength = options.pullStrength || 100;
         }
         update(dt) { 
             this.x += this.vx * dt; this.y += this.vy * dt; 
             this.lifetime -= dt; this.particleTimer -= dt;
-            if (this.particleTimer <= 0) {
+            if (this.particleTimer <= 0 && this.color === '#ff8c1a') { // Só para a bola de fogo
                 this.particleTimer = 0.03;
                 const particleColor = Math.random() < 0.5 ? 'rgba(255, 100, 0, 0.7)' : 'rgba(255, 200, 0, 0.7)';
                 createParticleBurst(this.x, this.y, 1, particleColor, 0.4, this.size * 0.6, 50);
             }
+			if (this.pulls) {
+                enemies.forEach(enemy => {
+                    if (enemy.isBoss) return;
+                    const dx = this.x - enemy.x;
+                    const dy = this.y - enemy.y;
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq < this.pullRadius ** 2 && distSq > enemy.size**2) {
+                        const dist = Math.sqrt(distSq);
+                        enemy.x += (dx / dist) * this.pullStrength * (1 - dist/this.pullRadius) * dt;
+                        enemy.y += (dy / dist) * this.pullStrength * (1 - dist/this.pullRadius) * dt;
+                    }
+                });
+            }
         }
         draw(ctx) {
             ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = '#ff6600'; ctx.shadowBlur = 12;
+                ctx.shadowColor = this.color; ctx.shadowBlur = 12;
             }
-            ctx.fillStyle = 'rgba(255, 100, 0, 0.8)';
+            ctx.fillStyle = this.color;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            
             if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 5;
-            ctx.fillStyle = 'rgba(255, 255, 100, 1)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 0.5, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
         }
         handleExplosion() {
             if (!this.explodes) return;
-            createParticleBurst(this.x, this.y, 20, '#ff8c1a', 0.6, 5, 200);
-            camera.startShake(5, 0.1);
+            createParticleBurst(this.x, this.y, 30, this.color, 0.8, 6, 250);
+            camera.startShake(8, 0.15);
             enemies.forEach(enemy => {
-                if (!enemy.isBoss && (enemy.x - this.x)**2 + (enemy.y - this.y)**2 < this.explosionRadius**2) {
-                    enemy.takeDamage(this.damage * 0.5); 
+                if ((enemy.x - this.x)**2 + (enemy.y - this.y)**2 < this.explosionRadius**2) {
+                    enemy.takeDamage(this.damage);
                 }
             });
         }
     }
-
     class EnergyBall {
         constructor(x, y, target, speed, damage) {
             this.x = x; this.y = y; this.speed = speed; this.damage = damage; this.size = 10;
@@ -1845,6 +2943,7 @@
         }
         draw(ctx) {
             ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
             if (currentGraphics && currentGraphics.shadows) {
                 ctx.shadowColor = '#be4dff'; ctx.shadowBlur = 15;
             }
@@ -1856,7 +2955,6 @@
             ctx.restore();
         }
     }
-    
     class HomingSoul extends EnergyBall {
         constructor(x, y, target, speed, damage) {
             super(x, y, target, speed, damage);
@@ -1864,8 +2962,12 @@
             this.turnSpeed = Math.PI / 1.5; 
             this.color = 'rgba(150, 220, 255, 0.8)';
             this.size = 12; this.acceleration = 150; 
+            this.lifetime = 6;
         }
         update(dt) {
+            if (!this.target?.isAlive) {
+                this.target = findNearestEnemy(this, false) || this.target;
+            }
             this.speed += this.acceleration * dt;
             const targetAngle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
             let currentAngle = Math.atan2(this.vy, this.vx);
@@ -1884,6 +2986,7 @@
         }
         draw(ctx){
             ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
             if (currentGraphics && currentGraphics.shadows) {
                 ctx.shadowColor = this.color; ctx.shadowBlur = 15;
             }
@@ -1895,7 +2998,34 @@
             ctx.restore();
         }
     }
-
+    class MagmaBall extends EnergyBall {
+        constructor(x, y, target, speed, damage) {
+            super(x, y, target, speed, damage);
+            this.color = '#ff8c00';
+            this.size = 25;
+            this.lifetime = 6;
+        }
+        update(dt) {
+            super.update(dt);
+            if (Math.random() < 0.2) {
+                 createParticleBurst(this.x, this.y, 1, 'rgba(255, 69, 0, 0.6)', 0.5, 5, 30);
+            }
+            // Explode on lifetime end
+            if (this.lifetime <= 0) {
+                 effects.push(new LavaPool(this.x, this.y, 100, 20, 5));
+            }
+        }
+        draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.color; ctx.shadowBlur = 20;
+            }
+            ctx.fillStyle = this.color;
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        }
+    }
     class FireballWeapon {
         constructor(player) {
             this.id = 'fireball'; this.player = player;
@@ -1903,11 +3033,12 @@
             this.cooldownTimer = 0; this.isEvolved = false;
         }
         update(dt) {
-            this.cooldownTimer -= dt;
+            const attackSpeedMultiplier = this.player.furyShrineTimer > 0 ? 2 : 1;
+            this.cooldownTimer -= dt * attackSpeedMultiplier;
             if (this.cooldownTimer <= 0) { this.attack(); this.cooldownTimer = this.stats.cooldown; }
         }
         attack() {
-            const target = findNearestEnemy(this.player);
+            const target = findNearestEnemy(this.player, false, this.stats.initialRange);
             if (!target) return;
             soundManager.play('shot');
             const totalDamage = this.stats.damage * this.player.damageMultiplier;
@@ -1918,17 +3049,20 @@
                 for (let i = -1; i <= 1; i++) {
                     const currentAngle = angle + i * spread;
                     const dir = {x: Math.cos(currentAngle), y: Math.sin(currentAngle)};
-                    projectiles.push(new Projectile(this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size, this.stats.color, { explodes: true, explosionRadius: 75 }));
+                    projectiles.push(new Projectile(this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size * 1.5, this.stats.color, { explodes: true, explosionRadius: 75 }));
                 }
             } else {
                 const dir = normalizeVector({x: target.x - this.player.x, y: target.y - this.player.y});
                 projectiles.push(new Projectile(this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size, this.stats.color));
             }
         }
-        evolve() { this.isEvolved = true; this.stats.cooldown *= 1.2; }
+        evolve() {
+            this.isEvolved = true;
+            this.stats.cooldown *= 1.2;
+            playerData.persistentStats.weaponsEvolved = (playerData.persistentStats.weaponsEvolved || 0) + 1;
+        }
         draw(ctx) {}
     }
-    
     class HammerWeapon {
         constructor(player) {
             this.id = 'hammer'; this.player = player;
@@ -1945,9 +3079,13 @@
             }
         }
         addHammer() { this.recalculateHammers(); }
-        evolve() { this.isEvolved = true; }
+        evolve() {
+            this.isEvolved = true;
+            playerData.persistentStats.weaponsEvolved = (playerData.persistentStats.weaponsEvolved || 0) + 1;
+        }
         update(dt) {
-            this.hammers.forEach(hammer => hammer.angle += this.stats.rotationSpeed * dt);
+            const attackSpeedMultiplier = this.player.furyShrineTimer > 0 ? 2 : 1;
+            this.hammers.forEach(hammer => hammer.angle += this.stats.rotationSpeed * dt * attackSpeedMultiplier);
             for (const [enemy, timer] of this.hitEnemies.entries()) {
                 if (timer - dt <= 0) this.hitEnemies.delete(enemy);
                 else this.hitEnemies.set(enemy, timer - dt);
@@ -1960,8 +3098,9 @@
                     camera.startShake(8, 0.2);
                 }
             }
-            const s = this.stats.size, handleLength = s * 1.2, headHeight = s * 0.7, headWidth = s;
-            const effectiveRadius = this.stats.radius + handleLength + (headHeight / 2);
+            const s = this.stats.size, handleLength = s * 1.2;
+            let headWidth = this.isEvolved ? s * 1.5 : s;
+            const effectiveRadius = this.stats.radius + handleLength + (headWidth / 2);
             for (const hammer of this.hammers) {
                 const hammerHeadX = this.player.x + Math.cos(hammer.angle) * effectiveRadius;
                 const hammerHeadY = this.player.y + Math.sin(hammer.angle) * effectiveRadius;
@@ -1977,6 +3116,8 @@
             };
         }
         draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
             this.hammers.forEach(hammer => {
                 const hammerX = this.player.x + Math.cos(hammer.angle) * this.stats.radius;
                 const hammerY = this.player.y + Math.sin(hammer.angle) * this.stats.radius;
@@ -2000,11 +3141,192 @@
                 ctx.fillRect(-headWidth / 2, -handleLength - headHeight, headWidth, headHeight);
                 ctx.restore();
             });
+            ctx.restore();
         }
     }
-
-
-    // --- Funções Auxiliares e de Jogo ---
+    class LightningChainWeapon {
+        constructor(player) {
+            this.id = 'lightning_chain';
+            this.player = player;
+            this.stats = { ...CONFIG.WEAPONS.lightning_chain };
+            this.cooldownTimer = 0;
+            this.isEvolved = false;
+        }
+        update(dt) {
+            const attackSpeedMultiplier = this.player.furyShrineTimer > 0 ? 2 : 1;
+            this.cooldownTimer -= dt * attackSpeedMultiplier;
+            if (this.cooldownTimer <= 0) {
+                this.attack();
+                this.cooldownTimer = this.stats.cooldown;
+            }
+        }
+        attack() {
+            let availableEnemies = [...enemies];
+            let firstTarget = findNearestEnemy(this.player, false, this.stats.initialRange);
+            if (!firstTarget) return;
+            soundManager.play('shot');
+            let currentTarget = firstTarget;
+            let currentDamage = this.stats.damage * this.player.damageMultiplier;
+            let chainedEnemies = [currentTarget];
+            let chainPoints = [{x: this.player.x, y: this.player.y}, {x: currentTarget.x, y: currentTarget.y}];
+            currentTarget.takeDamage(currentDamage);
+            if (this.isEvolved) currentTarget.applyStun();
+            for (let i = 0; i < this.stats.chains; i++) {
+                availableEnemies = availableEnemies.filter(e => !chainedEnemies.includes(e));
+                let nextTarget = null;
+                let nearestDistSq = Infinity;
+                for (const potentialTarget of availableEnemies) {
+                    const distSq = (currentTarget.x - potentialTarget.x)**2 + (currentTarget.y - potentialTarget.y)**2;
+                    if (distSq < this.stats.chainRadius**2 && distSq < nearestDistSq) {
+                        nearestDistSq = distSq;
+                        nextTarget = potentialTarget;
+                    }
+                }
+                if (nextTarget) {
+                    if (!this.isEvolved) {
+                       currentDamage *= this.stats.damageFalloff;
+                    }
+                    nextTarget.takeDamage(currentDamage);
+                    if (this.isEvolved) nextTarget.applyStun();
+                    chainedEnemies.push(nextTarget);
+                    chainPoints.push({x: nextTarget.x, y: nextTarget.y});
+                    currentTarget = nextTarget;
+                } else {
+                    break;
+                }
+            }
+            effects.push(new LightningBolt(chainPoints, this.isEvolved));
+        }
+        evolve() {
+            this.isEvolved = true;
+            this.stats.cooldown *= 0.7; 
+            playerData.persistentStats.weaponsEvolved = (playerData.persistentStats.weaponsEvolved || 0) + 1;
+        }
+        draw(ctx) {}
+    }
+    class SpectralBladesWeapon {
+        constructor(player) {
+            this.id = 'spectral_blades'; this.player = player;
+            this.stats = { ...CONFIG.WEAPONS.spectral_blades };
+            this.cooldownTimer = 0; this.isEvolved = false;
+        }
+        update(dt) {
+            const attackSpeedMultiplier = this.player.furyShrineTimer > 0 ? 2 : 1;
+            this.cooldownTimer -= dt * attackSpeedMultiplier;
+            if (this.cooldownTimer <= 0) {
+                this.attack();
+                this.cooldownTimer = this.stats.cooldown;
+            }
+        }
+        attack() {
+            const totalDamage = this.stats.damage * this.player.damageMultiplier;
+            const attackAngle = Math.atan2(this.player.lastMoveDirection.y, this.player.lastMoveDirection.x);
+            
+            for (let i = 0; i < this.stats.count; i++) {
+                setTimeout(() => {
+                    soundManager.play('shot');
+                    const arc = new SpectralArc(this.player.x, this.player.y, attackAngle, this.stats.arc, this.stats.range, totalDamage, this.isEvolved);
+                    effects.push(arc);
+                }, i * 100);
+            }
+        }
+        evolve() {
+            this.isEvolved = true;
+            this.stats.cooldown *= 0.8;
+            playerData.persistentStats.weaponsEvolved = (playerData.persistentStats.weaponsEvolved || 0) + 1;
+        }
+        draw(ctx) {}
+    }
+    class SingularityCannonWeapon {
+        constructor(player) {
+            this.id = 'singularity_cannon'; this.player = player;
+            this.stats = { ...CONFIG.WEAPONS.singularity_cannon };
+            this.cooldownTimer = 0; this.isEvolved = false;
+        }
+        update(dt) {
+            const attackSpeedMultiplier = this.player.furyShrineTimer > 0 ? 2 : 1;
+            this.cooldownTimer -= dt * attackSpeedMultiplier;
+            if (this.cooldownTimer <= 0) {
+                this.attack();
+                this.cooldownTimer = this.stats.cooldown;
+            }
+        }
+        attack() {
+            const target = findNearestEnemy(this.player, false, 1000);
+            if (!target) return;
+            soundManager.play('shot');
+            const totalDamage = this.stats.damage * this.player.damageMultiplier;
+            const dir = normalizeVector({x: target.x - this.player.x, y: target.y - this.player.y});
+            
+            const options = {
+                pulls: true,
+                pullRadius: this.stats.pullRadius,
+                pullStrength: this.isEvolved ? 300 : 150,
+                explodes: true,
+                explosionRadius: this.stats.explosionRadius,
+                lifetime: this.isEvolved ? 4 : 2,
+            };
+            projectiles.push(new Projectile(this.player.x, this.player.y, dir, this.stats.speed, totalDamage, 999, this.stats.size, this.stats.color, options));
+        }
+        evolve() {
+            this.isEvolved = true;
+            this.stats.pullRadius *= 1.5;
+            this.stats.explosionRadius *= 1.5;
+            this.stats.damage *= 1.5;
+            playerData.persistentStats.weaponsEvolved = (playerData.persistentStats.weaponsEvolved || 0) + 1;
+        }
+        draw(ctx) {}
+    }
+    class RunicOrbWeapon {
+        constructor(player) {
+            this.id = 'runic_orb'; this.player = player;
+            this.stats = { ...CONFIG.WEAPONS.runic_orb };
+            this.cooldownTimer = 0; this.isEvolved = false;
+            this.orbs = [{ angle: 0, dist: 60, cooldown: Math.random() * this.stats.cooldown }];
+        }
+        update(dt) {
+            const attackSpeedMultiplier = this.player.furyShrineTimer > 0 ? 2 : 1;
+            this.orbs.forEach(orb => {
+                orb.angle += 2 * dt;
+                orb.cooldown -= dt * attackSpeedMultiplier;
+                if (orb.cooldown <= 0) {
+                    const target = findNearestEnemy(this.player, false, 500);
+                    if (target) {
+                        const orbX = this.player.x + Math.cos(orb.angle) * orb.dist;
+                        const orbY = this.player.y + Math.sin(orb.angle) * orb.dist;
+                        const proj = new HomingSoul(orbX, orbY, target, this.stats.speed, this.stats.damage * this.player.damageMultiplier);
+                        if(this.isEvolved) proj.pierce = 2; // Custom property for homing soul
+                        enemyProjectiles.push(proj); // Fires as "enemy" projectile to use homing logic, but damages enemies. Re-route in collision.
+                        orb.cooldown = this.stats.cooldown;
+                    }
+                }
+            });
+        }
+        evolve() {
+            if (this.isEvolved) return;
+            this.isEvolved = true;
+            this.orbs.push({ angle: Math.PI, dist: 60, cooldown: Math.random() * this.stats.cooldown });
+            playerData.persistentStats.weaponsEvolved = (playerData.persistentStats.weaponsEvolved || 0) + 1;
+        }
+        draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = playerData.graphics.effectsOpacity;
+            this.orbs.forEach(orb => {
+                const orbX = this.player.x + Math.cos(orb.angle) * orb.dist;
+                const orbY = this.player.y + Math.sin(orb.angle) * orb.dist;
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = this.stats.color;
+                    ctx.shadowBlur = 15;
+                }
+                ctx.fillStyle = this.stats.color;
+                ctx.beginPath();
+                ctx.arc(orbX, orbY, this.stats.size * 1.5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.restore();
+        }
+    }
+	// --- Funções Auxiliares e de Jogo ---
     class AmbientParticle {
         constructor() {
             this.x = Math.random() * CONFIG.MAP_SIZE.width;
@@ -2029,20 +3351,17 @@
             ctx.fill();
         }
     }
-
-    function createAmbientParticles() {
+	function createAmbientParticles() {
         if (!currentGraphics) return; 
         const count = currentGraphics.ambientParticles;
         for (let i = 0; i < count; i++) {
             ambientParticles.push(new AmbientParticle());
         }
     }
-
     const normalizeVector = v => {
         const mag = Math.sqrt(v.x * v.x + v.y * v.y);
         return mag > 0 ? { x: v.x / mag, y: v.y / mag } : { x: 0, y: 0 };
     };
-    
     function createParticleBurst(x, y, count, color, lifespan = 0.5, size = 3, speed = 150) {
         if (!currentGraphics) return; 
         const finalCount = Math.ceil(count * currentGraphics.particleMultiplier);
@@ -2070,14 +3389,17 @@
         gridCtx.stroke();
         gridPattern = ctx.createPattern(gridCanvas, 'repeat');
     }
-
     function giveWaveCompletionBonus() {
         const gemBonus = wave;
         runGems += gemBonus;
         floatingTexts.push(new FloatingText(player.x, player.y - player.size, `ONDA ${wave-1} COMPLETA! +${gemBonus} ♦`, '#ffd700', 2.5, 18));
         soundManager.play('levelUp');
-    }
 
+        if ((wave - 1) % 2 === 0 && wave > 1) {
+             powerups.push(new MagnetFragment(CONFIG.MAP_SIZE.width / 2, CONFIG.MAP_SIZE.height / 2));
+             floatingTexts.push(new FloatingText(CONFIG.MAP_SIZE.width / 2, CONFIG.MAP_SIZE.height / 2 - 30, `ÍMÃ APARECEU!`, '#c0c0c0', 3, 18));
+        }
+    }
     function resizeCanvas() {
         const rect = canvas.getBoundingClientRect();
         if (canvas.width !== rect.width || canvas.height !== rect.height) {
@@ -2089,8 +3411,7 @@
         isMobile = screenWidth < 768;
         if(camera) camera.updateZoom();
     }
-
-    function init() {
+	function init() {
         soundManager = new SoundManager();
         resizeCanvas();
         loadProgress();
@@ -2099,14 +3420,13 @@
         lastTime = performance.now();
         if (!animationFrameId) gameLoop(lastTime);
     }
-    
     function startGame() {
         DOM.startModal.style.display = 'none'; 
         DOM.hud.style.display = 'block';
         runStats = { enemiesDefeated: 0, damageDealt: 0 };
         player = new Player();
         camera = new Camera(player);
-        enemies = []; expOrbs = []; projectiles = []; enemyProjectiles = []; soulGems = []; particles = []; floatingTexts = []; effects = [];
+        enemies = []; expOrbs = []; projectiles = []; enemyProjectiles = []; soulGems = []; particles = []; floatingTexts = []; effects = []; powerups = []; shrines = [];
         wave = 1; runGems = 0; gameTime = 0; waveTimer = 30;
         bossWaveActive = false;
         DOM.bossHud.style.display = 'none';
@@ -2114,56 +3434,87 @@
         gameState = 'playing';
         history.pushState({ inGame: true }, "");
     }
-    
+    function spawnShrine() {
+        if (shrines.length > 0) return; 
+
+        const types = ['fury', 'protection', 'wealth'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        
+        const angle = Math.random() * Math.PI * 2;
+        const radius = CONFIG.MAP_SIZE.width * 0.4;
+        const x = CONFIG.MAP_SIZE.width / 2 + Math.cos(angle) * radius;
+        const y = CONFIG.MAP_SIZE.height / 2 + Math.sin(angle) * radius;
+        
+        shrines.push(new Shrine(x, y, type));
+    }
     function spawnWave() {
+        if(wave > 1 && Math.random() < 0.25) {
+            spawnShrine();
+        }
+
         const enemiesToSpawn = 5 + wave * 3;
+        const spawnPool = wave < 10 
+            ? ['slime', 'bat', 'brute', 'mage'] 
+            : ['wraith', 'crystal_golem', 'abyss_worm', 'arcane_sentry'];
+
         for (let i = 0; i < enemiesToSpawn; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const radius = Math.max(screenWidth, screenHeight) / (camera ? camera.zoom : 1) * 0.7;
+            const radius = Math.max(screenWidth, screenHeight) / (camera ? camera.zoom : 1) * 0.8;
             const x = player.x + Math.cos(angle) * radius;
             const y = player.y + Math.sin(angle) * radius;
-            let enemyType;
-            const rand = Math.random();
-            if (wave > 3 && rand < 0.15) enemyType = 'mage';
-            else if (wave > 2 && rand < 0.4) enemyType = 'brute';
-            else if (rand > 0.6) enemyType = 'bat';
-            else enemyType = 'slime';
+            
+            let enemyType = spawnPool[Math.floor(Math.random() * spawnPool.length)];
             let newEnemy;
             switch(enemyType) {
                 case 'mage': newEnemy = new Mage(x, y); break;
                 case 'slime': newEnemy = new Slime(x, y); break;
                 case 'bat': newEnemy = new Bat(x, y); break;
                 case 'brute': newEnemy = new Brute(x, y); break;
-                default: newEnemy = new Enemy(x, y, enemyType);
+                case 'wraith': newEnemy = new Wraith(x, y); break;
+                case 'crystal_golem': newEnemy = new CrystalGolem(x, y); break;
+                case 'abyss_worm': newEnemy = new AbyssWorm(x, y); break;
+                case 'arcane_sentry': newEnemy = new ArcaneSentry(x, y); break;
             }
-            if (wave >= 5 && Math.random() < 0.05) {
+
+            if (wave >= 5 && Math.random() < 0.05 + (wave / 200)) {
                 newEnemy.makeChampion();
             }
             enemies.push(newEnemy);
         }
     }
-
     function startBossWave() {
         bossWaveActive = true;
         enemies.forEach(e => e.takeDamage(9999)); 
         setTimeout(() => {
             const boss = new SpectralElder(player.x, player.y - 600);
             enemies.push(boss);
-            floatingTexts.push(new FloatingText(player.x, player.y - 100, 'AVISO: CHEFE APARECEU!', '#ff4d4d', 4, 28));
-        }, 2000);
+            DOM.bossName.textContent = CONFIG.ENEMY.spectral_elder.name;
+            floatingTexts.push(new FloatingText(player.x, player.y - 100, `CHEFE: ${CONFIG.ENEMY.spectral_elder.name.toUpperCase()}!`, '#ff4d4d', 4, 28));
+        }, 5000);
     }
-
-    function findNearestEnemy(entity) {
-        let nearest = null, nearestDistSq = Infinity;
+    function startFinalBossWave() {
+        bossWaveActive = true;
+        enemies.forEach(e => e.takeDamage(9999));
+        setTimeout(() => {
+            const boss = new MagmaColossus(player.x, player.y - 600);
+            enemies.push(boss);
+            DOM.bossName.textContent = CONFIG.ENEMY.magma_colossus.name;
+            floatingTexts.push(new FloatingText(player.x, player.y - 100, `CHEFE FINAL: ${CONFIG.ENEMY.magma_colossus.name.toUpperCase()}!`, '#ff4500', 5, 32));
+        }, 5000);
+    }
+    function findNearestEnemy(entity, ignoreBoss = false, maxRange = Infinity) {
+        let nearest = null;
+        let nearestDistSq = maxRange * maxRange;
         for (const enemy of enemies) {
-            if(enemy.isBoss) continue; 
+            if(ignoreBoss && enemy.isBoss) continue;
             const distSq = (entity.x - enemy.x)**2 + (entity.y - enemy.y)**2;
-            if (distSq < nearestDistSq) { nearestDistSq = distSq; nearest = enemy; }
-        };
-        if(!nearest) nearest = enemies.find(e => e.isBoss);
+            if (distSq < nearestDistSq) {
+                nearestDistSq = distSq;
+                nearest = enemy;
+            }
+        }
         return nearest;
     }
-    
     function handleCollisions() {
         for (const enemy of enemies) {
             if (enemy.damage > 0 && !player.isDashing && (player.x - enemy.x)**2 + (player.y - enemy.y)**2 < (player.size / 2 + enemy.meleeAttackRange)**2) {
@@ -2193,7 +3544,22 @@
         }
         for (let i = enemyProjectiles.length - 1; i >= 0; i--) {
             const proj = enemyProjectiles[i];
-            if ((player.x - proj.x)**2 + (player.y - proj.y)**2 < (player.size / 2 + proj.size / 2)**2) {
+             // Special case for Runic Orb, which fires "enemy" projectiles that should hurt enemies.
+            if (proj instanceof HomingSoul && player.weapon.id === 'runic_orb') {
+                for (const enemy of enemies) {
+                    if (proj.hitEnemies?.includes(enemy)) continue;
+                    if ((enemy.x - proj.x)**2 + (enemy.y - proj.y)**2 < (enemy.size / 2 + proj.size / 2)**2) {
+                        enemy.takeDamage(proj.damage);
+                        soundManager.play('hit');
+                        if (!proj.hitEnemies) proj.hitEnemies = [];
+                        proj.hitEnemies.push(enemy);
+                        if (proj.hitEnemies.length >= (proj.pierce || 1)) {
+                             enemyProjectiles.splice(i, 1);
+                             break;
+                        }
+                    }
+                }
+            } else if ((player.x - proj.x)**2 + (player.y - proj.y)**2 < (player.size / 2 + proj.size / 2)**2) {
                 player.takeDamage(proj.damage);
                 createParticleBurst(proj.x, proj.y, 10, proj.color, 0.4, 3, 100);
                 enemyProjectiles.splice(i, 1);
@@ -2208,22 +3574,47 @@
         }
         for (let i = soulGems.length - 1; i >= 0; i--) {
             if ((player.x - soulGems[i].x)**2 + (player.y - soulGems[i].y)**2 < collectRadiusSq) {
-                runGems++; soundManager.play('collect');
+                runGems++;
+                playerData.persistentStats.gemsCollected = (playerData.persistentStats.gemsCollected || 0) + 1;
+                soundManager.play('collect');
                 soulGems.splice(i, 1);
             }
         }
+        for (let i = powerups.length - 1; i >= 0; i--) {
+            const powerup = powerups[i];
+            if ((player.x - powerup.x)**2 + (player.y - powerup.y)**2 < collectRadiusSq) {
+                if (powerup instanceof HealingFragment) {
+                    player.heal(player.maxHp * powerup.healAmount);
+                } else if (powerup instanceof MagnetFragment) {
+                    expOrbs.forEach(orb => { orb.x = player.x; orb.y = player.y; });
+                    soulGems.forEach(gem => { gem.x = player.x; gem.y = player.y; });
+                }
+                soundManager.play('levelUp');
+                powerups.splice(i, 1);
+            }
+        }
     }
-    
+    function rerollAbilities() {
+        if (runGems >= player.rerollCost) {
+            runGems -= player.rerollCost;
+            player.rerollCost = Math.ceil(player.rerollCost * 1.5);
+            showAbilityChoice();
+        }
+    }
     function showAbilityChoice() {
         if (gameState === 'gameOver' || gameState === 'paused') return; 
         gameState = 'paused_ability'; 
+        
+        DOM.rerollButton.textContent = `Rerrolar (${player.rerollCost} ♦)`;
+        DOM.rerollButton.disabled = runGems < player.rerollCost;
+
         const weaponId = player.weapon.id;
         let evolutionAvailable = null;
         const evolution = CONFIG.WEAPON_EVOLUTIONS[weaponId];
         if (evolution && !player.weapon.isEvolved) {
             const allReqsMet = evolution.requires.every(reqId => {
                 const reqUpgrade = CONFIG.WEAPON_UPGRADES[weaponId].find(u => u.id === reqId);
-                return (player.abilityLevels[reqId] || 0) >= reqUpgrade.max;
+                return (player.abilityLevels[reqId] || 0) >= (reqUpgrade.max || 1);
             });
             if (allReqsMet) { evolutionAvailable = evolution; }
         }
@@ -2251,14 +3642,22 @@
         chosen.forEach(ability => {
             const card = document.createElement('div');
             card.className = 'card p-4 text-center';
+            const currentLevel = player.abilityLevels[ability.id] || 0;
+            
+            let displayName = ability.name;
+            if (ability.max && !ability.id.startsWith('evolve')) {
+                displayName += ` <span class="text-sm opacity-75">(Nível ${currentLevel + 1}/${ability.max})</span>`;
+            }
+
+            let displayDesc = Array.isArray(ability.desc) ? ability.desc[currentLevel] : ability.desc;
+
             if (ability.id.startsWith('evolve')) card.classList.add('evolution-card');
-            card.innerHTML = `<h3 class="text-xl mb-2">${ability.name}</h3><p class="text-sm">${ability.desc || ''}</p>`;
+            card.innerHTML = `<h3 class="text-xl mb-2">${displayName}</h3><p class="text-sm">${displayDesc || ''}</p>`;
             card.onclick = () => selectAbility(ability);
             DOM.abilityOptions.appendChild(card);
         });
         DOM.abilityModal.style.display = 'flex';
     }
-
     function selectAbility(ability) {
         const weaponId = player.weapon.id;
         const isWeaponUpgrade = (CONFIG.WEAPON_UPGRADES[weaponId] || []).some(w => w.id === ability.id);
@@ -2275,11 +3674,17 @@
         gameState = 'playing';
         lastTime = performance.now();
     }
-
     function gameOver() {
         gameState = 'gameOver';
         soundManager.play('gameOver');
         playerData.totalSoulGems += runGems;
+        
+        playerData.persistentStats.gamesPlayed = (playerData.persistentStats.gamesPlayed || 0) + 1;
+        playerData.persistentStats.totalDamageDealt = (playerData.persistentStats.totalDamageDealt || 0) + runStats.damageDealt;
+        playerData.persistentStats.maxLevelReached = Math.max(playerData.persistentStats.maxLevelReached || 0, player.level);
+        playerData.persistentStats.maxTimeSurvived = Math.max(playerData.persistentStats.maxTimeSurvived || 0, gameTime);
+        playerData.persistentStats.maxWaveReached = Math.max(playerData.persistentStats.maxWaveReached || 0, wave);
+
         saveProgress();
         const minutes = Math.floor(gameTime / 60), seconds = Math.floor(gameTime % 60).toString().padStart(2, '0');
         DOM.timeSurvived.textContent = `${minutes}:${seconds}`;
@@ -2289,7 +3694,6 @@
         DOM.levelReachedStat.textContent = player.level;
         DOM.gameOverModal.style.display = 'flex';
     }
-    
     // --- Loop Principal e Funções de Desenho ---
     function update(dt) {
         if (gameState !== 'playing') return;
@@ -2297,12 +3701,14 @@
         if (!bossWaveActive) {
             waveTimer -= dt;
             if (waveTimer <= 0) {
-                if (wave === 9) { 
-                    wave++;
+                wave++;
+                giveWaveCompletionBonus();
+                if (wave === 10) { 
                     startBossWave();
+                } else if (wave === 20) {
+                    startFinalBossWave();
                 } else {
-                    wave++; waveTimer = 30;
-                    giveWaveCompletionBonus();
+                    waveTimer = 30;
                     spawnWave();
                 }
             }
@@ -2314,9 +3720,14 @@
         for(const p of enemyProjectiles) p.update(dt);
         for(const o of expOrbs) o.update(dt);
         for(const g of soulGems) g.update(dt);
+        for(const p of powerups) p.update(dt);
         for(const p of particles) p.update(dt);
         for(const t of floatingTexts) t.update(dt);
-        for(const e of effects) e.update(dt);
+        for(const s of shrines) s.update(dt);
+        for(let i = effects.length - 1; i >= 0; i--) {
+            effects[i].update(dt);
+            if(effects[i].life <= 0) effects.splice(i, 1);
+        }
         handleCollisions();
         for (let i = projectiles.length - 1; i >= 0; i--) {
             if (projectiles[i].lifetime <= 0) {
@@ -2325,13 +3736,13 @@
             }
         }
         for (let i = enemyProjectiles.length - 1; i >= 0; i--) if (enemyProjectiles[i].lifetime <= 0) enemyProjectiles.splice(i, 1);
+        for (let i = powerups.length - 1; i >= 0; i--) if (powerups[i].isCollected) powerups.splice(i, 1);
         for (let i = particles.length - 1; i >= 0; i--) if (particles[i].lifespan <= 0) particles.splice(i, 1);
         for (let i = floatingTexts.length - 1; i >= 0; i--) if (floatingTexts[i].lifespan <= 0) floatingTexts.splice(i, 1);
         for (let i = enemies.length - 1; i >= 0; i--) if (!enemies[i].isAlive) enemies.splice(i, 1);
-        for (let i = effects.length - 1; i >= 0; i--) if (effects[i].life <= 0) effects.splice(i, 1);
+        for (let i = shrines.length - 1; i >= 0; i--) if (shrines[i].isDepleted && shrines[i].activationProgress <=0) shrines.splice(i, 1);
         for(const p of ambientParticles) p.update(dt);
     }
-    
     function draw() {
         ctx.clearRect(0, 0, screenWidth, screenHeight);
         if (!camera) return;
@@ -2345,6 +3756,8 @@
         if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
         for(const o of expOrbs) o.draw(ctx);
         for(const g of soulGems) g.draw(ctx);
+        for(const p of powerups) p.draw(ctx);
+        for(const s of shrines) s.draw(ctx);
         ctx.save();
         if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 0;
         for(const p of particles) p.draw(ctx);
@@ -2352,6 +3765,7 @@
         if(player) player.weapon?.draw(ctx);
         if(player) player.draw(ctx);
         for(const e of enemies) e.draw(ctx);
+        if (playerData.general.showTargetIndicator) drawTargetIndicator();
         for(const p of projectiles) p.draw(ctx);
         for(const p of enemyProjectiles) p.draw(ctx);
         for(const e of effects) e.draw(ctx);
@@ -2365,7 +3779,18 @@
         ctx.restore();
         camera.restore(ctx);
     }
-
+    function drawTargetIndicator() {
+        const target = findNearestEnemy(player, false);
+        if (!target) return;
+        ctx.save();
+        const pulse = Math.abs(Math.sin(gameTime * 5));
+        ctx.strokeStyle = `rgba(255, 100, 100, ${0.4 + pulse * 0.4})`;
+        ctx.lineWidth = 2 + pulse;
+        ctx.beginPath();
+        ctx.arc(target.x, target.y, target.size, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
     function updateUI() {
         if (!player) return;
         DOM.healthBar.style.width = `${(player.hp / player.maxHp) * 100}%`;
@@ -2377,7 +3802,8 @@
             const boss = enemies.find(e => e.isBoss);
             if (boss) {
                 DOM.bossHud.style.display = 'block';
-                DOM.bossName.textContent = 'Ancião Espectral';
+                const bossConfig = CONFIG.ENEMY[boss.type];
+                DOM.bossName.textContent = bossConfig.name;
                 DOM.bossHealthBar.style.width = `${(boss.hp / boss.maxHp) * 100}%`;
             }
         } else {
@@ -2388,7 +3814,6 @@
         DOM.dashCooldownOverlay.style.height = `${dashCooldownProgress * 100}%`;
         DOM.dashButton.style.opacity = dashCooldownProgress > 0 ? '0.7' : '1';
     }
-    
     function gameLoop(timestamp) {
         soundManager.reset();
         const dt = Math.min(0.1, (timestamp - lastTime) / 1000);
@@ -2398,8 +3823,66 @@
         if (gameState === 'playing') updateUI();
         animationFrameId = requestAnimationFrame(gameLoop);
     }
-
     // --- Metaprogresso e UI do Menu ---
+    function renderQuestsModal() {
+        const templateNode = document.getElementById('quest-card-template');
+        
+        function renderCategory(category, container) {
+            container.innerHTML = '';
+            const quests = CONFIG.QUESTS[category];
+            quests.forEach(quest => {
+                const template = templateNode.content.cloneNode(true);
+                const progress = playerData.persistentStats[quest.stat] || 0;
+                const target = quest.target;
+                const isComplete = progress >= target;
+                const isClaimed = playerData.questProgress[quest.id]?.claimed || false;
+
+                template.querySelector('.quest-title').textContent = quest.desc;
+                template.querySelector('.quest-progress-text').textContent = `${Math.min(progress, target)} / ${target}`;
+                template.querySelector('.quest-progress-bar').style.width = `${Math.min(progress / target, 1) * 100}%`;
+                template.querySelector('.quest-reward').innerHTML = `${quest.reward} <span class="text-yellow-400">♦</span>`;
+                
+                const button = template.querySelector('.quest-claim-button');
+                if (isClaimed) {
+                    button.textContent = 'Coletado';
+                    button.disabled = true;
+                } else if (isComplete) {
+                    button.textContent = 'Coletar';
+                    button.disabled = false;
+                    button.onclick = () => claimQuestReward(quest.id);
+                } else {
+                    button.textContent = 'Em Progresso';
+                    button.disabled = true;
+                }
+                container.appendChild(template);
+            });
+        }
+
+        renderCategory('easy', DOM.easyQuestsContainer);
+        renderCategory('medium', DOM.mediumQuestsContainer);
+        renderCategory('hard', DOM.hardQuestsContainer);
+    }
+    function claimQuestReward(questId) {
+        let quest;
+        for (const category in CONFIG.QUESTS) {
+            const found = CONFIG.QUESTS[category].find(q => q.id === questId);
+            if (found) {
+                quest = found;
+                break;
+            }
+        }
+        if (quest && !playerData.questProgress[quest.id]?.claimed) {
+            playerData.totalSoulGems += quest.reward;
+            if (!playerData.questProgress[quest.id]) {
+                playerData.questProgress[quest.id] = {};
+            }
+            playerData.questProgress[quest.id].claimed = true;
+            soundManager.play('buy');
+            saveProgress();
+            updateGemDisplays();
+            renderQuestsModal();
+        }
+    }
     function renderUpgradesModal() {
         DOM.upgradesGems.textContent = playerData.totalSoulGems;
         DOM.upgradesContainer.innerHTML = '';
@@ -2423,17 +3906,30 @@
         DOM.weaponShopContainer.innerHTML = '';
         const templateNode = document.getElementById('upgrade-card-template');
         for (const id in CONFIG.WEAPONS) {
+            const weapon = CONFIG.WEAPONS[id];
+            
+            const isUnlockable = id === 'spectral_blades' || id === 'singularity_cannon' || id === 'runic_orb';
+            if (isUnlockable && !playerData.spectralElderDefeated) {
+                continue;
+            }
+
             const template = templateNode.content.cloneNode(true);
-            const weapon = CONFIG.WEAPONS[id], isUnlocked = playerData.unlockedWeapons.includes(id), isEquipped = playerData.equippedWeapon === id;
+            const isUnlocked = playerData.unlockedWeapons.includes(id);
+            const isEquipped = playerData.equippedWeapon === id;
             template.querySelector('.card-title').textContent = weapon.name;
             template.querySelector('.card-description').textContent = weapon.desc;
             template.querySelector('.card-level-text').style.display = 'none';
             template.querySelector('.card-bonus-text').textContent = `Dano: ${weapon.damage}, Recarga: ${weapon.cooldown}s`;
-            const card = template.querySelector('.card'), button = template.querySelector('.card-button');
+            const card = template.querySelector('.card');
+            const button = template.querySelector('.card-button');
+
             if (isEquipped) {
-                button.textContent = 'Equipado'; button.disabled = true; card.classList.add('locked');
+                button.textContent = 'Equipado';
+                button.disabled = true;
+                card.classList.add('locked');
             } else if (isUnlocked) {
-                button.textContent = 'Equipar'; button.onclick = () => equipWeapon(id);
+                button.textContent = 'Equipar';
+                button.onclick = () => equipWeapon(id);
             } else {
                 button.textContent = `Comprar (${weapon.cost} ♦)`;
                 button.disabled = playerData.totalSoulGems < weapon.cost;
@@ -2447,6 +3943,7 @@
         const level = playerData.purchasedUpgrades[id] || 0, cost = upgrade.cost(level);
         if (playerData.totalSoulGems >= cost && level < upgrade.maxLevel) {
             playerData.totalSoulGems -= cost; playerData.purchasedUpgrades[id] = level + 1;
+            playerData.persistentStats.upgradesPurchased = (playerData.persistentStats.upgradesPurchased || 0) + 1;
             soundManager.play('buy'); saveProgress(); updateGemDisplays(); renderUpgradesModal();
         }
     }
@@ -2466,26 +3963,43 @@
     function updateGemDisplays() {
         DOM.totalGems.textContent = playerData.totalSoulGems;
         DOM.upgradesGems.textContent = playerData.totalSoulGems;
+        DOM.questsGemsCount.textContent = playerData.totalSoulGems;
     }
     function saveProgress() { localStorage.setItem('finalVertexSave', JSON.stringify(playerData)); }
     function loadProgress() {
         const saved = localStorage.getItem('finalVertexSave');
         if (saved) {
             const loadedData = JSON.parse(saved);
-            Object.assign(playerData, loadedData);
-            if (loadedData.audio) Object.assign(playerData.audio, loadedData.audio);
-            if (loadedData.graphics) Object.assign(playerData.graphics, loadedData.graphics);
-            if (!playerData.controls) playerData.controls = { inverted: false };
-            if (loadedData.controls) Object.assign(playerData.controls, loadedData.controls);
+            Object.keys(playerData).forEach(key => {
+                if (loadedData[key] !== undefined) {
+                    if (typeof playerData[key] === 'object' && playerData[key] !== null && !Array.isArray(playerData[key])) {
+                        Object.assign(playerData[key], loadedData[key]);
+                    } else {
+                        playerData[key] = loadedData[key];
+                    }
+                }
+            });
+             if (!playerData.persistentStats) playerData.persistentStats = {};
+             if (!playerData.questProgress) playerData.questProgress = {};
+             if (playerData.spectralElderDefeated === undefined) playerData.spectralElderDefeated = false;
         }
         updateGemDisplays();
+        applyAllSettings();
+        const lastSeenVersion = localStorage.getItem('lastSeenVersion');
+        if (lastSeenVersion !== GAME_VERSION) {
+            DOM.changelogModal.style.display = 'flex';
+        }
+    }
+    function applyAllSettings() {
         applyAudioSettings();
         applyGraphicsSettings();
         applyControlsLayout();
+        applyGeneralSettings();
     }
     function applyAudioSettings() {
-        DOM.volumeSlider.value = playerData.audio.volume;
-        if (soundManager) soundManager.setVolume(playerData.audio.volume);
+        DOM.masterVolumeSlider.value = playerData.audio.masterVolume;
+        DOM.sfxVolumeSlider.value = playerData.audio.sfxVolume;
+        if (soundManager) soundManager.setMasterVolume(playerData.audio.masterVolume);
     }
     function applyGraphicsSettings() {
         const quality = playerData.graphics.quality || 'medium';
@@ -2494,6 +4008,9 @@
         if (quality === 'low') DOM.qualityLowBtn.classList.add('active');
         else if (quality === 'medium') DOM.qualityMediumBtn.classList.add('active');
         else if (quality === 'high') DOM.qualityHighBtn.classList.add('active');
+        DOM.screenShakeBtn.textContent = playerData.graphics.screenShake ? 'Ligado' : 'Desligado';
+        DOM.screenShakeBtn.classList.toggle('active', playerData.graphics.screenShake);
+        DOM.effectsOpacitySlider.value = playerData.graphics.effectsOpacity;
         ambientParticles = [];
         createAmbientParticles();
     }
@@ -2509,13 +4026,15 @@
             DOM.invertControlsBtn.classList.remove('active');
         }
     }
-
+    function applyGeneralSettings() {
+        DOM.targetIndicatorBtn.textContent = playerData.general.showTargetIndicator ? 'Ligado' : 'Desligado';
+        DOM.targetIndicatorBtn.classList.toggle('active', playerData.general.showTargetIndicator);
+    }
     function setGraphicsQuality(quality) {
         playerData.graphics.quality = quality;
         applyGraphicsSettings();
         saveProgress();
     }
-
     function updatePauseSummary() {
         if (!player) return;
         DOM.pauseSummary.innerHTML = ''; 
@@ -2541,7 +4060,6 @@
         abilitiesHtml += '</ul>';
         DOM.pauseSummary.innerHTML += abilitiesHtml;
     }
-
     function togglePause(isManual = true) {
         if (gameState === 'gameOver' || (gameState === 'paused_ability' && isManual)) return;
         const shouldPause = gameState === 'playing';
@@ -2555,7 +4073,6 @@
             lastTime = performance.now(); 
         }
     }
-    
     // --- Event Listeners ---
     function setupEventListeners() {
         document.body.addEventListener('click', () => soundManager.init(), { once: true });
@@ -2563,12 +4080,20 @@
             if (e.target.closest('button, .card:not(.locked)')) soundManager.play('uiClick');
         });
         DOM.startButton.addEventListener('click', startGame);
+        DOM.rerollButton.addEventListener('click', rerollAbilities);
         DOM.upgradesButton.addEventListener('click', () => {
             renderUpgradesModal(); renderWeaponShop();
             DOM.startModal.style.display = 'none'; DOM.upgradesModal.style.display = 'flex';
         });
         DOM.upgradesBackButton.addEventListener('click', () => {
             DOM.upgradesModal.style.display = 'none'; DOM.startModal.style.display = 'flex';
+        });
+        DOM.questsButton.addEventListener('click', () => {
+            renderQuestsModal();
+            DOM.startModal.style.display = 'none'; DOM.questsModal.style.display = 'flex';
+        });
+        DOM.questsBackButton.addEventListener('click', () => {
+            DOM.questsModal.style.display = 'none'; DOM.startModal.style.display = 'flex';
         });
         DOM.optionsButton.addEventListener('click', () => {
             DOM.startModal.style.display = 'none';
@@ -2585,6 +4110,10 @@
             updateGemDisplays(); 
             gameState = 'start';
         });
+        DOM.closeChangelogButton.addEventListener('click', () => {
+            DOM.changelogModal.style.display = 'none';
+            localStorage.setItem('lastSeenVersion', GAME_VERSION);
+        });
         DOM.showUpgradesTab.addEventListener('click', () => {
             DOM.upgradesContainer.style.display = 'grid'; DOM.weaponShopContainer.style.display = 'none';
             DOM.showUpgradesTab.classList.add('active-tab'); DOM.showWeaponsTab.classList.remove('active-tab');
@@ -2593,16 +4122,29 @@
             DOM.upgradesContainer.style.display = 'none'; DOM.weaponShopContainer.style.display = 'grid';
             DOM.showUpgradesTab.classList.remove('active-tab'); DOM.showWeaponsTab.classList.add('active-tab');
         });
-
-        // Listeners para as abas de opções
-        const tabs = [
+        const questTabs = [
+            { btn: DOM.showEasyQuestsTab, content: DOM.easyQuestsContainer },
+            { btn: DOM.showMediumQuestsTab, content: DOM.mediumQuestsContainer },
+            { btn: DOM.showHardQuestsTab, content: DOM.hardQuestsContainer }
+        ];
+        questTabs.forEach(tab => {
+            tab.btn.addEventListener('click', () => {
+                questTabs.forEach(t => {
+                    t.btn.classList.remove('active-tab');
+                    t.content.style.display = 'none';
+                });
+                tab.btn.classList.add('active-tab');
+                tab.content.style.display = 'grid';
+            });
+        });
+        const optionsTabs = [
             { btn: DOM.showGeneralTab, content: DOM.generalSettingsTab },
             { btn: DOM.showGraphicsTab, content: DOM.graphicsSettingsTab },
             { btn: DOM.showAudioTab, content: DOM.audioSettingsTab }
         ];
-        tabs.forEach(tab => {
+        optionsTabs.forEach(tab => {
             tab.btn.addEventListener('click', () => {
-                tabs.forEach(t => {
+                optionsTabs.forEach(t => {
                     t.btn.classList.remove('active-tab');
                     t.content.style.display = 'none';
                 });
@@ -2610,9 +4152,12 @@
                 tab.content.style.display = 'block';
             });
         });
-
-        DOM.volumeSlider.addEventListener('input', () => {
-            playerData.audio.volume = parseFloat(DOM.volumeSlider.value);
+        DOM.masterVolumeSlider.addEventListener('input', () => {
+            playerData.audio.masterVolume = parseFloat(DOM.masterVolumeSlider.value);
+            applyAudioSettings(); saveProgress();
+        });
+        DOM.sfxVolumeSlider.addEventListener('input', () => {
+            playerData.audio.sfxVolume = parseFloat(DOM.sfxVolumeSlider.value);
             applyAudioSettings(); saveProgress();
         });
         DOM.qualityLowBtn.addEventListener('click', () => setGraphicsQuality('low'));
@@ -2620,8 +4165,19 @@
         DOM.qualityHighBtn.addEventListener('click', () => setGraphicsQuality('high'));
         DOM.invertControlsBtn.addEventListener('click', () => {
             playerData.controls.inverted = !playerData.controls.inverted;
-            applyControlsLayout();
-            saveProgress();
+            applyControlsLayout(); saveProgress();
+        });
+        DOM.targetIndicatorBtn.addEventListener('click', () => {
+            playerData.general.showTargetIndicator = !playerData.general.showTargetIndicator;
+            applyGeneralSettings(); saveProgress();
+        });
+        DOM.screenShakeBtn.addEventListener('click', () => {
+            playerData.graphics.screenShake = !playerData.graphics.screenShake;
+            applyGraphicsSettings(); saveProgress();
+        });
+        DOM.effectsOpacitySlider.addEventListener('input', () => {
+            playerData.graphics.effectsOpacity = parseFloat(DOM.effectsOpacitySlider.value);
+            applyGraphicsSettings(); saveProgress();
         });
         DOM.resumeButton.addEventListener('click', () => togglePause(true));
         DOM.quitButton.addEventListener('click', () => {
