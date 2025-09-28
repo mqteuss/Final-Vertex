@@ -707,7 +707,7 @@
             'slime': { size: 18, color: '#4dff4d', hp: 20, maxHp: 25, speed: 250, damage: 10, xp: 3, stunDuration: 0.5 },
             'bat':   { size: 12, color: '#ff4da6', hp: 20, maxHp: 25, speed: 230, damage: 12, xp: 5, aggroRange: 350, diveSpeed: 1000, diveWindup: 0.3, diveCooldown: 2.5, circlingDist: 200, stunDuration: 0.4 },
             'brute': { size: 30, color: '#ff4d4d', hp: 60, maxHp: 70, speed: 120, damage: 20, xp: 9, slamDamage: 30, stunDuration: 0.5 },
-            'mage':  { size: 22, color: '#be4dff', hp: 30, maxHp:40, speed: 130, damage: 8, xp: 13, stunDuration: 0.5 },
+            'mage':  { size: 22, color: '#be4dff', hp: 25, maxHp:30, speed: 120, damage: 8, xp: 13, stunDuration: 0.5 },
             
             // Inimigos Avançados (Onda 10+)
             'wraith': { size: 20, color: '#a2a2d0', hp: 80, maxHp: 80, speed: 280, damage: 18, xp: 15, stunDuration: 0.5 },
@@ -1582,10 +1582,10 @@
                 this.castingState = 'healing'; this.castingTimer = this.castingTime; this.healTimer = this.healCooldown;
             }
         }
-        attack() { enemyProjectiles.push(new EnergyBall(this.x, this.y, player, 300, 15)); }
+        attack() { enemyProjectiles.push(new EnergyBall(this.x, this.y, player, 300, 12)); }
         performHeal() {
             const healRadius = 250;
-            const healAmountPercent = 0.20;
+            const healAmountPercent = 0.10;
             let healedSomeone = false;
             enemies.forEach(ally => {
                 if (ally !== this && (ally.x - this.x)**2 + (ally.y - this.y)**2 < healRadius**2) {
