@@ -699,8 +699,8 @@
         MAP_SIZE: { width: 4000, height: 4000 },
         PLAYER: {
             baseMaxHp: 100, baseSpeed: 250, dashSpeed: 1200,
-            dashDuration: 0.15, dashCooldown: 1, size: 20,
-            basePickupRadius: 150, // Raio de coleta base
+            dashDuration: 0.20, dashCooldown: 1, size: 20,
+            basePickupRadius: 120, // Raio de coleta base
         },
         ENEMY: {
             // Inimigos Iniciais (Onda 1-9)
@@ -1863,7 +1863,7 @@ class SpectralElder extends Enemy {
             for (let i = 0; i < amount; i++) {
                 setTimeout(() => {
                     if (!this.isAlive) return;
-                    enemyProjectiles.push(new HomingSoul(this.x, this.y, player, 220, 15, 'enemy'));
+                    enemyProjectiles.push(new HomingSoul(this.x, this.y, player, 220, 10, 'enemy'));
                 }, i * 150);
             }
         }
@@ -3412,9 +3412,9 @@ class SpectralElder extends Enemy {
             super(x, y, target, speed, damage);
             this.target = target;
             this.firedBy = firedBy; // 'player' or 'enemy'
-            this.turnSpeed = Math.PI * 1.0; 
+            this.turnSpeed = Math.PI * 0.9; 
             this.color = 'rgba(150, 220, 255, 0.8)';
-            this.size = 12; this.acceleration = 100; 
+            this.size = 12; this.acceleration = 90; 
             this.lifetime = 6;
             this.isPet = false;
         }
