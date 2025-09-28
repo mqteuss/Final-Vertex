@@ -9,7 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <style>
+</head>
+<style>
         :root {
             --primary-bg: #1a1a2a;
             --secondary-bg: #2a2a3e;
@@ -135,6 +136,8 @@
             border: 3px solid var(--light-text);
             transition: all 0.2s ease;
             cursor: pointer;
+			overflow: hidden;
+            position: relative; /* ADICIONADO */
         }
         .card:hover:not(.locked) {
             transform: translateY(-5px) scale(1.02);
@@ -145,10 +148,9 @@
             cursor: not-allowed;
             opacity: 0.6;
         }
+        /* AJUSTE VISUAL: O card de evolução agora foca no brilho, combinando com o novo estilo das raridades */
         .card.evolution-card {
-            border-color: #ffd700;
-            background: linear-gradient(145deg, #6a6a8e, #4a4a6e);
-            box-shadow: 0 0 15px #ffd700;
+            box-shadow: 0 0 15px #ffd700, inset 0 0 20px #ffd70022;
         }
         #joystick-container {
             position: absolute;
@@ -297,8 +299,7 @@
             #dash-button { width: 65px; height: 65px; bottom: 1rem; right: 1rem; }
             .controls-inverted #dash-button { right: auto; left: 1rem; }
         }
-    </style>
-</head>
+</style>
 <body class="text-white">
     <div id="game-container" class="relative w-screen h-screen">
         <canvas id="game-canvas"></canvas>
@@ -346,34 +347,41 @@
             <div class="modal-content">
                 <h2 class="text-2xl sm:text-3xl mb-6 text-center">Novidades da Versão</h2>
                 <div id="changelog-content" class="mb-8 text-left max-h-72 overflow-y-auto pr-2">
-                    <h3 class="text-xl">O Fim de Jogo Chegou!</h3>
+                    <h3 class="text-xl">🐾 Apresentando os Companheiros! 🐾</h3>
 <ul>
-    <li>Um novo chefe final, o <strong>Colosso de Magma</strong>, espera por você na Onda 20!</li>
-    <li><strong>4 novos inimigos</strong> (Assombração, Golem de Cristal, Verme do Abismo e Sentinela Arcana) substituem os antigos a partir da Onda 10.</li>
-    <li>Derrote o Ancião Espectral (Chefe da Onda 10) para desbloquear <strong>3 novas armas poderosas</strong> no Arsenal!</li>
+    <li>Você não está mais sozinho! Você terá a chance de invocar 1 de <strong>5 companheiros leais</strong> para te ajudar. Apenas um pode ser escolhido por partida!</li>
+    <li><strong>Fogo-Fátuo:</strong> Um espírito de fogo que ataca inimigos com projéteis teleguiados.</li>
+    <li><strong>Golem de Pedra:</strong> Um protetor que periodicamente concede um escudo que bloqueia dano.</li>
+    <li><strong>Sprite Elétrico:</strong> Uma centelha de energia que atordoa o inimigo mais próximo.</li>
+    <li><strong>Brotinho Nutriente:</strong> Uma pequena planta que gera orbes de cura para o jogador.</li>
+    <li><strong>Cão Sombrio:</strong> Um fiel cãozinho que aumenta seu raio de coleta de orbes e gemas.</li>
+    <li>Após escolher um companheiro, <strong>melhorias específicas para ele</strong> poderão aparecer em suas opções de nível!</li>
 </ul>
 
-<h3 class="mt-4 text-xl">Novos Sistemas e Mecânicas</h3>
+<h3 class="mt-4 text-xl">👹 O Desafio Final Chegou! 👹</h3>
 <ul>
-    <li>Uma nova aba de <strong>Missões</strong> está disponível no menu principal para ganhar grandes recompensas em gemas.</li>
-    <li><strong>Santuários</strong> raros agora aparecem com mais frequência pelo mapa, concedendo bônus temporários de Fúria, Proteção ou Riqueza.</li>
-    <li>Na tela de melhorias, agora é possível <strong>Rerrolar</strong> as opções gastando gemas da partida.</li>
-    <li>Efeitos visuais de <strong>auras</strong> foram adicionados ao jogador para indicar bônus ativos.</li>
+    <li>Um novo e poderoso chefe final, o <strong>Colosso de Magma</strong>, espera por você na Onda 20!</li>
+    <li>Prepare-se! <strong>4 novos tipos de inimigos</strong> (Assombração, Golem de Cristal, Verme do Abismo e Sentinela Arcana) agora dominam o mapa a partir da Onda 10.</li>
+    <li>Vença o Ancião Espectral (Chefe da Onda 10) para desbloquear <strong>3 novas armas devastadoras</strong> no Arsenal!</li>
 </ul>
 
-<h3 class="mt-4 text-xl">Novos Itens e Drops</h3>
+<h3 class="mt-4 text-xl">✨ Novos Sistemas e Itens ✨</h3>
 <ul>
-    <li>Adicionado drop raro: <strong>Fragmento de Cura</strong>! Recupera 25% da vida.</li>
-    <li>Adicionado drop raro: <strong>Fragmento de Ímã</strong>! Puxa todos os orbes e gemas.</li>
+    <li><strong>Sistema de Raridade:</strong> Melhorias agora têm cores que indicam sua raridade (<strong style="color: #52d681;">Verde</strong>, <strong style="color: #4f8be6;">Azul</strong>, <strong style="color: #a463e8;">Roxo</strong>, <strong style="color: #e6d84f;">Amarelo</strong>, <strong style="color: #e68a4f;">Laranja</strong>), tornando as escolhas mais estratégicas!</li>
+    <li><strong>Missões:</strong> Uma nova aba de Missões foi adicionada ao menu para você completar desafios e ganhar grandes recompensas em gemas. ♦️</li>
+    <li><strong>Santuários Místicos:</strong> Santuários de Fúria, Proteção e Riqueza agora aparecem com mais frequência, concedendo bônus temporários poderosos.</li>
+    <li><strong>Rerrolar Melhorias:</strong> Não gostou das opções? Agora é possível usar gemas da partida para rerrolar as melhorias oferecidas!</li>
+    <li><strong>Novos Drops Raros:</strong> Encontre o <strong>Fragmento de Cura</strong> para recuperar 25% da vida e o <strong>Fragmento de Ímã</strong> para atrair todos os orbes e gemas instantaneamente!</li>
 </ul>
 
-<h3 class="mt-4 text-xl">Balanceamento e Mudanças Gerais</h3>
+<h3 class="mt-4 text-xl">⚖️ Balanceamento e Ajustes ⚖️</h3>
 <ul>
-    <li>Um <strong>Fragmento de Ímã</strong> garantido agora aparece no centro do mapa a cada 2 ondas completadas.</li>
-    <li>A melhoria "Vigor" agora concede 17% de vida máxima e não cura mais o jogador totalmente.</li>
-    <li>A melhoria "Regeneração" foi retrabalhada com 3 níveis distintos de eficácia.</li>
-    <li>A <strong>Bola de Fogo</strong> agora tem um alcance inicial limitado.</li>
-    <li>Os projéteis teleguiados do <strong>Ancião Espectral</strong> duram mais tempo e ele agora invoca Ecos de Magos em vez de Ecos de Slimes.</li>
+    <li>Um <strong>Fragmento de Ímã</strong> garantido agora surge no centro do mapa a cada 2 ondas completas.</li>
+    <li>A melhoria "Vigor" agora concede 17% de vida máxima, mas não cura mais o jogador totalmente.</li>
+    <li>A melhoria "Regeneração" foi retrabalhada com 3 níveis distintos e mais eficazes.</li>
+    <li>A arma <strong>Bola de Fogo</strong> agora possui um alcance inicial limitado, exigindo melhorias para se tornar global.</li>
+    <li>O chefe <strong>Ancião Espectral</strong> está mais perigoso: seus projéteis duram mais e ele agora invoca Ecos de Magos.</li>
+    <li>Auras visuais foram adicionadas ao jogador para indicar bônus de santuários ativos.</li>
 </ul>
                 </div>
                 <div class="text-center">
@@ -507,9 +515,9 @@
         </div>
         <div id="game-over-modal" class="modal" style="display: none;">
             <div class="modal-content text-center">
-                <h2 class="text-3xl sm:text-4xl mb-2 text-red-500">Fim de Jogo</h2>
+                <h2 id="end-screen-title" class="text-3xl sm:text-4xl mb-2"></h2>
                 <p class="text-xl mb-2">Você sobreviveu por <span id="time-survived"></span>.</p>
-                <p class="text-lg mb-4">Gemas Coletadas: <span id="final-gems-count"></span></p>
+                <p id="final-gems-container" class="text-lg mb-4">Gemas Coletadas: <span id="final-gems-count"></span></p>
                 <div class="my-6 text-left border-t border-b border-gray-600 py-4 px-2 text-sm sm:text-base">
                     <p class="flex justify-between"><span>Inimigos Derrotados:</span> <span id="enemies-defeated-stat">0</span></p>
                     <p class="flex justify-between mt-2"><span>Dano Total Causado:</span> <span id="damage-dealt-stat">0</span></p>
@@ -560,14 +568,24 @@
         </div>
     </template>
 	<script>
-    // --- Configuração Inicial e Elementos do DOM ---
-    const GAME_VERSION = "7.2";
+// --- Configuração Inicial e Elementos do DOM ---
+    const GAME_VERSION = "7.21"; // Versão atualizada
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
     let screenWidth, screenHeight; 
     const gridCanvas = document.createElement('canvas');
     const gridCtx = gridCanvas.getContext('2d');
     let gridPattern;
+
+    const RARITY_COLORS = {
+        1: '#52d681', // Comum (Verde)
+        2: '#4f8be6', // Incomum (Azul)
+        3: '#a463e8', // Raro (Roxo)
+        4: '#e6d84f', // Épico (Amarelo)
+        5: '#e68a4f', // Lendário (Laranja)
+    };
+    const THREE_LEVEL_RARITY = { 1: 1, 2: 2, 3: 4 };
+
     const DOM = {
         hud: document.getElementById('hud'),
         healthBar: document.getElementById('health-bar-fill'),
@@ -579,6 +597,7 @@
         bossName: document.getElementById('boss-name'),
         bossHealthBar: document.getElementById('boss-health-bar-fill'),
         abilityModal: document.getElementById('ability-modal'),
+        abilityModalTitle: document.getElementById('ability-modal').querySelector('h2'),
         abilityOptions: document.getElementById('ability-options'),
         rerollButton: document.getElementById('reroll-button'),
         startModal: document.getElementById('start-modal'),
@@ -637,7 +656,11 @@
         easyQuestsContainer: document.getElementById('easy-quests-container'),
         mediumQuestsContainer: document.getElementById('medium-quests-container'),
         hardQuestsContainer: document.getElementById('hard-quests-container'),
+        // NOVOS ELEMENTOS DO DOM PARA A TELA FINAL
+        endScreenTitle: document.getElementById('end-screen-title'),
+        finalGemsContainer: document.getElementById('final-gems-container'),
     };
+
     // --- Variáveis Globais do Jogo ---
     let player, camera, soundManager;
     let enemies = [], expOrbs = [], projectiles = [], enemyProjectiles = [], soulGems = [], particles = [], floatingTexts = [], effects = [], powerups = [], shrines = [];
@@ -658,7 +681,7 @@
         damageDealt: 0,
     };
     let playerData = {
-        totalSoulGems: 0, // Gemas para teste
+        totalSoulGems: 0,
         purchasedUpgrades: {},
         unlockedWeapons: ['fireball'],
         equippedWeapon: 'fireball',
@@ -670,19 +693,21 @@
         questProgress: {},
         spectralElderDefeated: false,
     };
+
     // --- Constantes de Configuração ---
     const CONFIG = {
         MAP_SIZE: { width: 4000, height: 4000 },
         PLAYER: {
             baseMaxHp: 100, baseSpeed: 250, dashSpeed: 1200,
             dashDuration: 0.15, dashCooldown: 1, size: 20,
+            basePickupRadius: 150, // Raio de coleta base
         },
         ENEMY: {
             // Inimigos Iniciais (Onda 1-9)
-            'slime': { size: 18, color: '#4dff4d', hp: 20, maxHp: 20, speed: 250, damage: 10, xp: 2, stunDuration: 0.5 },
-            'bat':   { size: 12, color: '#ff4da6', hp: 20, maxHp: 20, speed: 230, damage: 12, xp: 4, aggroRange: 350, diveSpeed: 1000, diveWindup: 0.3, diveCooldown: 2.5, circlingDist: 200, stunDuration: 0.5 },
-            'brute': { size: 30, color: '#ff4d4d', hp: 100, maxHp: 100, speed: 120, damage: 20, xp: 8, slamDamage: 30, stunDuration: 0.2 },
-            'mage':  { size: 22, color: '#be4dff', hp: 40, maxHp: 40, speed: 130, damage: 8, xp: 12, stunDuration: 0.5 },
+            'slime': { size: 18, color: '#4dff4d', hp: 20, maxHp: 25, speed: 250, damage: 10, xp: 3, stunDuration: 0.5 },
+            'bat':   { size: 12, color: '#ff4da6', hp: 20, maxHp: 25, speed: 230, damage: 12, xp: 5, aggroRange: 350, diveSpeed: 1000, diveWindup: 0.3, diveCooldown: 2.5, circlingDist: 200, stunDuration: 0.4 },
+            'brute': { size: 30, color: '#ff4d4d', hp: 90, maxHp: 100, speed: 120, damage: 20, xp: 9, slamDamage: 30, stunDuration: 0.5 },
+            'mage':  { size: 22, color: '#be4dff', hp: 30, maxHp:40, speed: 130, damage: 8, xp: 13, stunDuration: 0.5 },
             
             // Inimigos Avançados (Onda 10+)
             'wraith': { size: 20, color: '#a2a2d0', hp: 80, maxHp: 80, speed: 300, damage: 18, xp: 15, stunDuration: 0.5 },
@@ -691,18 +716,18 @@
             'arcane_sentry': { size: 28, color: '#ffdf00', hp: 150, maxHp: 150, speed: 0, damage: 15, xp: 22, stunDuration: 0 },
 
             // Chefes
-            'spectral_elder': { name: 'Ancião Espectral', hp: 10000, size: 80, xp: 500},
-            'magma_colossus': { name: 'Colosso de Magma', hp: 25000, size: 120, xp: 1000},
+            'spectral_elder': { name: 'Ancião Espectral', hp: 6000, size: 80, xp: 500},
+            'magma_colossus': { name: 'Colosso de Magma', hp: 12000, size: 120, xp: 1000},
             'lava_spawn': { hp: 50, size: 15, speed: 200, damage: 15, xp: 1 }
         },
         WEAPONS: {
-            'fireball': { name: 'Bola de Fogo', desc: 'Dispara uma bola de fogo que perfura inimigos.', cooldown: 0.8, damage: 15, speed: 400, pierce: 1, size: 8, color: '#ff8c1a', cost: 0, initialRange: 400 },
-            'hammer': { name: 'Martelo Giratório', desc: 'Um martelo que gira ao seu redor.', cooldown: 0.2, damage: 8, radius: 80, rotationSpeed: 4, size: 20, count: 1, color: '#cccccc', cost: 150 },
-            'lightning_chain': { name: 'Corrente Elétrica', desc: 'Raio que salta entre inimigos. Dano reduzido a cada salto.', cooldown: 1.5, damage: 12, chains: 2, chainRadius: 125, damageFalloff: 0.75, initialRange: 500, color: '#4dffff', cost: 300 },
+            'fireball': { name: 'Bola de Fogo', desc: 'Dispara uma bola de fogo que perfura inimigos.', cooldown: 1.0, damage: 13, speed: 400, pierce: 1, size: 8, color: '#ff8c1a', cost: 0, initialRange: 400 },
+            'hammer': { name: 'Martelo Giratório', desc: 'Um martelo que gira ao seu redor.', cooldown: 0.2, damage: 16, radius: 80, rotationSpeed: 4, size: 20, count: 1, color: '#cccccc', cost: 150 },
+            'lightning_chain': { name: 'Corrente Elétrica', desc: 'Raio que salta entre inimigos. Dano reduzido a cada salto.', cooldown: 1.5, damage: 12, chains: 2, chainRadius: 125, damageFalloff: 0.75, initialRange: 400, color: '#4dffff', cost: 300 },
             // Novas Armas (desbloqueáveis)
             'spectral_blades': { name: 'Lâminas Espectrais', desc: 'Corta inimigos em um arco rápido à sua frente.', cooldown: 0.4, damage: 12, range: 100, arc: Math.PI / 2, count: 2, color: '#aaffff', cost: 500 },
-            'singularity_cannon': { name: 'Canhão de Singularidade', desc: 'Dispara um orbe que atrai inimigos antes de explodir.', cooldown: 3.5, damage: 50, speed: 150, size: 15, pullRadius: 200, explosionRadius: 150, color: '#9400d3', cost: 800 },
-            'runic_orb': { name: 'Orbe Rúnico', desc: 'Um orbe passivo que atira projéteis teleguiados.', cooldown: 1.0, damage: 8, speed: 300, size: 6, color: '#ff69b4', cost: 650 },
+            'singularity_cannon': { name: 'Canhão de Singularidade', desc: 'Dispara um orbe que atrai inimigos antes de explodir.', cooldown: 3.5, damage: 28, speed: 150, size: 15, pullRadius: 200, explosionRadius: 150, color: '#9400d3', cost: 800 },
+            'runic_orb': { name: 'Orbe Rúnico', desc: 'Um orbe passivo que atira projéteis teleguiados.', cooldown: 0.9, damage: 15, speed: 300, size: 6, color: '#ff69b4', cost: 650 },
         },
         PERMANENT_UPGRADES: {
             'hp_boost': { name: 'Vitalidade', desc: 'Aumenta a vida máxima inicial em 5%.', maxLevel: 20, cost: l => 5 + l * 5, format: v => `+${v * 5}% HP` },
@@ -833,13 +858,36 @@
                 apply: p => p.weapon.evolve()
             },
         },
+        PETS: {
+            'wisp': { name: 'Fogo-Fátuo', desc: 'Um espírito de fogo que ataca inimigos com projéteis teleguiados.', baseCooldown: 1.8, baseDamage: 8 },
+            'golem': { name: 'Golem de Pedra', desc: 'Um protetor que periodicamente concede um escudo que bloqueia dano.', baseCooldown: 15, baseShieldHits: 1 },
+            'sprite': { name: 'Sprite Elétrico', desc: 'Uma centelha de energia que atordoa o inimigo mais próximo.', baseCooldown: 6, baseStun: 1.0 },
+            'sprout': { name: 'Brotinho Nutriente', desc: 'Uma pequena planta que gera orbes de cura para o jogador.', baseCooldown: 10, baseHeal: 5 },
+            'shadow_pup': { name: 'Cão Sombrio', desc: 'Um fiel cãozinho que aumenta seu raio de coleta de orbes e gemas.', baseRadius: 1.5 },
+        },
+        PET_UPGRADES: [
+            // Upgrades do Fogo-Fátuo
+            { id: 'pet_wisp_damage', name: 'Alma Ardente', desc: 'Aumenta o dano do Fogo-Fátuo em 25%.', max: 3, for: ['wisp'], apply: p => p.pet.damageMultiplier = 1 + 0.25 * p.abilityLevels['pet_wisp_damage'] },
+            { id: 'pet_wisp_cooldown', name: 'Chama Eterna', desc: 'O Fogo-Fátuo ataca 20% mais rápido.', max: 2, for: ['wisp'], apply: p => p.pet.cooldownMultiplier = 1 - 0.2 * p.abilityLevels['pet_wisp_cooldown'] },
+            // Upgrades do Golem
+            { id: 'pet_golem_cooldown', name: 'Guardião Leal', desc: 'O Golem de Pedra gera escudos 25% mais rápido.', max: 2, for: ['golem'], apply: p => p.pet.cooldownMultiplier = 1 - 0.25 * p.abilityLevels['pet_golem_cooldown'] },
+            { id: 'pet_golem_hits', name: 'Barreira Reforçada', desc: 'O escudo do Golem agora absorve 1 golpe extra.', max: 2, for: ['golem'], apply: p => p.pet.shieldHits = 1 + p.abilityLevels['pet_golem_hits'] },
+             // Upgrades do Sprite
+            { id: 'pet_sprite_cooldown', name: 'Supercondutor', desc: 'O Sprite Elétrico atordoa 25% mais rápido.', max: 2, for: ['sprite'], apply: p => p.pet.cooldownMultiplier = 1 - 0.25 * p.abilityLevels['pet_sprite_cooldown'] },
+            { id: 'pet_sprite_stun', name: 'Choque de Alta Voltagem', desc: 'Aumenta a duração do atordoamento em 50%.', max: 2, for: ['sprite'], apply: p => p.pet.stunDurationMultiplier = 1 + 0.5 * p.abilityLevels['pet_sprite_stun'] },
+             // Upgrades do Brotinho
+            { id: 'pet_sprout_cooldown', name: 'Fotossíntese Rápida', desc: 'O Brotinho gera orbes de cura 20% mais rápido.', max: 2, for: ['sprout'], apply: p => p.pet.cooldownMultiplier = 1 - 0.2 * p.abilityLevels['pet_sprout_cooldown'] },
+            { id: 'pet_sprout_heal', name: 'Néctar Potente', desc: 'Aumenta a cura dos orbes em 50%.', max: 3, for: ['sprout'], apply: p => p.pet.healMultiplier = 1 + 0.5 * p.abilityLevels['pet_sprout_heal'] },
+             // Upgrades do Cão
+            { id: 'pet_pup_radius', name: 'Faro Aguçado', desc: 'Aumenta ainda mais o bônus de coleta do Cão Sombrio.', max: 3, for: ['shadow_pup'], apply: p => p.pet.radiusMultiplier = CONFIG.PETS.shadow_pup.baseRadius + 0.25 * p.abilityLevels['pet_pup_radius'] },
+        ],
         GRAPHICS: {
             'low':    { particleMultiplier: 0.2, shadows: false, ambientParticles: 20 },
             'medium': { particleMultiplier: 0.6, shadows: true,  ambientParticles: 80 },
-            'high':   { particleMultiplier: 1.0, shadows: true,  ambientParticles: 150 }
+            'high':   { particleMultiplier: 1.0, shadows: true,  ambientParticles: 200 }
         }
     };
-    // --- Gerenciador de Som ---
+	// --- Gerenciador de Som ---
     class SoundManager {
         constructor() {
             this.isInitialized = false; this.synths = {}; this.initPromise = null;
@@ -895,7 +943,7 @@
             }
         }
     }
-    // --- Classes de Entidades do Jogo ---
+	// --- Classes de Entidades do Jogo ---
     class Camera {
         constructor(target) {
             this.target = target;
@@ -943,6 +991,7 @@
             this.shakeDuration = duration;
         }
     }
+
     class Player {
         constructor() {
             this.x = CONFIG.MAP_SIZE.width / 2;
@@ -962,12 +1011,16 @@
             this.isMoving = false;
             this.fragments = [];
             this.orbitalAngle = 0;
+            this.isAlive = true;
             // Buffs de Santuário
             this.furyShrineTimer = 0;
             this.protectionShrineTimer = 0;
             this.wealthShrineTimer = 0;
             // Controles de Melhoria
             this.rerollCost = 5;
+            this.pickupRadius = CONFIG.PLAYER.basePickupRadius;
+            this.pickupRadiusMultiplier = 1;
+            this.pet = null;
 
             for (let i = 0; i < 4; i++) {
                 this.fragments.push({
@@ -991,10 +1044,11 @@
             this.abilityLevels = {};
             this.stepTimer = 0;
         }
+
         update(dt) {
             this.handleMovement(dt);
             this.weapon.update(dt);
-            // Contagem dos timers
+            if (this.pet) { this.pet.update(dt); }
             if (this.dashCooldown > 0) this.dashCooldown -= dt;
             if (this.invincibilityTimer > 0) this.invincibilityTimer -= dt;
             if (this.protectionShrineTimer > 0) this.protectionShrineTimer -= dt;
@@ -1029,6 +1083,7 @@
                 frag.rotation += frag.rotationSpeed * dt;
             });
         }
+
         handleMovement(dt) {
             if (this.isDashing) {
                 this.x += this.dashDirection.x * CONFIG.PLAYER.dashSpeed * dt;
@@ -1059,6 +1114,7 @@
             this.x = Math.max(this.size, Math.min(this.x, CONFIG.MAP_SIZE.width - this.size));
             this.y = Math.max(this.size, Math.min(this.y, CONFIG.MAP_SIZE.height - this.size));
         }
+
         draw(ctx) {
             // Auras de Buffs
             ctx.save();
@@ -1138,6 +1194,7 @@
                 ctx.stroke();
             }
         }
+
         dash() {
             if (this.dashCooldown > 0 || this.isDashing || gameState !== 'playing' || this.stunTimer > 0) return;
             this.isDashing = true;
@@ -1150,37 +1207,58 @@
                 normalizeVector(move) : { ...this.lastMoveDirection };
             setTimeout(() => { this.isDashing = false; }, CONFIG.PLAYER.dashDuration * 1000);
         }
+
         takeDamage(amount) {
             if (this.invincibilityTimer > 0 || this.protectionShrineTimer > 0) return;
+            if(this.pet && this.pet.id === 'golem' && this.pet.shieldActive) {
+                this.pet.shieldHitsLeft--;
+                if(this.pet.shieldHitsLeft <= 0) {
+                    this.pet.shieldActive = false;
+                }
+                floatingTexts.push(new FloatingText(this.x, this.y - this.size, `BLOQUEADO!`, '#c0c0c0'));
+                return;
+            }
+
             this.hp -= amount;
             this.invincibilityTimer = 0.5;
             camera.startShake(8, 0.2);
             floatingTexts.push(new FloatingText(this.x, this.y - this.size, `-${Math.round(amount)}`, '#ff4d4d'));
-            if (this.hp <= 0) { this.hp = 0; gameOver(); }
+            
+            if (this.hp <= 0) { 
+                this.hp = 0; 
+                this.isAlive = false;
+                gameOver(); 
+            }
         }
+
         heal(amount) {
             if (this.hp >= this.maxHp) return;
             const realHeal = Math.min(amount, this.maxHp - this.hp);
             this.hp += realHeal;
             floatingTexts.push(new FloatingText(this.x, this.y + this.size, `+${Math.round(realHeal)}`, '#4dff9e'));
         }
+
         addXp(amount) {
             this.xp += amount;
             if (this.xp >= this.xpToNextLevel) this.levelUp();
         }
+
         levelUp() {
-            this.xp -= this.xpToNextLevel;
-            this.level++;
-            this.xpToNextLevel = Math.floor(this.xpToNextLevel * 1.5);
-            soundManager.play('levelUp');
-            createParticleBurst(this.x, this.y, 30, '#4dff9e', 1, 5, 200);
-            showAbilityChoice();
-            if (this.xp >= this.xpToNextLevel) this.levelUp();
+            while (this.xp >= this.xpToNextLevel) {
+                this.xp -= this.xpToNextLevel;
+                this.level++;
+                this.xpToNextLevel = Math.floor(this.xpToNextLevel * 1.5);
+                soundManager.play('levelUp');
+                createParticleBurst(this.x, this.y, 30, '#4dff9e', 1, 5, 200);
+                showAbilityChoice();
+            }
         }
+
         applyStun(duration) {
             this.stunTimer = Math.max(this.stunTimer, duration);
         }
     }
+
     class Enemy {
         constructor(x, y, type) {
             this.x = x; this.y = y; this.type = type;
@@ -1197,6 +1275,7 @@
             this.isBoss = false;
             this.stunTimer = 0;
         }
+
         update(dt) {
             if (this.stunTimer > 0) {
                 this.stunTimer -= dt;
@@ -1204,11 +1283,13 @@
                 return;
             }
         }
+
         makeChampion() {
             this.isChampion = true;
             this.hp *= 3; this.maxHp *= 3; this.damage *= 1.5; this.size *= 1.3;
             this.meleeAttackRange = this.size / 2 + 5;
         }
+
         takeDamage(amount) {
             if (!this.isAlive) return;
             const finalDamage = Math.round(amount);
@@ -1218,11 +1299,13 @@
             floatingTexts.push(new FloatingText(this.x, this.y - this.size / 2, finalDamage, '#ffffff'));
             if (this.hp <= 0) this.die();
         }
+
         heal(amount) {
             if (!this.isAlive) return;
             this.hp = Math.min(this.maxHp, this.hp + amount);
             floatingTexts.push(new FloatingText(this.x, this.y - this.size, `+${Math.round(amount)}`, '#4dff4d'));
         }
+
         die() {
             this.isAlive = false;
             runStats.enemiesDefeated++;
@@ -1248,6 +1331,7 @@
                  else powerups.push(new MagnetFragment(this.x, this.y));
             }
         }
+        
         applyStun() {
             this.stunTimer = this.stunDuration;
         }
@@ -1567,7 +1651,7 @@
             this.state = 'chasing'; this.stateTimer = 0; this.chargeTarget = { x: 0, y: 0 };
             this.aggroRange = 300; this.windupDuration = 0.5; this.chargeSpeed = 900;
             this.chargeDuration = 0.30; this.slamRadius = 100;
-            this.slamDamage = CONFIG.ENEMY.brute.slamDamage || 30;
+            this.slamDamage = CONFIG.ENEMY.brute.slamDamage;
             this.slamKnockback = 30; this.recoverCooldown = 1.0;
         }
         update(dt) {
@@ -1666,7 +1750,7 @@
             ctx.restore();
         }
     }
-	class SpectralElder extends Enemy {
+class SpectralElder extends Enemy {
         constructor(x, y) {
             super(x, y, 'spectral_elder');
             this.maxHp = CONFIG.ENEMY.spectral_elder.hp; this.hp = this.maxHp; this.size = CONFIG.ENEMY.spectral_elder.size; this.speed = 80; this.damage = 0; 
@@ -1779,7 +1863,7 @@
             for (let i = 0; i < amount; i++) {
                 setTimeout(() => {
                     if (!this.isAlive) return;
-                    enemyProjectiles.push(new HomingSoul(this.x, this.y, player, 220, 15));
+                    enemyProjectiles.push(new HomingSoul(this.x, this.y, player, 220, 15, 'enemy'));
                 }, i * 150);
             }
         }
@@ -2291,7 +2375,7 @@
                     const targetX = player.x + Math.cos(angle) * dist;
                     const targetY = player.y + Math.sin(angle) * dist;
                     effects.push(new WarningCircle(targetX, targetY, 80, 1.5, (tx, ty) => {
-                        effects.push(new LavaPool(tx, ty, 80, 10, 8)); // 10 damage per second for 8 seconds
+                        effects.push(new LavaPool(tx, ty, 80, 10, 8));
                     }));
                     break;
                 case 'summon':
@@ -2351,10 +2435,8 @@
         }
         die() {
             this.isAlive = false;
-            gameState = 'gameOver'; // Or a victory state
-            floatingTexts.push(new FloatingText(this.x, this.y, 'FIM DE JOGO!', '#ffd700', 5, 40));
-            // Trigger victory screen instead of standard game over
-            gameOver();
+            gameOver(true); 
+            floatingTexts.push(new FloatingText(this.x, this.y, 'VITÓRIA!', '#ffd700', 5, 40));
         }
     }
     class LavaSpawn extends Enemy {
@@ -2421,12 +2503,230 @@
             createParticleBurst(this.x, this.y, 5, 'rgba(190, 77, 255, 0.5)');
         }
     }
-    // --- Classes de Coletáveis e Efeitos ---
+	// --- Sistema de Pets ---
+    class Pet {
+        constructor(player, id) {
+            this.player = player;
+            this.id = id;
+            this.x = player.x;
+            this.y = player.y - 50;
+            this.followDistance = 50;
+            this.speed = player.speed * 0.9;
+            this.cooldownMultiplier = 1;
+            this.damageMultiplier = 1;
+        }
+        update(dt) {
+            const dx = this.player.x - this.x;
+            const dy = (this.player.y - this.followDistance) - this.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist > 1) {
+                const moveSpeed = Math.min(dist, this.speed * dt);
+                this.x += (dx / dist) * moveSpeed;
+                this.y += (dy / dist) * moveSpeed;
+            }
+        }
+    }
+
+    class WispPet extends Pet {
+        constructor(player) {
+            super(player, 'wisp');
+            const stats = CONFIG.PETS.wisp;
+            this.cooldown = stats.baseCooldown;
+            this.damage = stats.baseDamage;
+            this.timer = this.cooldown;
+        }
+        update(dt) {
+            super.update(dt);
+            this.timer -= dt;
+            if (this.timer <= 0) {
+                const target = findNearestEnemy(this, false, 400);
+                if (target) {
+                    const finalDamage = this.damage * this.player.damageMultiplier * this.damageMultiplier;
+                    const proj = new HomingSoul(this.x, this.y, target, 250, finalDamage, 'player');
+                    proj.size = 8;
+                    proj.isPet = true; 
+                    enemyProjectiles.push(proj);
+                    this.timer = this.cooldown * this.cooldownMultiplier;
+                }
+            }
+        }
+        draw(ctx) {
+            ctx.save();
+            const pulse = 1 + Math.sin(gameTime * 8) * 0.2;
+            const color = '#ff8c1a';
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = color; ctx.shadowBlur = 15 * pulse;
+            }
+            const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 10 * pulse);
+            grad.addColorStop(0, '#ffffaa');
+            grad.addColorStop(0.6, color);
+            grad.addColorStop(1, 'rgba(255, 140, 26, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.arc(this.x, this.y, 10 * pulse, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        }
+    }
+    
+    class GolemPet extends Pet {
+         constructor(player) {
+            super(player, 'golem');
+            const stats = CONFIG.PETS.golem;
+            this.cooldown = stats.baseCooldown;
+            this.timer = this.cooldown * 0.5; // Starts earlier
+            this.shieldActive = false;
+            this.shieldHits = stats.baseShieldHits;
+            this.shieldHitsLeft = 0;
+        }
+        update(dt) {
+            super.update(dt);
+            this.timer -= dt;
+            if (this.timer <= 0 && !this.shieldActive) {
+                this.shieldActive = true;
+                this.shieldHitsLeft = this.shieldHits;
+                this.timer = this.cooldown * this.cooldownMultiplier;
+                floatingTexts.push(new FloatingText(player.x, player.y - 30, 'ESCUDO!', '#c0c0c0', 2, 12));
+            }
+        }
+        draw(ctx) {
+            ctx.save();
+            if(this.shieldActive) {
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(220, 220, 255, ${0.5 + Math.sin(gameTime*10) * 0.3})`;
+                ctx.lineWidth = 3;
+                ctx.arc(this.player.x, this.player.y, this.player.size + 8, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            const color = '#a9a9a9';
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#555555'; ctx.shadowBlur = 10;
+            }
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x - 10, this.y - 12, 20, 24); // Body
+            ctx.fillStyle = '#696969';
+            ctx.fillRect(this.x - 14, this.y - 8, 4, 12); // Left arm
+            ctx.fillRect(this.x + 10, this.y - 8, 4, 12); // Right arm
+            ctx.restore();
+        }
+    }
+
+    class SpritePet extends Pet {
+        constructor(player) {
+            super(player, 'sprite');
+            const stats = CONFIG.PETS.sprite;
+            this.cooldown = stats.baseCooldown;
+            this.stunDuration = stats.baseStun;
+            this.timer = this.cooldown;
+            this.stunDurationMultiplier = 1;
+        }
+        update(dt) {
+            super.update(dt);
+            this.timer -= dt;
+            if (this.timer <= 0) {
+                 const target = findNearestEnemy(this, false, 250);
+                 if(target) {
+                    target.applyStun(this.stunDuration * this.stunDurationMultiplier);
+                    effects.push(new LightningBolt([{x:this.x, y:this.y}, {x:target.x, y:target.y}], false));
+                    this.timer = this.cooldown * this.cooldownMultiplier;
+                 }
+            }
+        }
+        draw(ctx) {
+            ctx.save();
+            const pulse = 1 + Math.sin(gameTime * 20) * 0.4;
+            const color = '#ffff4d';
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = color; ctx.shadowBlur = 15 * pulse;
+            }
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 6 * pulse, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    class SproutPet extends Pet {
+        constructor(player) {
+            super(player, 'sprout');
+            const stats = CONFIG.PETS.sprout;
+            this.cooldown = stats.baseCooldown;
+            this.healAmount = stats.baseHeal;
+            this.timer = this.cooldown;
+            this.healMultiplier = 1;
+        }
+        update(dt) {
+            super.update(dt);
+            this.timer -= dt;
+            if (this.timer <= 0) {
+                const angle = Math.random() * Math.PI * 2;
+                const spawnX = this.x + Math.cos(angle) * 10;
+                const spawnY = this.y + Math.sin(angle) * 10;
+                powerups.push(new HealingOrb(spawnX, spawnY, this.healAmount * this.healMultiplier));
+                this.timer = this.cooldown * this.cooldownMultiplier;
+            }
+        }
+        draw(ctx) {
+            ctx.save();
+            const color = '#228B22';
+            const headColor = '#90EE90';
+             if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = color; ctx.shadowBlur = 8;
+            }
+            // Body
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+            // Head
+            ctx.fillStyle = headColor;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y - 6, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    class ShadowPupPet extends Pet {
+        constructor(player) {
+            super(player, 'pup');
+            const stats = CONFIG.PETS.shadow_pup;
+            this.radiusMultiplier = stats.baseRadius;
+            this.player.pickupRadiusMultiplier = this.radiusMultiplier;
+        }
+        update(dt) {
+            super.update(dt);
+            if (this.player.pickupRadiusMultiplier !== this.radiusMultiplier) {
+                 this.player.pickupRadiusMultiplier = this.radiusMultiplier;
+            }
+        }
+        draw(ctx) {
+            ctx.save();
+            const color = '#483D8B';
+            ctx.globalAlpha = 0.8;
+             if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#9370DB'; ctx.shadowBlur = 10;
+            }
+            // Body
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.ellipse(this.x, this.y, 12, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Ears
+            ctx.beginPath();
+            ctx.moveTo(this.x - 8, this.y - 8); ctx.lineTo(this.x - 4, this.y - 14); ctx.lineTo(this.x, this.y - 6);
+            ctx.moveTo(this.x + 8, this.y - 8); ctx.lineTo(this.x + 4, this.y - 14); ctx.lineTo(this.x, this.y - 6);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+	// --- Classes de Coletáveis e Efeitos ---
     class Collectible {
         constructor(x, y, size) { this.x = x; this.y = y; this.size = size; this.isCollected = false; }
         update(dt, attractionRadius, speed) {
             const dx = player.x - this.x, dy = player.y - this.y;
-            if (dx * dx + dy * dy < attractionRadius * attractionRadius) {
+            const finalAttractionRadius = (attractionRadius || player.pickupRadius) * player.pickupRadiusMultiplier;
+            if (dx * dx + dy * dy < finalAttractionRadius * finalAttractionRadius) {
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist > 1) {
                     this.x += (dx / dist) * speed * dt;
@@ -2437,7 +2737,7 @@
     }
     class ExpOrb extends Collectible {
         constructor(x, y, value) { super(x, y, 5); this.value = value; }
-        update(dt) { super.update(dt, 150, 400); }
+        update(dt) { super.update(dt, null, 400); }
         draw(ctx) {
             const glowColor = '#4dff9e';
             ctx.save();
@@ -2451,7 +2751,7 @@
     }
     class SoulGem extends Collectible {
         constructor(x, y) { super(x, y, 6); }
-        update(dt) { super.update(dt, 200, 450); }
+        update(dt) { super.update(dt, null, 450); }
         draw(ctx) {
             const size = this.size, glowColor = '#ffff4d';
             ctx.save();
@@ -2471,12 +2771,34 @@
             ctx.restore();
         }
     }
+     class HealingOrb extends Collectible {
+        constructor(x, y, value) {
+            super(x, y, 8);
+            this.value = value;
+        }
+        update(dt) { super.update(dt, null, 400); }
+        draw(ctx) {
+            const glowColor = '#ff4d4d';
+            ctx.save();
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = glowColor; ctx.shadowBlur = 10;
+            }
+            ctx.fillStyle = glowColor;
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.font = '8px "Press Start 2P"';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('+', this.x, this.y + 1);
+            ctx.restore();
+        }
+    }
     class Powerup extends Collectible {
         constructor(x, y, size) {
             super(x, y, size);
         }
         update(dt) {
-            super.update(dt, 250, 500); 
+            super.update(dt, null, 500); 
         }
     }
     class HealingFragment extends Powerup {
@@ -2743,7 +3065,7 @@
         constructor(x, y, radius, dps, duration) {
             this.x = x; this.y = y; this.radius = radius; this.dps = dps;
             this.lifespan = duration; this.life = duration;
-            this.damageTimer = 0.5; // Apply damage every 0.5s
+            this.damageTimer = 0.5;
         }
         update(dt) {
             this.life -= dt;
@@ -2771,27 +3093,50 @@
             ctx.restore();
         }
     }
-    class LightningBolt {
+	class LightningBolt {
         constructor(points, isEvolved) {
             this.points = points;
-            this.lifespan = isEvolved ? 0.4 : 0.2;
+            this.lifespan = isEvolved ? 0.45 : 0.25;
             this.life = this.lifespan;
             this.isEvolved = isEvolved;
         }
-        update(dt) {
-            this.life -= dt;
-        }
+        update(dt) { this.life -= dt; }
         draw(ctx) {
             const alpha = this.life / this.lifespan;
             ctx.save();
             ctx.globalAlpha = alpha * playerData.graphics.effectsOpacity;
-            ctx.lineWidth = this.isEvolved ? 5 : 3;
-            ctx.strokeStyle = '#87cefa';
-            if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = '#4dffff';
-                ctx.shadowBlur = 20;
+            if (this.isEvolved) {
+                 if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = '#ffffff';
+                    ctx.shadowBlur = 30;
+                }
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 8;
+                this.drawBoltPath(ctx, 20);
+                
+                ctx.strokeStyle = '#87cefa';
+                ctx.lineWidth = 15;
+                 if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowBlur = 25;
+                    ctx.shadowColor = '#4dffff';
+                }
+                this.drawBoltPath(ctx, 25);
+            } 
+            else {
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#ffffff';
+                 if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = '#4dffff';
+                    ctx.shadowBlur = 20;
+                }
+                 this.drawBoltPath(ctx, 10);
             }
-            for (let i = 0; i < this.points.length - 1; i++) {
+           
+            ctx.restore();
+        }
+
+        drawBoltPath(ctx, randomOffset) {
+             for (let i = 0; i < this.points.length - 1; i++) {
                 const start = this.points[i];
                 const end = this.points[i + 1];
                 ctx.beginPath();
@@ -2801,13 +3146,12 @@
                     const t = j / segments;
                     const x = start.x * (1 - t) + end.x * t;
                     const y = start.y * (1 - t) + end.y * t;
-                    const offsetX = (Math.random() - 0.5) * (this.isEvolved ? 15 : 10) * Math.sin(t * Math.PI);
-                    const offsetY = (Math.random() - 0.5) * (this.isEvolved ? 15 : 10) * Math.sin(t * Math.PI);
+                    const offsetX = (Math.random() - 0.5) * randomOffset * Math.sin(t * Math.PI);
+                    const offsetY = (Math.random() - 0.5) * randomOffset * Math.sin(t * Math.PI);
                     ctx.lineTo(x + offsetX, y + offsetY);
                 }
                 ctx.stroke();
             }
-            ctx.restore();
         }
     }
     class SpectralArc {
@@ -2815,22 +3159,22 @@
             this.x = x; this.y = y; this.angle = angle;
             this.arc = isEvolved ? Math.PI * 2 : arc;
             this.range = range; this.damage = damage;
-            this.lifespan = 0.2; this.life = this.lifespan;
+            this.lifespan = isEvolved ? 0.4 : 0.25;
+            this.life = this.lifespan;
             this.hitEnemies = [];
             this.isEvolved = isEvolved;
+            this.initialRotation = Math.random() * Math.PI;
         }
         update(dt) {
             this.life -= dt;
             const startAngle = this.angle - this.arc / 2;
-            const endAngle = this.angle + this.arc / 2;
-
             enemies.forEach(enemy => {
                 if (!this.hitEnemies.includes(enemy)) {
                     const dx = enemy.x - this.x;
                     const dy = enemy.y - this.y;
                     const distSq = dx * dx + dy * dy;
                     if (distSq < this.range * this.range) {
-                        if (this.isEvolved) { // Full circle check
+                        if (this.isEvolved) {
                             enemy.takeDamage(this.damage);
                             this.hitEnemies.push(enemy);
                             return;
@@ -2853,20 +3197,54 @@
             ctx.save();
             ctx.globalAlpha = progress * playerData.graphics.effectsOpacity;
             ctx.translate(this.x, this.y);
-            ctx.fillStyle = this.isEvolved ? 'rgba(255, 255, 255, 0.4)' : 'rgba(170, 255, 255, 0.5)';
-            if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = '#aaffff';
-                ctx.shadowBlur = 20;
+
+            if (this.isEvolved) {
+                const rotation = gameTime * 15 + this.initialRotation;
+                const bladeCount = 5;
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = '#ffffff';
+                    ctx.shadowBlur = 30;
+                }
+                for(let i=0; i < bladeCount; i++) {
+                    ctx.save();
+                    ctx.rotate(rotation + (i * Math.PI * 2 / bladeCount));
+                    const grad = ctx.createLinearGradient(0, 0, this.range, 0);
+                    grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+                    grad.addColorStop(0.7, 'rgba(170, 255, 255, 0.8)');
+                    grad.addColorStop(1, 'rgba(255, 255, 255, 0.9)');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.moveTo(0,0);
+                    ctx.lineTo(this.range * 0.8, -10);
+                    ctx.lineTo(this.range, 0);
+                    ctx.lineTo(this.range * 0.8, 10);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
             }
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.arc(0, 0, this.range, this.angle - this.arc / 2, this.angle + this.arc / 2);
-            ctx.closePath();
-            ctx.fill();
+            else {
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = '#aaffff';
+                    ctx.shadowBlur = 20;
+                }
+                const grad = ctx.createRadialGradient(0,0,0, 0,0,this.range);
+                grad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                grad.addColorStop(0.8, 'rgba(170, 255, 255, 0.6)');
+                grad.addColorStop(1, 'rgba(170, 255, 255, 0)');
+                ctx.fillStyle = grad;
+                
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, this.range, this.angle - this.arc / 2, this.angle + this.arc / 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+
             ctx.restore();
         }
     }
-    // --- Sistema de Armas ---
+	// --- Sistema de Armas ---
     class Projectile {
         constructor(x, y, target, speed, damage, pierce, size, color, options = {}) {
             this.x = x; this.y = y; this.speed = speed; this.damage = damage; this.pierce = pierce; this.size = size; this.color = color;
@@ -2878,16 +3256,29 @@
 			this.pulls = options.pulls || false;
             this.pullRadius = options.pullRadius || 0;
             this.pullStrength = options.pullStrength || 100;
+
+            this.weaponId = options.weaponId || null;
+            this.isEvolved = options.isEvolved || false;
+            this.rotation = Math.atan2(this.vy, this.vx);
         }
         update(dt) { 
             this.x += this.vx * dt; this.y += this.vy * dt; 
             this.lifetime -= dt; this.particleTimer -= dt;
-            if (this.particleTimer <= 0 && this.color === '#ff8c1a') { // Só para a bola de fogo
+            if (this.particleTimer <= 0 && this.weaponId === 'fireball') {
                 this.particleTimer = 0.03;
-                const particleColor = Math.random() < 0.5 ? 'rgba(255, 100, 0, 0.7)' : 'rgba(255, 200, 0, 0.7)';
+                const particleColor = this.isEvolved ? 'rgba(180, 220, 255, 0.7)' : (Math.random() < 0.5 ? 'rgba(255, 100, 0, 0.7)' : 'rgba(255, 200, 0, 0.7)');
                 createParticleBurst(this.x, this.y, 1, particleColor, 0.4, this.size * 0.6, 50);
             }
 			if (this.pulls) {
+                const pullAngle = gameTime * (this.isEvolved ? -10 : 8);
+                const particleCount = this.isEvolved ? 3 : 1;
+                for(let i=0; i < particleCount; i++) {
+                    const angle = pullAngle + (i * Math.PI*2 / particleCount);
+                    const pX = this.x + Math.cos(angle) * this.pullRadius * (this.lifetime / 2);
+                    const pY = this.y + Math.sin(angle) * this.pullRadius * (this.lifetime / 2);
+                    particles.push(new Particle(pX, pY, this.isEvolved ? '#ff00ff' : '#dcb0ff', 0.2, 2, -400));
+                }
+
                 enemies.forEach(enemy => {
                     if (enemy.isBoss) return;
                     const dx = this.x - enemy.x;
@@ -2904,20 +3295,81 @@
         draw(ctx) {
             ctx.save();
             ctx.globalAlpha = playerData.graphics.effectsOpacity;
+            
+            switch(this.weaponId) {
+                case 'fireball': this.drawFireball(ctx); break;
+                case 'singularity_cannon': this.drawSingularity(ctx); break;
+                default: this.drawDefault(ctx); break;
+            }
+
+            ctx.restore();
+        }
+        drawDefault(ctx) {
             if (currentGraphics && currentGraphics.shadows) {
                 ctx.shadowColor = this.color; ctx.shadowBlur = 12;
             }
             ctx.fillStyle = this.color;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-            
-            if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 5;
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 0.5, 0, Math.PI * 2); ctx.fill();
-            ctx.restore();
+        }
+        drawFireball(ctx) {
+            if (this.isEvolved) {
+                const coreColor = '#ffffff';
+                const glowColor = 'rgba(100, 180, 255, 0.7)';
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = glowColor; ctx.shadowBlur = this.size * 3;
+                }
+                const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+                grad.addColorStop(0, coreColor);
+                grad.addColorStop(0.5, glowColor);
+                grad.addColorStop(1, 'rgba(100, 180, 255, 0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2); ctx.fill();
+            } 
+            else {
+                const coreColor = '#ffffaa';
+                const glowColor = this.color;
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = glowColor; ctx.shadowBlur = this.size * 2;
+                }
+                const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+                grad.addColorStop(0, coreColor);
+                grad.addColorStop(0.6, glowColor);
+                grad.addColorStop(1, 'rgba(255, 140, 26, 0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 1.2, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        drawSingularity(ctx) {
+             if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = this.isEvolved ? '#ff00ff' : this.color; 
+                ctx.shadowBlur = this.size * 3;
+            }
+            if (this.isEvolved) {
+                const coreGrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+                coreGrad.addColorStop(0, '#2e0854');
+                coreGrad.addColorStop(1, '#000000');
+                ctx.fillStyle = coreGrad;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+
+                ctx.strokeStyle = '#ff00ff';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            else {
+                const grad = ctx.createRadialGradient(this.x, this.y, this.size * 0.2, this.x, this.y, this.size);
+                grad.addColorStop(0, '#000000');
+                grad.addColorStop(0.8, this.color);
+                grad.addColorStop(1, 'rgba(148, 0, 211, 0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
         }
         handleExplosion() {
             if (!this.explodes) return;
-            createParticleBurst(this.x, this.y, 30, this.color, 0.8, 6, 250);
+            const particleColor = this.isEvolved && this.weaponId === 'fireball' ? '#87cefa' : this.color;
+            createParticleBurst(this.x, this.y, 30, particleColor, 0.8, 6, 250);
             camera.startShake(8, 0.15);
             enemies.forEach(enemy => {
                 if ((enemy.x - this.x)**2 + (enemy.y - this.y)**2 < this.explosionRadius**2) {
@@ -2956,17 +3408,23 @@
         }
     }
     class HomingSoul extends EnergyBall {
-        constructor(x, y, target, speed, damage) {
+        constructor(x, y, target, speed, damage, firedBy = 'enemy') {
             super(x, y, target, speed, damage);
             this.target = target;
-            this.turnSpeed = Math.PI / 1.5; 
+            this.firedBy = firedBy; // 'player' or 'enemy'
+            this.turnSpeed = Math.PI * 1.0; 
             this.color = 'rgba(150, 220, 255, 0.8)';
-            this.size = 12; this.acceleration = 150; 
+            this.size = 12; this.acceleration = 100; 
             this.lifetime = 6;
+            this.isPet = false;
         }
         update(dt) {
-            if (!this.target?.isAlive) {
+            if (this.firedBy === 'player' && !this.target?.isAlive) {
                 this.target = findNearestEnemy(this, false) || this.target;
+            }
+            if(!this.target || !this.target.isAlive) {
+                this.lifetime = 0;
+                return;
             }
             this.speed += this.acceleration * dt;
             const targetAngle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
@@ -3010,9 +3468,11 @@
             if (Math.random() < 0.2) {
                  createParticleBurst(this.x, this.y, 1, 'rgba(255, 69, 0, 0.6)', 0.5, 5, 30);
             }
-            // Explode on lifetime end
-            if (this.lifetime <= 0) {
+            const outOfBoundsX = this.x < 0 || this.x > CONFIG.MAP_SIZE.width;
+            const outOfBoundsY = this.y < 0 || this.y > CONFIG.MAP_SIZE.height;
+            if (this.lifetime <= 0 || outOfBoundsX || outOfBoundsY) {
                  effects.push(new LavaPool(this.x, this.y, 100, 20, 5));
+                 this.lifetime = 0;
             }
         }
         draw(ctx) {
@@ -3026,6 +3486,32 @@
             ctx.restore();
         }
     }
+	// --- Funções Auxiliares e de Jogo ---
+    class AmbientParticle {
+        constructor() {
+            this.x = Math.random() * CONFIG.MAP_SIZE.width;
+            this.y = Math.random() * CONFIG.MAP_SIZE.height;
+            this.size = Math.random() * 1.5 + 1;
+            this.baseY = this.y;
+            this.speedX = (Math.random() - 0.5) * 15; 
+            this.amplitudeY = Math.random() * 10 + 5; 
+            this.frequencyY = Math.random() * 0.5 + 0.2; 
+            this.color = `rgba(200, 220, 255, ${Math.random() * 0.4 + 0.2})`;
+        }
+        update(dt) {
+            this.x += this.speedX * dt;
+            this.y = this.baseY + Math.sin(gameTime * this.frequencyY) * this.amplitudeY;
+            if (this.x < 0) this.x = CONFIG.MAP_SIZE.width;
+            if (this.x > CONFIG.MAP_SIZE.width) this.x = 0;
+        }
+        draw(ctx) {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+	// --- Sistema de Armas ---
     class FireballWeapon {
         constructor(player) {
             this.id = 'fireball'; this.player = player;
@@ -3042,6 +3528,12 @@
             if (!target) return;
             soundManager.play('shot');
             const totalDamage = this.stats.damage * this.player.damageMultiplier;
+            const options = {
+                weaponId: this.id,
+                isEvolved: this.isEvolved,
+                explodes: this.isEvolved,
+                explosionRadius: 75
+            };
             if (this.isEvolved) {
                 const baseDir = normalizeVector({x: target.x - this.player.x, y: target.y - this.player.y});
                 const angle = Math.atan2(baseDir.y, baseDir.x);
@@ -3049,11 +3541,11 @@
                 for (let i = -1; i <= 1; i++) {
                     const currentAngle = angle + i * spread;
                     const dir = {x: Math.cos(currentAngle), y: Math.sin(currentAngle)};
-                    projectiles.push(new Projectile(this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size * 1.5, this.stats.color, { explodes: true, explosionRadius: 75 }));
+                    projectiles.push(new Projectile(this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size * 1.5, this.stats.color, options));
                 }
             } else {
                 const dir = normalizeVector({x: target.x - this.player.x, y: target.y - this.player.y});
-                projectiles.push(new Projectile(this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size, this.stats.color));
+                projectiles.push(new Projectile(this.player.x, this.player.y, dir, this.stats.speed, totalDamage, this.stats.pierce, this.stats.size, this.stats.color, options));
             }
         }
         evolve() {
@@ -3081,6 +3573,7 @@
         addHammer() { this.recalculateHammers(); }
         evolve() {
             this.isEvolved = true;
+            this.stats.size *= 1.5;
             playerData.persistentStats.weaponsEvolved = (playerData.persistentStats.weaponsEvolved || 0) + 1;
         }
         update(dt) {
@@ -3098,9 +3591,9 @@
                     camera.startShake(8, 0.2);
                 }
             }
-            const s = this.stats.size, handleLength = s * 1.2;
-            let headWidth = this.isEvolved ? s * 1.5 : s;
-            const effectiveRadius = this.stats.radius + handleLength + (headWidth / 2);
+            const s = this.stats.size;
+            let headWidth = s;
+            const effectiveRadius = this.stats.radius;
             for (const hammer of this.hammers) {
                 const hammerHeadX = this.player.x + Math.cos(hammer.angle) * effectiveRadius;
                 const hammerHeadY = this.player.y + Math.sin(hammer.angle) * effectiveRadius;
@@ -3125,20 +3618,42 @@
                 ctx.translate(hammerX, hammerY);
                 ctx.rotate(hammer.angle + Math.PI / 2); 
                 const s = this.stats.size;
-                const handleLength = s * 1.2, handleWidth = s * 0.2;
-                let headWidth = s, headHeight = s * 0.7;
-                let handleColor = '#8B4513', headColor = this.stats.color;
+                
                 if (this.isEvolved) {
-                    headWidth *= 1.5; headHeight *= 1.5;
-                    headColor = '#ffd700';
+                    const headColor = '#ffd700';
+                    const handleColor = '#d2b48c';
+                    const gemColor = '#ff4d4d';
+                    if (currentGraphics && currentGraphics.shadows) {
+                        ctx.shadowColor = headColor; ctx.shadowBlur = 25;
+                    }
+                    ctx.fillStyle = handleColor;
+                    ctx.fillRect(-s * 0.1, 0, s * 0.2, s * 1.2);
+                    ctx.fillStyle = headColor;
+                    ctx.fillRect(-s*0.3, -s*0.1, s*0.6, s*0.2);
+                    ctx.beginPath();
+                    ctx.moveTo(-s/2, -s*0.8);
+                    ctx.lineTo(s/2, -s*0.8);
+                    ctx.lineTo(s*0.4, -s*0.1);
+                    ctx.lineTo(-s*0.4, -s*0.1);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillStyle = gemColor;
+                    ctx.beginPath();
+                    ctx.arc(0, -s*0.45, s*0.15, 0, Math.PI * 2);
+                    ctx.fill();
+                } 
+                else {
+                    const headColor = this.stats.color;
+                    const handleColor = '#8B4513';
+                    if (currentGraphics && currentGraphics.shadows) {
+                        ctx.shadowColor = headColor; ctx.shadowBlur = 10;
+                    }
+                    ctx.fillStyle = handleColor;
+                    ctx.fillRect(-s * 0.1, 0, s * 0.2, s * 1.2);
+                    ctx.fillStyle = headColor;
+                    ctx.fillRect(-s / 2, -s * 0.7, s, s * 0.7);
                 }
-                ctx.fillStyle = handleColor;
-                ctx.fillRect(-handleWidth / 2, -handleLength, handleWidth, handleLength);
-                ctx.fillStyle = headColor;
-                if (currentGraphics && currentGraphics.shadows) {
-                    ctx.shadowColor = headColor; ctx.shadowBlur = 10;
-                }
-                ctx.fillRect(-headWidth / 2, -handleLength - headHeight, headWidth, headHeight);
+
                 ctx.restore();
             });
             ctx.restore();
@@ -3170,7 +3685,7 @@
             let chainedEnemies = [currentTarget];
             let chainPoints = [{x: this.player.x, y: this.player.y}, {x: currentTarget.x, y: currentTarget.y}];
             currentTarget.takeDamage(currentDamage);
-            if (this.isEvolved) currentTarget.applyStun();
+            if (this.isEvolved) currentTarget.applyStun(0.5);
             for (let i = 0; i < this.stats.chains; i++) {
                 availableEnemies = availableEnemies.filter(e => !chainedEnemies.includes(e));
                 let nextTarget = null;
@@ -3187,7 +3702,7 @@
                        currentDamage *= this.stats.damageFalloff;
                     }
                     nextTarget.takeDamage(currentDamage);
-                    if (this.isEvolved) nextTarget.applyStun();
+                    if (this.isEvolved) nextTarget.applyStun(0.5);
                     chainedEnemies.push(nextTarget);
                     chainPoints.push({x: nextTarget.x, y: nextTarget.y});
                     currentTarget = nextTarget;
@@ -3259,6 +3774,8 @@
             const dir = normalizeVector({x: target.x - this.player.x, y: target.y - this.player.y});
             
             const options = {
+                weaponId: this.id,
+                isEvolved: this.isEvolved,
                 pulls: true,
                 pullRadius: this.stats.pullRadius,
                 pullStrength: this.isEvolved ? 300 : 150,
@@ -3294,9 +3811,9 @@
                     if (target) {
                         const orbX = this.player.x + Math.cos(orb.angle) * orb.dist;
                         const orbY = this.player.y + Math.sin(orb.angle) * orb.dist;
-                        const proj = new HomingSoul(orbX, orbY, target, this.stats.speed, this.stats.damage * this.player.damageMultiplier);
-                        if(this.isEvolved) proj.pierce = 2; // Custom property for homing soul
-                        enemyProjectiles.push(proj); // Fires as "enemy" projectile to use homing logic, but damages enemies. Re-route in collision.
+                        const proj = new HomingSoul(orbX, orbY, target, this.stats.speed, this.stats.damage * this.player.damageMultiplier, 'player');
+                        if(this.isEvolved) proj.pierce = 2;
+                        enemyProjectiles.push(proj);
                         orb.cooldown = this.stats.cooldown;
                     }
                 }
@@ -3314,41 +3831,48 @@
             this.orbs.forEach(orb => {
                 const orbX = this.player.x + Math.cos(orb.angle) * orb.dist;
                 const orbY = this.player.y + Math.sin(orb.angle) * orb.dist;
-                if (currentGraphics && currentGraphics.shadows) {
-                    ctx.shadowColor = this.stats.color;
-                    ctx.shadowBlur = 15;
+                
+                if (this.isEvolved) {
+                    const eyeColor = '#ff1493';
+                    if (currentGraphics && currentGraphics.shadows) {
+                        ctx.shadowColor = eyeColor;
+                        ctx.shadowBlur = 20;
+                    }
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath(); ctx.arc(orbX, orbY, this.stats.size * 1.8, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = eyeColor;
+                    ctx.beginPath(); ctx.arc(orbX, orbY, this.stats.size * 1.5, 0, Math.PI * 2); ctx.fill();
+                    const target = findNearestEnemy({x: orbX, y: orbY}, false, 500);
+                    let pupilX = orbX, pupilY = orbY;
+                    if (target) {
+                        const dx = target.x - orbX, dy = target.y - orbY;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        pupilX += (dx/dist) * this.stats.size * 0.4;
+                        pupilY += (dy/dist) * this.stats.size * 0.4;
+                    }
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath(); ctx.arc(pupilX, pupilY, this.stats.size * 0.8, 0, Math.PI * 2); ctx.fill();
+                } 
+                else {
+                    if (currentGraphics && currentGraphics.shadows) {
+                        ctx.shadowColor = this.stats.color;
+                        ctx.shadowBlur = 15;
+                    }
+                    ctx.fillStyle = this.stats.color;
+                    ctx.beginPath();
+                    ctx.arc(orbX, orbY, this.stats.size * 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(orbX, orbY - this.stats.size * 0.8);
+                    ctx.lineTo(orbX, orbY + this.stats.size * 0.8);
+                    ctx.moveTo(orbX - this.stats.size * 0.8, orbY);
+                    ctx.lineTo(orbX + this.stats.size * 0.8, orbY);
+                    ctx.stroke();
                 }
-                ctx.fillStyle = this.stats.color;
-                ctx.beginPath();
-                ctx.arc(orbX, orbY, this.stats.size * 1.5, 0, Math.PI * 2);
-                ctx.fill();
             });
             ctx.restore();
-        }
-    }
-	// --- Funções Auxiliares e de Jogo ---
-    class AmbientParticle {
-        constructor() {
-            this.x = Math.random() * CONFIG.MAP_SIZE.width;
-            this.y = Math.random() * CONFIG.MAP_SIZE.height;
-            this.size = Math.random() * 1.5 + 1;
-            this.baseY = this.y;
-            this.speedX = (Math.random() - 0.5) * 15; 
-            this.amplitudeY = Math.random() * 10 + 5; 
-            this.frequencyY = Math.random() * 0.5 + 0.2; 
-            this.color = `rgba(200, 220, 255, ${Math.random() * 0.4 + 0.2})`;
-        }
-        update(dt) {
-            this.x += this.speedX * dt;
-            this.y = this.baseY + Math.sin(gameTime * this.frequencyY) * this.amplitudeY;
-            if (this.x < 0) this.x = CONFIG.MAP_SIZE.width;
-            if (this.x > CONFIG.MAP_SIZE.width) this.x = 0;
-        }
-        draw(ctx) {
-            ctx.fillStyle = this.color;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
         }
     }
 	function createAmbientParticles() {
@@ -3474,6 +3998,7 @@
                 case 'crystal_golem': newEnemy = new CrystalGolem(x, y); break;
                 case 'abyss_worm': newEnemy = new AbyssWorm(x, y); break;
                 case 'arcane_sentry': newEnemy = new ArcaneSentry(x, y); break;
+                default: newEnemy = new Slime(x,y); break;
             }
 
             if (wave >= 5 && Math.random() < 0.05 + (wave / 200)) {
@@ -3506,6 +4031,7 @@
         let nearest = null;
         let nearestDistSq = maxRange * maxRange;
         for (const enemy of enemies) {
+            if (!enemy.isAlive) continue;
             if(ignoreBoss && enemy.isBoss) continue;
             const distSq = (entity.x - enemy.x)**2 + (entity.y - enemy.y)**2;
             if (distSq < nearestDistSq) {
@@ -3544,19 +4070,14 @@
         }
         for (let i = enemyProjectiles.length - 1; i >= 0; i--) {
             const proj = enemyProjectiles[i];
-             // Special case for Runic Orb, which fires "enemy" projectiles that should hurt enemies.
-            if (proj instanceof HomingSoul && player.weapon.id === 'runic_orb') {
+            if (proj instanceof HomingSoul && (player.weapon.id === 'runic_orb' || proj.isPet)) {
                 for (const enemy of enemies) {
                     if (proj.hitEnemies?.includes(enemy)) continue;
                     if ((enemy.x - proj.x)**2 + (enemy.y - proj.y)**2 < (enemy.size / 2 + proj.size / 2)**2) {
-                        enemy.takeDamage(proj.damage);
-                        soundManager.play('hit');
+                        enemy.takeDamage(proj.damage); soundManager.play('hit');
                         if (!proj.hitEnemies) proj.hitEnemies = [];
                         proj.hitEnemies.push(enemy);
-                        if (proj.hitEnemies.length >= (proj.pierce || 1)) {
-                             enemyProjectiles.splice(i, 1);
-                             break;
-                        }
+                        if (proj.hitEnemies.length >= (proj.pierce || 1)) { enemyProjectiles.splice(i, 1); break; }
                     }
                 }
             } else if ((player.x - proj.x)**2 + (player.y - proj.y)**2 < (player.size / 2 + proj.size / 2)**2) {
@@ -3567,28 +4088,29 @@
         }
         const collectRadiusSq = (player.size + 10)**2;
         for (let i = expOrbs.length - 1; i >= 0; i--) {
-            if ((player.x - expOrbs[i].x)**2 + (player.y - expOrbs[i].y)**2 < collectRadiusSq) {
+            if ((player.x - expOrbs[i].x)**2 + (player.y - expOrbs[i].y)**2 < collectRadiusSq * player.pickupRadiusMultiplier**2) {
                 player.addXp(expOrbs[i].value); soundManager.play('collect'); 
                 expOrbs.splice(i, 1);
             }
         }
         for (let i = soulGems.length - 1; i >= 0; i--) {
-            if ((player.x - soulGems[i].x)**2 + (player.y - soulGems[i].y)**2 < collectRadiusSq) {
+            if ((player.x - soulGems[i].x)**2 + (player.y - soulGems[i].y)**2 < collectRadiusSq * player.pickupRadiusMultiplier**2) {
                 runGems++;
                 playerData.persistentStats.gemsCollected = (playerData.persistentStats.gemsCollected || 0) + 1;
                 soundManager.play('collect');
                 soulGems.splice(i, 1);
             }
         }
-        for (let i = powerups.length - 1; i >= 0; i--) {
+         for (let i = powerups.length - 1; i >= 0; i--) {
             const powerup = powerups[i];
-            if ((player.x - powerup.x)**2 + (player.y - powerup.y)**2 < collectRadiusSq) {
-                if (powerup instanceof HealingFragment) {
-                    player.heal(player.maxHp * powerup.healAmount);
-                } else if (powerup instanceof MagnetFragment) {
+            const collectionBox = (powerup instanceof HealingOrb) ? collectRadiusSq : (collectRadiusSq * player.pickupRadiusMultiplier**2);
+            if ((player.x - powerup.x)**2 + (player.y - powerup.y)**2 < collectionBox) {
+                if (powerup instanceof HealingFragment) { player.heal(player.maxHp * powerup.healAmount); } 
+                else if (powerup instanceof MagnetFragment) {
                     expOrbs.forEach(orb => { orb.x = player.x; orb.y = player.y; });
                     soulGems.forEach(gem => { gem.x = player.x; gem.y = player.y; });
                 }
+                else if (powerup instanceof HealingOrb) { player.heal(powerup.value); }
                 soundManager.play('levelUp');
                 powerups.splice(i, 1);
             }
@@ -3598,102 +4120,52 @@
         if (runGems >= player.rerollCost) {
             runGems -= player.rerollCost;
             player.rerollCost = Math.ceil(player.rerollCost * 1.5);
-            showAbilityChoice();
+            if (DOM.abilityModalTitle.textContent.includes("Companheiro")) {
+                showPetChoice();
+            } else {
+                showAbilityChoice();
+            }
         }
     }
-    function showAbilityChoice() {
-        if (gameState === 'gameOver' || gameState === 'paused') return; 
-        gameState = 'paused_ability'; 
-        
+    function showPetChoice() {
+        DOM.abilityModalTitle.textContent = "Escolha um Companheiro!";
+        DOM.rerollButton.style.display = 'block';
         DOM.rerollButton.textContent = `Rerrolar (${player.rerollCost} ♦)`;
         DOM.rerollButton.disabled = runGems < player.rerollCost;
 
-        const weaponId = player.weapon.id;
-        let evolutionAvailable = null;
-        const evolution = CONFIG.WEAPON_EVOLUTIONS[weaponId];
-        if (evolution && !player.weapon.isEvolved) {
-            const allReqsMet = evolution.requires.every(reqId => {
-                const reqUpgrade = CONFIG.WEAPON_UPGRADES[weaponId].find(u => u.id === reqId);
-                return (player.abilityLevels[reqId] || 0) >= (reqUpgrade.max || 1);
-            });
-            if (allReqsMet) { evolutionAvailable = evolution; }
-        }
-        const generalAbilities = CONFIG.GENERAL_ABILITIES.filter(a => (player.abilityLevels[a.id] || 0) < (a.max || 99));
-        const weaponAbilities = (CONFIG.WEAPON_UPGRADES[weaponId] || []).filter(a => (player.abilityLevels[a.id] || 0) < (a.max || 99));
-        let weightedPool = [...generalAbilities];
-        for (let i = 0; i <= player.weaponUpgradeLuck; i++) {
-            weightedPool.push(...weaponAbilities);
-        }
+        const petPool = Object.keys(CONFIG.PETS);
         let chosen = [];
-        if (evolutionAvailable) { chosen.push(evolutionAvailable); }
-        const uniquePool = [...new Set(weightedPool)];
-        while(chosen.length < 3 && uniquePool.length > 0) {
-            const randomIndex = Math.floor(Math.random() * uniquePool.length);
-            const selected = uniquePool.splice(randomIndex, 1)[0];
-            if (!chosen.find(c => c.id === selected.id)) {
-                chosen.push(selected);
-            }
+        while (chosen.length < 3 && petPool.length > 0) {
+            const randomIndex = Math.floor(Math.random() * petPool.length);
+            chosen.push(petPool.splice(randomIndex, 1)[0]);
         }
-        if (chosen.length === 0) {
-            chosen.push({id: 'gem_cache', name: 'Tesouro', desc: 'Ganhe 25 gemas.', apply: () => { runGems += 25; player.weaponUpgradeLuck++; } });
-            chosen.push({id: 'health_potion', name: 'Poção', desc: 'Recupere 30% da vida máxima.', apply: () => { player.hp = Math.min(player.maxHp, player.hp + player.maxHp * 0.3); player.weaponUpgradeLuck++; } });
-        }
+
         DOM.abilityOptions.innerHTML = '';
-        chosen.forEach(ability => {
+        chosen.forEach(petId => {
+            const petInfo = CONFIG.PETS[petId];
             const card = document.createElement('div');
             card.className = 'card p-4 text-center';
-            const currentLevel = player.abilityLevels[ability.id] || 0;
-            
-            let displayName = ability.name;
-            if (ability.max && !ability.id.startsWith('evolve')) {
-                displayName += ` <span class="text-sm opacity-75">(Nível ${currentLevel + 1}/${ability.max})</span>`;
-            }
-
-            let displayDesc = Array.isArray(ability.desc) ? ability.desc[currentLevel] : ability.desc;
-
-            if (ability.id.startsWith('evolve')) card.classList.add('evolution-card');
-            card.innerHTML = `<h3 class="text-xl mb-2">${displayName}</h3><p class="text-sm">${displayDesc || ''}</p>`;
-            card.onclick = () => selectAbility(ability);
+            const rarityColor = RARITY_COLORS[4];
+            const titleStyle = `color: ${rarityColor}; text-shadow: 0 0 10px ${rarityColor}70;`;
+            card.innerHTML = `<h3 class="text-xl mb-2" style="${titleStyle}">${petInfo.name}</h3><p class="text-sm">${petInfo.desc}</p>`;
+            card.onclick = () => selectPet(petId);
             DOM.abilityOptions.appendChild(card);
         });
         DOM.abilityModal.style.display = 'flex';
     }
-    function selectAbility(ability) {
-        const weaponId = player.weapon.id;
-        const isWeaponUpgrade = (CONFIG.WEAPON_UPGRADES[weaponId] || []).some(w => w.id === ability.id);
-        if (isWeaponUpgrade || ability.id.startsWith('evolve')) {
-            player.weaponUpgradeLuck = 0;
-        } else {
-            player.weaponUpgradeLuck++;
+    function selectPet(petId) {
+        switch (petId) {
+            case 'wisp': player.pet = new WispPet(player); break;
+            case 'golem': player.pet = new GolemPet(player); break;
+            case 'sprite': player.pet = new SpritePet(player); break;
+            case 'sprout': player.pet = new SproutPet(player); break;
+            case 'shadow_pup': player.pet = new ShadowPupPet(player); break;
         }
-        if (!ability.id.startsWith('evolve')) {
-            player.abilityLevels[ability.id] = (player.abilityLevels[ability.id] || 0) + 1;
-        }
-        ability.apply(player);
         DOM.abilityModal.style.display = 'none';
         gameState = 'playing';
         lastTime = performance.now();
     }
-    function gameOver() {
-        gameState = 'gameOver';
-        soundManager.play('gameOver');
-        playerData.totalSoulGems += runGems;
-        
-        playerData.persistentStats.gamesPlayed = (playerData.persistentStats.gamesPlayed || 0) + 1;
-        playerData.persistentStats.totalDamageDealt = (playerData.persistentStats.totalDamageDealt || 0) + runStats.damageDealt;
-        playerData.persistentStats.maxLevelReached = Math.max(playerData.persistentStats.maxLevelReached || 0, player.level);
-        playerData.persistentStats.maxTimeSurvived = Math.max(playerData.persistentStats.maxTimeSurvived || 0, gameTime);
-        playerData.persistentStats.maxWaveReached = Math.max(playerData.persistentStats.maxWaveReached || 0, wave);
-
-        saveProgress();
-        const minutes = Math.floor(gameTime / 60), seconds = Math.floor(gameTime % 60).toString().padStart(2, '0');
-        DOM.timeSurvived.textContent = `${minutes}:${seconds}`;
-        DOM.finalGems.textContent = runGems;
-        DOM.enemiesDefeatedStat.textContent = runStats.enemiesDefeated;
-        DOM.damageDealtStat.textContent = Math.round(runStats.damageDealt);
-        DOM.levelReachedStat.textContent = player.level;
-        DOM.gameOverModal.style.display = 'flex';
-    }
+    
     // --- Loop Principal e Funções de Desenho ---
     function update(dt) {
         if (gameState !== 'playing') return;
@@ -3764,6 +4236,7 @@
         ctx.restore();
         if(player) player.weapon?.draw(ctx);
         if(player) player.draw(ctx);
+        if(player?.pet) player.pet.draw(ctx);
         for(const e of enemies) e.draw(ctx);
         if (playerData.general.showTargetIndicator) drawTargetIndicator();
         for(const p of projectiles) p.draw(ctx);
@@ -3988,6 +4461,7 @@
         const lastSeenVersion = localStorage.getItem('lastSeenVersion');
         if (lastSeenVersion !== GAME_VERSION) {
             DOM.changelogModal.style.display = 'flex';
+            localStorage.setItem('lastSeenVersion', GAME_VERSION);
         }
     }
     function applyAllSettings() {
@@ -4043,9 +4517,18 @@
         weaponHtml += `<li>${weaponName}</li>`;
         weaponHtml += '</ul>';
         DOM.pauseSummary.innerHTML += weaponHtml;
+
+        if (player.pet) {
+            let petHtml = '<h3 class="mt-4">Companheiro</h3><ul>';
+            petHtml += `<li>${CONFIG.PETS[player.pet.id].name}</li>`;
+            petHtml += '</ul>';
+            DOM.pauseSummary.innerHTML += petHtml;
+        }
+
         let abilitiesHtml = '<h3 class="mt-4">Melhorias</h3><ul>';
         const abilityNames = { ...CONFIG.GENERAL_ABILITIES.reduce((obj, item) => ({...obj, [item.id]: item.name }), {}),
-            ...Object.values(CONFIG.WEAPON_UPGRADES).flat().reduce((obj, item) => ({...obj, [item.id]: item.name }), {})
+            ...Object.values(CONFIG.WEAPON_UPGRADES).flat().reduce((obj, item) => ({...obj, [item.id]: item.name }), {}),
+            ...CONFIG.PET_UPGRADES.reduce((obj, item) => ({...obj, [item.id]: item.name }), {})
         };
         const sortedAbilities = Object.keys(player.abilityLevels).sort();
         if (sortedAbilities.length > 0) {
@@ -4061,7 +4544,7 @@
         DOM.pauseSummary.innerHTML += abilitiesHtml;
     }
     function togglePause(isManual = true) {
-        if (gameState === 'gameOver' || (gameState === 'paused_ability' && isManual)) return;
+        if (gameState === 'gameOver' || gameState === 'victory' || (gameState === 'paused_ability' && isManual)) return;
         const shouldPause = gameState === 'playing';
         if (shouldPause) {
             gameState = 'paused';
@@ -4072,6 +4555,167 @@
             DOM.pauseModal.style.display = 'none';
             lastTime = performance.now(); 
         }
+    }
+    function showAbilityChoice() {
+        if (gameState === 'gameOver' || gameState === 'paused' || gameState === 'victory') return;
+        gameState = 'paused_ability';
+    
+        DOM.abilityModalTitle.textContent = "Escolha uma Melhoria!";
+        DOM.rerollButton.style.display = 'block';
+        DOM.rerollButton.textContent = `Rerrolar (${player.rerollCost} ♦)`;
+        DOM.rerollButton.disabled = runGems < player.rerollCost;
+    
+        const weaponId = player.weapon.id;
+        
+        const evolution = CONFIG.WEAPON_EVOLUTIONS[weaponId];
+        let evolutionAvailable = null;
+        if (evolution && !player.weapon.isEvolved) {
+            const allReqsMet = evolution.requires.every(reqId => {
+                const reqUpgrade = CONFIG.WEAPON_UPGRADES[weaponId].find(u => u.id === reqId);
+                return (player.abilityLevels[reqId] || 0) >= (reqUpgrade.max || 1);
+            });
+            if (allReqsMet) {
+                evolutionAvailable = evolution;
+            }
+        }
+    
+        let possibleAbilities = [];
+        possibleAbilities.push(...CONFIG.GENERAL_ABILITIES.filter(a => (player.abilityLevels[a.id] || 0) < (a.max || 99)));
+        possibleAbilities.push(...(CONFIG.WEAPON_UPGRADES[weaponId] || []).filter(a => (player.abilityLevels[a.id] || 0) < (a.max || 99)));
+    
+        if (!player.pet && Math.random() < 0.25) { 
+            possibleAbilities.push({
+                id: 'summon_pet',
+                name: 'Invocar Companheiro',
+                desc: 'Escolha um aliado fiel para te ajudar na batalha.',
+                max: 1,
+                isPetSummon: true,
+                apply: () => { showPetChoice(); }
+            });
+        }
+    
+        if (player.pet) {
+            const petUpgrades = CONFIG.PET_UPGRADES.filter(up =>
+                up.for.includes(player.pet.id) && (player.abilityLevels[up.id] || 0) < up.max
+            );
+            possibleAbilities.push(...petUpgrades);
+        }
+    
+        let chosen = [];
+        if (evolutionAvailable) {
+            chosen.push(evolutionAvailable);
+        }
+    
+        while (chosen.length < 3 && possibleAbilities.length > 0) {
+            const randomIndex = Math.floor(Math.random() * possibleAbilities.length);
+            chosen.push(possibleAbilities.splice(randomIndex, 1)[0]);
+        }
+        
+        if (chosen.length < 3) {
+            const fallbacks = [
+                { id: 'gem_cache', name: 'Tesouro', desc: 'Ganhe 25 gemas.', max: 99, apply: () => { runGems += 25; } },
+                { id: 'health_potion', name: 'Poção', desc: 'Recupere 30% da vida máxima.', max: 99, apply: () => { player.heal(player.maxHp * 0.3); } }
+            ];
+            while(chosen.length < 3 && fallbacks.length > 0) {
+                 chosen.push(fallbacks.shift());
+            }
+        }
+
+        DOM.abilityOptions.innerHTML = '';
+        chosen.forEach(ability => {
+            const card = document.createElement('div');
+            card.className = 'card p-4 text-center';
+            const currentLevel = player.abilityLevels[ability.id] || 0;
+
+            let rarity = 1;
+            if (ability.id.startsWith('evolve') || ability.isPetSummon) {
+                rarity = 5;
+            } else if (ability.id.startsWith('pet_')) {
+                rarity = 4;
+            } else if (ability.max) {
+                 rarity = currentLevel + 1;
+                 if (ability.max === 3) {
+                    rarity = THREE_LEVEL_RARITY[rarity] || 1;
+                 }
+            }
+            const rarityColor = RARITY_COLORS[rarity] || '#ffffff';
+            
+            const titleStyle = `color: ${rarityColor}; text-shadow: 0 0 10px ${rarityColor}70;`;
+            
+            let displayName = ability.name;
+            if (ability.max && !ability.id.startsWith('evolve') && !ability.isPetSummon) {
+                displayName += ` <span class="text-sm opacity-75">(Nível ${currentLevel + 1}/${ability.max})</span>`;
+            }
+
+            let displayDesc = Array.isArray(ability.desc) ? ability.desc[currentLevel] : ability.desc;
+
+            if (ability.id.startsWith('evolve')) card.classList.add('evolution-card');
+            
+            card.innerHTML = `
+                <div class="absolute top-0 left-0 w-full h-2" style="background-color: ${rarityColor};"></div>
+                <h3 class="text-xl mb-2 mt-2" style="${titleStyle}">${displayName}</h3>
+                <p class="text-sm">${displayDesc || ''}</p>
+            `;
+            card.onclick = () => selectAbility(ability);
+            DOM.abilityOptions.appendChild(card);
+        });
+
+        DOM.abilityModal.style.display = 'flex';
+    }
+
+    function selectAbility(ability) {
+        if (ability.isPetSummon) {
+            ability.apply();
+            return;
+        }
+        const weaponId = player.weapon.id;
+        const isWeaponUpgrade = (CONFIG.WEAPON_UPGRADES[weaponId] || []).some(w => w.id === ability.id);
+        if (isWeaponUpgrade || ability.id.startsWith('evolve')) {
+            player.weaponUpgradeLuck = 0;
+        } else {
+            player.weaponUpgradeLuck++;
+        }
+        if (!ability.id.startsWith('evolve')) {
+            player.abilityLevels[ability.id] = (player.abilityLevels[ability.id] || 0) + 1;
+        }
+        ability.apply(player);
+        DOM.abilityModal.style.display = 'none';
+        gameState = 'playing';
+        lastTime = performance.now();
+    }
+    
+    function gameOver(isVictory = false) {
+        if (gameState === 'gameOver' || gameState === 'victory') return;
+        
+        if (isVictory) {
+            gameState = 'victory';
+            DOM.endScreenTitle.textContent = 'Vitória!';
+            DOM.endScreenTitle.className = 'text-3xl sm:text-4xl mb-2 text-yellow-400';
+            DOM.finalGemsContainer.style.display = 'none';
+        } else {
+            gameState = 'gameOver';
+            soundManager.play('gameOver');
+            DOM.endScreenTitle.textContent = 'Fim de Jogo';
+            DOM.endScreenTitle.className = 'text-3xl sm:text-4xl mb-2 text-red-500';
+            DOM.finalGemsContainer.style.display = 'block';
+            DOM.finalGems.textContent = runGems;
+        }
+
+        playerData.totalSoulGems += runGems;
+        
+        playerData.persistentStats.gamesPlayed = (playerData.persistentStats.gamesPlayed || 0) + 1;
+        playerData.persistentStats.totalDamageDealt = (playerData.persistentStats.totalDamageDealt || 0) + runStats.damageDealt;
+        playerData.persistentStats.maxLevelReached = Math.max(playerData.persistentStats.maxLevelReached || 0, player.level);
+        playerData.persistentStats.maxTimeSurvived = Math.max(playerData.persistentStats.maxTimeSurvived || 0, gameTime);
+        playerData.persistentStats.maxWaveReached = Math.max(playerData.persistentStats.maxWaveReached || 0, wave);
+
+        saveProgress();
+        const minutes = Math.floor(gameTime / 60), seconds = Math.floor(gameTime % 60).toString().padStart(2, '0');
+        DOM.timeSurvived.textContent = `${minutes}:${seconds}`;
+        DOM.enemiesDefeatedStat.textContent = runStats.enemiesDefeated;
+        DOM.damageDealtStat.textContent = Math.round(runStats.damageDealt);
+        DOM.levelReachedStat.textContent = player.level;
+        DOM.gameOverModal.style.display = 'flex';
     }
     // --- Event Listeners ---
     function setupEventListeners() {
@@ -4112,7 +4756,6 @@
         });
         DOM.closeChangelogButton.addEventListener('click', () => {
             DOM.changelogModal.style.display = 'none';
-            localStorage.setItem('lastSeenVersion', GAME_VERSION);
         });
         DOM.showUpgradesTab.addEventListener('click', () => {
             DOM.upgradesContainer.style.display = 'grid'; DOM.weaponShopContainer.style.display = 'none';
@@ -4181,13 +4824,11 @@
         });
         DOM.resumeButton.addEventListener('click', () => togglePause(true));
         DOM.quitButton.addEventListener('click', () => {
-            togglePause(false); 
-            DOM.gameOverModal.style.display = 'none';
+            gameState = 'start';
             DOM.pauseModal.style.display = 'none';
             DOM.hud.style.display = 'none';
             DOM.startModal.style.display = 'flex';
-            updateGemDisplays(); 
-            gameState = 'start';
+            updateGemDisplays();
         });
         window.addEventListener('keydown', e => {
             keys[e.key.toLowerCase()] = true;
@@ -4263,6 +4904,6 @@
     }
     // --- Iniciar o Jogo ---
     init();
-    </script>
+	</script>
 </body>
 </html>
