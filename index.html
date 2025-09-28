@@ -706,13 +706,13 @@
             // Inimigos Iniciais (Onda 1-9)
             'slime': { size: 18, color: '#4dff4d', hp: 20, maxHp: 25, speed: 250, damage: 10, xp: 3, stunDuration: 0.5 },
             'bat':   { size: 12, color: '#ff4da6', hp: 20, maxHp: 25, speed: 230, damage: 12, xp: 5, aggroRange: 350, diveSpeed: 1000, diveWindup: 0.3, diveCooldown: 2.5, circlingDist: 200, stunDuration: 0.4 },
-            'brute': { size: 30, color: '#ff4d4d', hp: 90, maxHp: 100, speed: 120, damage: 20, xp: 9, slamDamage: 30, stunDuration: 0.5 },
+            'brute': { size: 30, color: '#ff4d4d', hp: 60, maxHp: 70, speed: 120, damage: 20, xp: 9, slamDamage: 30, stunDuration: 0.5 },
             'mage':  { size: 22, color: '#be4dff', hp: 30, maxHp:40, speed: 130, damage: 8, xp: 13, stunDuration: 0.5 },
             
             // Inimigos Avançados (Onda 10+)
-            'wraith': { size: 20, color: '#a2a2d0', hp: 80, maxHp: 80, speed: 300, damage: 18, xp: 15, stunDuration: 0.5 },
-            'crystal_golem': { size: 35, color: '#87cefa', hp: 250, maxHp: 250, speed: 80, damage: 25, xp: 20, stunDuration: 0.1 },
-            'abyss_worm': { size: 25, color: '#663399', hp: 120, maxHp: 120, speed: 400, damage: 30, xp: 18, stunDuration: 0.3 },
+            'wraith': { size: 20, color: '#a2a2d0', hp: 80, maxHp: 80, speed: 280, damage: 18, xp: 15, stunDuration: 0.5 },
+            'crystal_golem': { size: 35, color: '#87cefa', hp: 200, maxHp: 200, speed: 80, damage: 25, xp: 20, stunDuration: 0.1 },
+            'abyss_worm': { size: 25, color: '#663399', hp: 120, maxHp: 120, speed: 400, damage: 25, xp: 18, stunDuration: 0.3 },
             'arcane_sentry': { size: 28, color: '#ffdf00', hp: 150, maxHp: 150, speed: 0, damage: 15, xp: 22, stunDuration: 0 },
 
             // Chefes
@@ -721,9 +721,9 @@
             'lava_spawn': { hp: 50, size: 15, speed: 200, damage: 15, xp: 1 }
         },
         WEAPONS: {
-            'fireball': { name: 'Bola de Fogo', desc: 'Dispara uma bola de fogo que perfura inimigos.', cooldown: 1.0, damage: 13, speed: 400, pierce: 1, size: 8, color: '#ff8c1a', cost: 0, initialRange: 400 },
+            'fireball': { name: 'Bola de Fogo', desc: 'Dispara uma bola de fogo que perfura inimigos.', cooldown: 0.9, damage: 13, speed: 450, pierce: 1, size: 8, color: '#ff8c1a', cost: 0, initialRange: 400 },
             'hammer': { name: 'Martelo Giratório', desc: 'Um martelo que gira ao seu redor.', cooldown: 0.2, damage: 16, radius: 80, rotationSpeed: 4, size: 20, count: 1, color: '#cccccc', cost: 150 },
-            'lightning_chain': { name: 'Corrente Elétrica', desc: 'Raio que salta entre inimigos. Dano reduzido a cada salto.', cooldown: 1.5, damage: 12, chains: 2, chainRadius: 125, damageFalloff: 0.75, initialRange: 400, color: '#4dffff', cost: 300 },
+            'lightning_chain': { name: 'Corrente Elétrica', desc: 'Raio que salta entre inimigos. Dano reduzido a cada salto.', cooldown: 1.3, damage: 12, chains: 2, chainRadius: 125, damageFalloff: 0.75, initialRange: 400, color: '#4dffff', cost: 300 },
             // Novas Armas (desbloqueáveis)
             'spectral_blades': { name: 'Lâminas Espectrais', desc: 'Corta inimigos em um arco rápido à sua frente.', cooldown: 0.4, damage: 12, range: 100, arc: Math.PI / 2, count: 2, color: '#aaffff', cost: 500 },
             'singularity_cannon': { name: 'Canhão de Singularidade', desc: 'Dispara um orbe que atrai inimigos antes de explodir.', cooldown: 3.5, damage: 28, speed: 150, size: 15, pullRadius: 200, explosionRadius: 150, color: '#9400d3', cost: 800 },
@@ -3976,10 +3976,32 @@ class SpectralElder extends Enemy {
             spawnShrine();
         }
 
-        const enemiesToSpawn = 5 + wave * 3;
-        const spawnPool = wave < 10 
-            ? ['slime', 'bat', 'brute', 'mage'] 
-            : ['wraith', 'crystal_golem', 'abyss_worm', 'arcane_sentry'];
+        const enemiesToSpawn = 4 + wave * 3;
+        let spawnPool;
+
+        // --- Ondas Iniciais ---
+        if (wave < 3) {
+            // Ondas 1-2: Apenas inimigos básicos para o jogador aprender.
+            spawnPool = ['slime', 'bat'];
+        } else if (wave < 5) {
+            // Ondas 3-4: Introduz o Mago, que ataca à distância.
+            spawnPool = ['slime', 'bat', 'mage'];
+        } else if (wave < 10) {
+            // Ondas 5-9: Introduz o Bruto, o inimigo mais forte do início.
+            spawnPool = ['slime', 'bat', 'brute', 'mage'];
+        
+        // --- Ondas de Transição (Equilíbrio Pós-Onda 10) ---
+        } else if (wave < 14) {
+            // Ondas 10-13: Remove os inimigos mais fracos (Slime, Bat).
+            // Mantém os mais fortes do grupo anterior (Brute, Mage) e introduz dois novos (Wraith, Abyss Worm).
+            // Isso cria uma mistura de padrões conhecidos com novos desafios.
+            spawnPool = ['brute', 'mage', 'wraith', 'abyss_worm'];
+        } else {
+            // Ondas 14 em diante: O desafio final antes do chefe.
+            // Remove os inimigos antigos e introduz os de elite (Crystal Golem, Arcane Sentry).
+            // Agora o jogo espera que o jogador domine os novos inimigos.
+            spawnPool = ['wraith', 'crystal_golem', 'abyss_worm', 'arcane_sentry'];
+        }
 
         for (let i = 0; i < enemiesToSpawn; i++) {
             const angle = Math.random() * Math.PI * 2;
