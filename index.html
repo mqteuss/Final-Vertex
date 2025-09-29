@@ -2504,27 +2504,26 @@ class SpectralElder extends Enemy {
         }
     }
 	// --- Sistema de Pets ---
+   // --- Sistema de Pets ---
     class Pet {
         constructor(player, id) {
             this.player = player;
             this.id = id;
             this.x = player.x;
             this.y = player.y - 50;
-            this.followDistance = 50;
-            this.speed = player.speed * 0.9;
+            this.followDistance = 60; // Aumentado um pouco para melhor posicionamento
+            this.speed = player.speed * 1.2; // Aumentado para melhor acompanhamento
             this.cooldownMultiplier = 1;
             this.damageMultiplier = 1;
         }
         update(dt) {
-            const dx = this.player.x - this.x;
-            const dy = (this.player.y - this.followDistance) - this.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+            // Movimento de acompanhamento suavizado (Lerp)
+            const targetX = this.player.x + (this.player.lastMoveDirection.x * -10);
+            const targetY = this.player.y - this.followDistance;
+            const lerpFactor = 0.08;
 
-            if (dist > 1) {
-                const moveSpeed = Math.min(dist, this.speed * dt);
-                this.x += (dx / dist) * moveSpeed;
-                this.y += (dy / dist) * moveSpeed;
-            }
+            this.x += (targetX - this.x) * lerpFactor;
+            this.y += (targetY - this.y) * lerpFactor;
         }
     }
 
@@ -2535,17 +2534,35 @@ class SpectralElder extends Enemy {
             this.cooldown = stats.baseCooldown;
             this.damage = stats.baseDamage;
             this.timer = this.cooldown;
+            this.blinkTimer = 0;
+            this.blinkTarget = {x: this.x, y: this.y};
         }
         update(dt) {
-            super.update(dt);
+            // Movimento de "piscar"
+            this.blinkTimer -= dt;
+            if (this.blinkTimer <= 0) {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 20 + Math.random() * 20;
+                this.blinkTarget.x = this.player.x + Math.cos(angle) * dist;
+                this.blinkTarget.y = this.player.y - this.followDistance + Math.sin(angle) * dist;
+                this.blinkTimer = 0.4 + Math.random() * 0.3;
+                 createParticleBurst(this.x, this.y, 5, '#ff8c1a', 0.3, 3, 80);
+            }
+             // Movimento suavizado para o alvo do "piscar"
+            this.x += (this.blinkTarget.x - this.x) * 0.1;
+            this.y += (this.blinkTarget.y - this.y) * 0.1;
+
+
             this.timer -= dt;
             if (this.timer <= 0) {
-                const target = findNearestEnemy(this, false, 400);
+                const target = findNearestEnemy(this, false, 450); // Alcance aumentado
                 if (target) {
                     const finalDamage = this.damage * this.player.damageMultiplier * this.damageMultiplier;
                     const proj = new HomingSoul(this.x, this.y, target, 250, finalDamage, 'player');
-                    proj.size = 8;
+                    proj.size = 10;
                     proj.isPet = true; 
+                    // Marca o projétil como sendo do Wisp para desenho customizado
+                    proj.isWispFire = true; 
                     enemyProjectiles.push(proj);
                     this.timer = this.cooldown * this.cooldownMultiplier;
                 }
@@ -2553,17 +2570,51 @@ class SpectralElder extends Enemy {
         }
         draw(ctx) {
             ctx.save();
-            const pulse = 1 + Math.sin(gameTime * 8) * 0.2;
+            ctx.globalAlpha *= playerData.graphics.effectsOpacity;
+
+            const pulse = 1 + Math.sin(gameTime * 10) * 0.1;
             const color = '#ff8c1a';
+            const eyeColor = '#ffff00';
+
+            // Chama da cauda
+            const tailAngle = Math.atan2(this.y - this.player.y, this.x - this.player.x);
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(tailAngle);
+            const gradTail = ctx.createLinearGradient(0, 0, 40 * pulse, 0);
+            gradTail.addColorStop(0, color);
+            gradTail.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradTail;
+            ctx.beginPath();
+            ctx.moveTo(0,0);
+            ctx.quadraticCurveTo(20 * pulse, -15 * pulse, 40 * pulse, 0);
+            ctx.quadraticCurveTo(20 * pulse, 15 * pulse, 0, 0);
+            ctx.fill();
+            ctx.restore();
+
+
+            // Crânio
+            ctx.fillStyle = '#222';
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 2;
             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = color; ctx.shadowBlur = 15 * pulse;
+                ctx.shadowColor = color; ctx.shadowBlur = 20 * pulse;
             }
-            const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 10 * pulse);
-            grad.addColorStop(0, '#ffffaa');
-            grad.addColorStop(0.6, color);
-            grad.addColorStop(1, 'rgba(255, 140, 26, 0)');
-            ctx.fillStyle = grad;
-            ctx.beginPath(); ctx.arc(this.x, this.y, 10 * pulse, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 10 * pulse, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Olhos brilhantes
+            ctx.fillStyle = eyeColor;
+             if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = eyeColor; ctx.shadowBlur = 15;
+            }
+            ctx.beginPath();
+            ctx.arc(this.x - 4 * pulse, this.y - 2 * pulse, 2.5 * pulse, 0, Math.PI * 2);
+            ctx.arc(this.x + 4 * pulse, this.y - 2 * pulse, 2.5 * pulse, 0, Math.PI * 2);
+            ctx.fill();
+
             ctx.restore();
         }
     }
@@ -2577,35 +2628,98 @@ class SpectralElder extends Enemy {
             this.shieldActive = false;
             this.shieldHits = stats.baseShieldHits;
             this.shieldHitsLeft = 0;
+
+            // Pedras flutuantes
+            this.rocks = [
+                { id: 'torso', size: 18, angle: 0, dist: 0, rotation: 0 },
+                { id: 'fist1', size: 10, angle: Math.PI * 1.8, dist: 25, rotation: Math.random() * Math.PI },
+                { id: 'fist2', size: 10, angle: Math.PI * 1.2, dist: 25, rotation: Math.random() * Math.PI },
+            ];
         }
         update(dt) {
             super.update(dt);
+            // Animação das pedras
+            this.rocks.forEach(rock => {
+                rock.angle += dt * 0.5;
+                rock.rotation += dt * (rock.id === 'torso' ? 0.2 : 1.5);
+            });
+
+
             this.timer -= dt;
             if (this.timer <= 0 && !this.shieldActive) {
                 this.shieldActive = true;
                 this.shieldHitsLeft = this.shieldHits;
                 this.timer = this.cooldown * this.cooldownMultiplier;
-                floatingTexts.push(new FloatingText(player.x, player.y - 30, 'ESCUDO!', '#c0c0c0', 2, 12));
+                
+                // Efeito visual da criação do escudo
+                effects.push(new ShieldFormationEffect(
+                    {x: this.x + Math.cos(this.rocks[1].angle) * this.rocks[1].dist, y: this.y + Math.sin(this.rocks[1].angle) * this.rocks[1].dist},
+                    {x: this.x + Math.cos(this.rocks[2].angle) * this.rocks[2].dist, y: this.y + Math.sin(this.rocks[2].angle) * this.rocks[2].dist},
+                    this.player
+                ));
+
+                floatingTexts.push(new FloatingText(player.x, player.y - 30, 'ESCUDO!', '#abfffa', 2, 12));
             }
         }
         draw(ctx) {
             ctx.save();
+            ctx.globalAlpha *= playerData.graphics.effectsOpacity;
+
+            // Desenha o escudo ativo
             if(this.shieldActive) {
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(220, 220, 255, ${0.5 + Math.sin(gameTime*10) * 0.3})`;
+                const shieldAlpha = 0.4 + Math.sin(gameTime*15) * 0.3;
+                ctx.strokeStyle = `rgba(171, 255, 250, ${shieldAlpha})`;
+                ctx.fillStyle = `rgba(171, 255, 250, ${shieldAlpha * 0.2})`;
                 ctx.lineWidth = 3;
+                if (currentGraphics && currentGraphics.shadows) {
+                   ctx.shadowColor = '#abfffa'; ctx.shadowBlur = 15;
+                }
                 ctx.arc(this.player.x, this.player.y, this.player.size + 8, 0, Math.PI * 2);
                 ctx.stroke();
+                ctx.fill();
             }
-            const color = '#a9a9a9';
-            if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = '#555555'; ctx.shadowBlur = 10;
-            }
-            ctx.fillStyle = color;
-            ctx.fillRect(this.x - 10, this.y - 12, 20, 24); // Body
-            ctx.fillStyle = '#696969';
-            ctx.fillRect(this.x - 14, this.y - 8, 4, 12); // Left arm
-            ctx.fillRect(this.x + 10, this.y - 8, 4, 12); // Right arm
+
+            const runeColor = '#abfffa';
+            // Desenha as rochas
+            this.rocks.forEach(rock => {
+                const rockX = this.x + Math.cos(rock.angle) * rock.dist;
+                const rockY = this.y + Math.sin(rock.angle) * rock.dist;
+                
+                ctx.save();
+                ctx.translate(rockX, rockY);
+                ctx.rotate(rock.rotation);
+
+                ctx.fillStyle = '#696969';
+                ctx.strokeStyle = '#444';
+                ctx.lineWidth = 2;
+
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = '#000'; ctx.shadowBlur = 10;
+                }
+
+                ctx.beginPath();
+                ctx.rect(-rock.size/2, -rock.size/2, rock.size, rock.size);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Desenha runas no torso
+                if (rock.id === 'torso') {
+                    const readyPulse = this.timer <= 0 ? (0.5 + Math.sin(gameTime * 10) * 0.5) : 0;
+                    ctx.fillStyle = runeColor;
+                    ctx.globalAlpha *= (this.timer / (this.cooldown * this.cooldownMultiplier)) * 0.5 + readyPulse;
+                     if (currentGraphics && currentGraphics.shadows) {
+                        ctx.shadowColor = runeColor; ctx.shadowBlur = 15;
+                    }
+                    ctx.font = `${rock.size * 0.8}px "Press Start 2P"`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('+', 0, 0);
+                }
+
+                ctx.restore();
+            });
+
             ctx.restore();
         }
     }
@@ -2620,12 +2734,20 @@ class SpectralElder extends Enemy {
             this.stunDurationMultiplier = 1;
         }
         update(dt) {
-            super.update(dt);
+            // Vibração de movimento
+            const targetX = this.player.x + 40;
+            const targetY = this.player.y - this.followDistance;
+            const lerpFactor = 0.05;
+            this.x += (targetX - this.x) * lerpFactor + (Math.random() - 0.5) * 4;
+            this.y += (targetY - this.y) * lerpFactor + (Math.random() - 0.5) * 4;
+
+
             this.timer -= dt;
             if (this.timer <= 0) {
-                 const target = findNearestEnemy(this, false, 250);
+                 const target = findNearestEnemy(this, false, 300); // Alcance aumentado
                  if(target) {
                     target.applyStun(this.stunDuration * this.stunDurationMultiplier);
+                    // O raio já é um efeito instantâneo que conecta o pet ao inimigo, como solicitado.
                     effects.push(new LightningBolt([{x:this.x, y:this.y}, {x:target.x, y:target.y}], false));
                     this.timer = this.cooldown * this.cooldownMultiplier;
                  }
@@ -2633,14 +2755,40 @@ class SpectralElder extends Enemy {
         }
         draw(ctx) {
             ctx.save();
-            const pulse = 1 + Math.sin(gameTime * 20) * 0.4;
-            const color = '#ffff4d';
-            if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = color; ctx.shadowBlur = 15 * pulse;
+            ctx.globalAlpha *= playerData.graphics.effectsOpacity;
+            const pulse = 1 + Math.sin(gameTime * 30) * 0.4;
+            const coreColor = '#ffffff';
+            const arcColor1 = '#4f8be6';
+            const arcColor2 = '#a463e8';
+
+            // Arcos elétricos caóticos
+             if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = arcColor1; ctx.shadowBlur = 20 * pulse;
             }
-            ctx.fillStyle = color;
+            ctx.lineWidth = 1.5 * pulse;
+            for(let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                const angle = Math.random() * Math.PI * 2;
+                const dist = (10 + Math.random() * 10) * pulse;
+                ctx.strokeStyle = Math.random() > 0.5 ? arcColor1 : arcColor2;
+                ctx.lineTo(this.x + Math.cos(angle) * dist, this.y + Math.sin(angle) * dist);
+                ctx.stroke();
+            }
+
+
+            // Núcleo de energia pulsante
+             if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = coreColor; ctx.shadowBlur = 15 * pulse;
+            }
+            const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 8 * pulse);
+            grad.addColorStop(0, coreColor);
+            grad.addColorStop(0.7, 'rgba(200, 220, 255, 0.7)');
+            grad.addColorStop(1, 'rgba(79, 139, 230, 0)');
+            
+            ctx.fillStyle = grad;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, 6 * pulse, 0, Math.PI * 2);
+            ctx.arc(this.x, this.y, 8 * pulse, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
         }
@@ -2654,9 +2802,18 @@ class SpectralElder extends Enemy {
             this.healAmount = stats.baseHeal;
             this.timer = this.cooldown;
             this.healMultiplier = 1;
+            this.bobble = 0; // Para o gingado
         }
         update(dt) {
-            super.update(dt);
+            // Movimento de gingado fofo
+            this.bobble += dt * 8;
+            const targetX = this.player.x - 40;
+            const targetY = this.player.y - this.followDistance + Math.sin(this.bobble) * 3;
+            const lerpFactor = 0.05;
+            this.x += (targetX - this.x) * lerpFactor;
+            this.y += (targetY - this.y) * lerpFactor;
+
+
             this.timer -= dt;
             if (this.timer <= 0) {
                 const angle = Math.random() * Math.PI * 2;
@@ -2668,22 +2825,80 @@ class SpectralElder extends Enemy {
         }
         draw(ctx) {
             ctx.save();
-            const color = '#228B22';
-            const headColor = '#90EE90';
-             if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = color; ctx.shadowBlur = 8;
+            ctx.globalAlpha *= playerData.graphics.effectsOpacity;
+
+            const bodyColor = '#228B22';
+            const leafColor = '#3CB371';
+            const flowerPetalColor = '#f0f0f0';
+            const flowerCoreColor = '#90EE90';
+            
+            const bloomProgress = Math.max(0, 1 - (this.timer / (this.cooldown * this.cooldownMultiplier)));
+
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#000'; ctx.shadowBlur = 8;
             }
-            // Body
-            ctx.fillStyle = color;
+            
+            ctx.translate(this.x, this.y);
+
+            // "Pés" de raiz
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(-5, 5, 3, 5);
+            ctx.fillRect(2, 5, 3, 5);
+
+            // Corpo de bulbo
+            ctx.fillStyle = bodyColor;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, 8, 0, Math.PI * 2);
+            ctx.arc(0, 0, 9, 0, Math.PI * 2);
             ctx.fill();
-            // Head
-            ctx.fillStyle = headColor;
+
+            // Folhas como braços
+            ctx.fillStyle = leafColor;
+            // Folha da esquerda
             ctx.beginPath();
-            ctx.arc(this.x, this.y - 6, 6, 0, Math.PI * 2);
+            ctx.moveTo(-7, -2);
+            ctx.quadraticCurveTo(-15, -15, -5, -12);
             ctx.fill();
-            ctx.restore();
+            // Folha da direita
+            ctx.beginPath();
+            ctx.moveTo(7, -2);
+            ctx.quadraticCurveTo(15, -15, 5, -12);
+            ctx.fill();
+            
+            // Flor na cabeça
+            ctx.save();
+            ctx.translate(0, -8);
+
+            // Brilho da flor quando pronta
+            if (bloomProgress >= 1) {
+                const glowPulse = 0.8 + Math.sin(gameTime * 10) * 0.2;
+                ctx.globalAlpha *= glowPulse;
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = flowerCoreColor; ctx.shadowBlur = 15;
+                }
+            }
+
+            // Pétalas
+            const petalCount = 5;
+            for (let i = 0; i < petalCount; i++) {
+                ctx.save();
+                ctx.rotate(i * Math.PI * 2 / petalCount);
+                ctx.fillStyle = flowerPetalColor;
+                ctx.beginPath();
+                // As pétalas se abrem com o progresso
+                const angleOffset = (Math.PI / 3) * (1 - bloomProgress);
+                ctx.ellipse(0, -6, 4, 6 * bloomProgress, angleOffset, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Miolo da flor
+            ctx.fillStyle = flowerCoreColor;
+            ctx.beginPath();
+            ctx.arc(0, 0, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore(); // Fim do desenho da flor
+            ctx.restore(); // Fim do desenho do pet
         }
     }
 
@@ -2693,34 +2908,152 @@ class SpectralElder extends Enemy {
             const stats = CONFIG.PETS.shadow_pup;
             this.radiusMultiplier = stats.baseRadius;
             this.player.pickupRadiusMultiplier = this.radiusMultiplier;
+            this.trail = [];
         }
         update(dt) {
-            super.update(dt);
+             // Movimento fluido
+            const targetX = this.player.x - (this.player.lastMoveDirection.x * 20);
+            const targetY = this.player.y - this.followDistance + 20;
+            const lerpFactor = 0.06;
+            this.x += (targetX - this.x) * lerpFactor;
+            this.y += (targetY - this.y) * lerpFactor;
+
+            // Rastro de fumaça
+            this.trail.push({x: this.x, y: this.y, alpha: 1.0, size: 10});
+            if(this.trail.length > 15) {
+                this.trail.shift();
+            }
+            this.trail.forEach(p => {
+                p.alpha -= dt * 1.5;
+                p.size -= dt * 2;
+            });
+
+
             if (this.player.pickupRadiusMultiplier !== this.radiusMultiplier) {
                  this.player.pickupRadiusMultiplier = this.radiusMultiplier;
             }
         }
         draw(ctx) {
             ctx.save();
-            const color = '#483D8B';
-            ctx.globalAlpha = 0.8;
+            ctx.globalAlpha *= playerData.graphics.effectsOpacity;
+
+            // Aura de coleta no jogador
+            const auraRadius = this.player.pickupRadius * this.radiusMultiplier;
+            const auraPulse = 0.2 + Math.sin(gameTime * 3) * 0.1;
+            ctx.strokeStyle = `rgba(147, 112, 219, ${auraPulse})`;
+            ctx.fillStyle = `rgba(147, 112, 219, ${auraPulse * 0.2})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(this.player.x, this.player.y, auraRadius, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fill();
+
+            // Rastro
+            this.trail.forEach(p => {
+                if (p.size <= 0) return;
+                ctx.fillStyle = `rgba(72, 61, 139, ${p.alpha * 0.5})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            const bodyColor = `rgba(72, 61, 139, 0.7)`;
+            const eyeColor = '#e6e6fa'; // Lavanda pálido
              if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = '#9370DB'; ctx.shadowBlur = 10;
+                ctx.shadowColor = '#9370DB'; ctx.shadowBlur = 15;
             }
-            // Body
-            ctx.fillStyle = color;
+            
+            ctx.translate(this.x, this.y);
+
+            // Corpo de fumaça
+            ctx.fillStyle = bodyColor;
             ctx.beginPath();
-            ctx.ellipse(this.x, this.y, 12, 8, 0, 0, Math.PI * 2);
+            ctx.ellipse(0, 0, 14, 10, 0, 0, Math.PI * 2);
             ctx.fill();
-            // Ears
+
+            // Orelhas
             ctx.beginPath();
-            ctx.moveTo(this.x - 8, this.y - 8); ctx.lineTo(this.x - 4, this.y - 14); ctx.lineTo(this.x, this.y - 6);
-            ctx.moveTo(this.x + 8, this.y - 8); ctx.lineTo(this.x + 4, this.y - 14); ctx.lineTo(this.x, this.y - 6);
+            ctx.moveTo(-8, -8); ctx.lineTo(-4, -16); ctx.lineTo(0, -8);
+            ctx.moveTo(8, -8); ctx.lineTo(4, -16); ctx.lineTo(0, -8);
             ctx.fill();
+            
+            // Cauda
+             ctx.beginPath();
+            ctx.moveTo(12, 0);
+            ctx.quadraticCurveTo(20, -15, 15, -5);
+            ctx.fill();
+
+            // Olhos brilhantes
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = eyeColor; ctx.shadowBlur = 10;
+            }
+            ctx.fillStyle = eyeColor;
+            ctx.beginPath();
+            ctx.arc(-5, -2, 2, 0, Math.PI * 2);
+            ctx.arc(5, -2, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+
             ctx.restore();
         }
     }
 	// --- Classes de Coletáveis e Efeitos ---
+	// Efeito visual para a formação do escudo do Golem
+    class ShieldFormationEffect {
+        constructor(startPos1, startPos2, target) {
+            this.p1 = {...startPos1};
+            this.p2 = {...startPos2};
+            this.target = target;
+            this.lifespan = 0.5;
+            this.life = this.lifespan;
+        }
+
+        update(dt) {
+            this.life -= dt;
+            const lerpFactor = 1 - (this.life / this.lifespan);
+            this.p1.x += (this.target.x - this.p1.x) * lerpFactor;
+            this.p1.y += (this.target.y - this.p1.y) * lerpFactor;
+            this.p2.x += (this.target.x - this.p2.x) * lerpFactor;
+            this.p2.y += (this.target.y - this.p2.y) * lerpFactor;
+        }
+
+        draw(ctx) {
+            const progress = 1 - (this.life / this.lifespan);
+            const alpha = Math.sin(progress * Math.PI);
+            ctx.save();
+            ctx.globalAlpha = alpha * playerData.graphics.effectsOpacity;
+
+            // Desenha as rochas voando
+            ctx.fillStyle = '#696969';
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = '#abfffa'; ctx.shadowBlur = 20;
+            }
+            ctx.beginPath();
+            ctx.rect(this.p1.x - 5, this.p1.y - 5, 10, 10);
+            ctx.rect(this.p2.x - 5, this.p2.y - 5, 10, 10);
+            ctx.fill();
+            
+            // Desenha o hexágono se formando
+            if (progress > 0.7) {
+                const hexProgress = (progress - 0.7) / 0.3;
+                ctx.strokeStyle = '#abfffa';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                const radius = (this.target.size + 8) * hexProgress;
+                for (let i = 0; i < 6; i++) {
+                    const angle = Math.PI / 3 * i;
+                    const x = this.target.x + radius * Math.cos(angle);
+                    const y = this.target.y + radius * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+    }
     class Collectible {
         constructor(x, y, size) { this.x = x; this.y = y; this.size = size; this.isCollected = false; }
         update(dt, attractionRadius, speed) {
@@ -3407,7 +3740,7 @@ class SpectralElder extends Enemy {
             ctx.restore();
         }
     }
-    class HomingSoul extends EnergyBall {
+   class HomingSoul extends EnergyBall {
         constructor(x, y, target, speed, damage, firedBy = 'enemy') {
             super(x, y, target, speed, damage);
             this.target = target;
@@ -3417,6 +3750,8 @@ class SpectralElder extends Enemy {
             this.size = 12; this.acceleration = 90; 
             this.lifetime = 6;
             this.isPet = false;
+            this.isWispFire = false; // Flag para o novo visual
+            this.trail = [];
         }
         update(dt) {
             if (this.firedBy === 'player' && !this.target?.isAlive) {
@@ -3426,6 +3761,16 @@ class SpectralElder extends Enemy {
                 this.lifetime = 0;
                 return;
             }
+
+            // Adiciona pontos à cauda (trail)
+            if (this.isWispFire) {
+                this.trail.push({x: this.x, y: this.y, alpha: 1.0});
+                if(this.trail.length > 10) {
+                    this.trail.shift();
+                }
+                this.trail.forEach(p => p.alpha -= dt * 2);
+            }
+
             this.speed += this.acceleration * dt;
             const targetAngle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
             let currentAngle = Math.atan2(this.vy, this.vx);
@@ -3443,16 +3788,49 @@ class SpectralElder extends Enemy {
             this.x += this.vx * dt; this.y += this.vy * dt; this.lifetime -= dt;
         }
         draw(ctx){
-            ctx.save();
-            ctx.globalAlpha = playerData.graphics.effectsOpacity;
-            if (currentGraphics && currentGraphics.shadows) {
-                ctx.shadowColor = this.color; ctx.shadowBlur = 15;
+            if (this.isWispFire) {
+                this.drawWispFire(ctx);
+            } else {
+                ctx.save();
+                ctx.globalAlpha = playerData.graphics.effectsOpacity;
+                if (currentGraphics && currentGraphics.shadows) {
+                    ctx.shadowColor = this.color; ctx.shadowBlur = 15;
+                }
+                ctx.fillStyle = this.color;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+                if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 8;
+                ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 0.4, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
             }
-            ctx.fillStyle = this.color;
+        }
+        drawWispFire(ctx) {
+            ctx.save();
+            ctx.globalAlpha *= playerData.graphics.effectsOpacity;
+
+            // Cauda de fumaça e brasas
+            for (let i = 0; i < this.trail.length; i++) {
+                const p = this.trail[i];
+                const progress = i / this.trail.length;
+                ctx.fillStyle = `rgba(255, 100, 0, ${p.alpha * 0.5 * progress})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, this.size * progress, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Alma flamejante (cabeça do projétil)
+            const color = '#ff8c1a';
+            const coreColor = '#ffffaa';
+            if (currentGraphics && currentGraphics.shadows) {
+                ctx.shadowColor = color; ctx.shadowBlur = this.size * 2;
+            }
+            const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+            grad.addColorStop(0, coreColor);
+            grad.addColorStop(0.6, color);
+            grad.addColorStop(1, 'rgba(255, 140, 26, 0)');
+            ctx.fillStyle = grad;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-            if (currentGraphics && currentGraphics.shadows) ctx.shadowBlur = 8;
-            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-            ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 0.4, 0, Math.PI * 2); ctx.fill();
+
             ctx.restore();
         }
     }
