@@ -698,22 +698,22 @@
     const CONFIG = {
         MAP_SIZE: { width: 4000, height: 4000 },
         PLAYER: {
-            baseMaxHp: 100, baseSpeed: 250, dashSpeed: 1200,
+            baseMaxHp: 100, baseSpeed: 220, dashSpeed: 1200,
             dashDuration: 0.20, dashCooldown: 1, size: 20,
             basePickupRadius: 120, // Raio de coleta base
         },
         ENEMY: {
             // Inimigos Iniciais (Onda 1-9)
-            'slime': { size: 18, color: '#4dff4d', hp: 20, maxHp: 25, speed: 250, damage: 10, xp: 3, stunDuration: 0.5 },
-            'bat':   { size: 12, color: '#ff4da6', hp: 20, maxHp: 25, speed: 230, damage: 12, xp: 5, aggroRange: 350, diveSpeed: 1000, diveWindup: 0.3, diveCooldown: 2.5, circlingDist: 200, stunDuration: 0.4 },
-            'brute': { size: 30, color: '#ff4d4d', hp: 60, maxHp: 70, speed: 120, damage: 20, xp: 9, slamDamage: 30, stunDuration: 0.5 },
-            'mage':  { size: 22, color: '#be4dff', hp: 25, maxHp:30, speed: 120, damage: 8, xp: 13, stunDuration: 0.5 },
+            'slime': { size: 18, color: '#4dff4d', hp: 15, maxHp: 20, speed: 250, damage: 10, xp: 7, stunDuration: 0.5 },
+            'bat':   { size: 12, color: '#ff4da6', hp: 20, maxHp: 25, speed: 200, damage: 12, xp: 10, aggroRange: 350, diveSpeed: 1000, diveWindup: 0.3, diveCooldown: 2.5, circlingDist: 200, stunDuration: 0.4 },
+            'brute': { size: 30, color: '#ff4d4d', hp: 60, maxHp: 70, speed: 110, damage: 20, xp: 20, slamDamage: 30, stunDuration: 0.6 },
+            'mage':  { size: 22, color: '#be4dff', hp: 25, maxHp:30, speed: 120, damage: 8, xp: 15, stunDuration: 0.5 },
             
             // Inimigos Avançados (Onda 10+)
-            'wraith': { size: 20, color: '#a2a2d0', hp: 80, maxHp: 80, speed: 280, damage: 18, xp: 15, stunDuration: 0.5 },
-            'crystal_golem': { size: 35, color: '#87cefa', hp: 200, maxHp: 200, speed: 80, damage: 25, xp: 20, stunDuration: 0.1 },
-            'abyss_worm': { size: 25, color: '#663399', hp: 120, maxHp: 120, speed: 400, damage: 25, xp: 18, stunDuration: 0.3 },
-            'arcane_sentry': { size: 28, color: '#ffdf00', hp: 150, maxHp: 150, speed: 0, damage: 15, xp: 22, stunDuration: 0 },
+            'wraith': { size: 20, color: '#a2a2d0', hp: 50, maxHp: 60, speed: 280, damage: 15, xp: 20, stunDuration: 0.5 },
+            'crystal_golem': { size: 35, color: '#87cefa', hp: 150, maxHp: 170, speed: 80, damage: 17, xp: 25, stunDuration: 0.1 },
+            'abyss_worm': { size: 25, color: '#663399', hp: 100, maxHp: 120, speed: 400, damage: 20, xp: 17, stunDuration: 0.3 },
+            'arcane_sentry': { size: 28, color: '#ffdf00', hp: 120, maxHp: 150, speed: 0, damage: 12, xp: 25, stunDuration: 0 },
 
             // Chefes
             'spectral_elder': { name: 'Ancião Espectral', hp: 6000, size: 80, xp: 500},
@@ -738,35 +738,35 @@
         QUESTS: {
             easy: [
                 { id: 'play_1_game', desc: 'Jogue sua primeira partida.', stat: 'gamesPlayed', target: 1, reward: 25 },
-                { id: 'kill_100_slimes', desc: 'Derrote 100 Slimes.', stat: 'slime_defeated', target: 100, reward: 50 },
-                { id: 'collect_250_gems', desc: 'Colete 250 gemas no total.', stat: 'gemsCollected', target: 250, reward: 75 },
+                { id: 'kill_100_slimes', desc: 'Derrote 500 Slimes.', stat: 'slime_defeated', target: 500, reward: 50 },
+                { id: 'collect_250_gems', desc: 'Colete 300 gemas no total.', stat: 'gemsCollected', target: 300, reward: 75 },
                 { id: 'reach_level_10', desc: 'Atinja o nível 10 em uma partida.', stat: 'maxLevelReached', target: 10, reward: 40 },
                 { id: 'survive_5_min', desc: 'Sobreviva por 5 minutos.', stat: 'maxTimeSurvived', target: 300, reward: 60 },
             ],
             medium: [
-                { id: 'kill_500_enemies', desc: 'Derrote 500 inimigos no total.', stat: 'totalEnemiesDefeated', target: 500, reward: 150 },
-                { id: 'kill_250_bats', desc: 'Derrote 250 Morcegos.', stat: 'bat_defeated', target: 250, reward: 125 },
-                { id: 'deal_100k_damage', desc: 'Cause 100,000 de dano total.', stat: 'totalDamageDealt', target: 500000, reward: 200 },
+                { id: 'kill_500_enemies', desc: 'Derrote 1000 inimigos no total.', stat: 'totalEnemiesDefeated', target: 1000, reward: 150 },
+                { id: 'kill_250_bats', desc: 'Derrote 400 Morcegos.', stat: 'bat_defeated', target: 400, reward: 125 },
+                { id: 'deal_100k_damage', desc: 'Cause 2,500,000 de dano total.', stat: 'totalDamageDealt', target: 2500000, reward: 200 },
                 { id: 'collect_1000_gems', desc: 'Colete 1000 gemas no total.', stat: 'gemsCollected', target: 1000, reward: 180 },
-                { id: 'buy_5_upgrades', desc: 'Compre 5 melhorias permanentes.', stat: 'upgradesPurchased', target: 5, reward: 100 },
+                { id: 'buy_5_upgrades', desc: 'Compre 10 melhorias permanentes.', stat: 'upgradesPurchased', target: 10, reward: 100 },
             ],
             hard: [
-                { id: 'kill_100_brutes', desc: 'Derrote 100 Brutos.', stat: 'brute_defeated', target: 100, reward: 250 },
-                { id: 'kill_75_mages', desc: 'Derrote 75 Magos.', stat: 'mage_defeated', target: 75, reward: 150 },
-                { id: 'reach_wave_10', desc: 'Sobreviva até a onda 10.', stat: 'maxWaveReached', target: 10, reward: 300 },
+                { id: 'kill_100_brutes', desc: 'Derrote 200 Brutos.', stat: 'brute_defeated', target: 200, reward: 250 },
+                { id: 'kill_75_mages', desc: 'Derrote 150 Magos.', stat: 'mage_defeated', target: 150, reward: 150 },
+                { id: 'reach_wave_10', desc: 'Sobreviva até a onda 10.', stat: 'maxWaveReached', target: 10, reward: 200 },
                 { id: 'evolve_weapon', desc: 'Evolua uma arma pela primeira vez.', stat: 'weaponsEvolved', target: 1, reward: 400 },
                 { id: 'defeat_spectral_elder', desc: 'Derrote o Ancião Espectral.', stat: 'spectral_elder_defeated', target: 1, reward: 500 },
             ]
         },
         GENERAL_ABILITIES: [
-            { id: 'hp_boost', name: 'Vigor', desc: 'Aumenta a vida máxima em 17%.', max: 5, 
+            { id: 'hp_boost', name: 'Vigor', desc: 'Aumenta a vida máxima em 12%.', max: 5, 
               apply: p => { 
                 const oldMaxHp = p.maxHp;
-                p.maxHp *= 1.17;
+                p.maxHp *= 1.12;
                 p.hp += p.maxHp - oldMaxHp;
               }
             },
-            { id: 'speed_boost', name: 'Pés Ligeiros', desc: 'Aumenta a velocidade em 15%.', max: 5, apply: p => { p.speed *= 1.15; }},
+            { id: 'speed_boost', name: 'Pés Ligeiros', desc: 'Aumenta a velocidade em 2%.', max: 5, apply: p => { p.speed *= 1.02; }},
             { 
               id: 'health_regen', name: 'Regeneração', 
               desc: [
@@ -1863,7 +1863,7 @@ class SpectralElder extends Enemy {
             for (let i = 0; i < amount; i++) {
                 setTimeout(() => {
                     if (!this.isAlive) return;
-                    enemyProjectiles.push(new HomingSoul(this.x, this.y, player, 220, 10, 'enemy'));
+                    enemyProjectiles.push(new HomingSoul(this.x, this.y, player, 180, 10, 'enemy'));
                 }, i * 150);
             }
         }
