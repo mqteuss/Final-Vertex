@@ -6,8 +6,8 @@
     <title>Extrator Avançado de FIIs</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Pequenos ajustes para animações e scrollbars */
         .loader { border-top-color: #6366f1; animation: spinner 1.5s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         pre::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -27,10 +27,7 @@
                 <div>
                     <h1 class="text-2xl font-bold text-slate-900">Extrator Avançado de FIIs</h1>
                     <div class="text-sm text-slate-500 mt-1 flex items-center gap-3">
-                        <p>Extraia a API oculta do StatusInvest diretamente para o seu projeto.</p>
-                        <span id="chatBadge" class="hidden items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-semibold animate-pulse">
-                            <i data-lucide="message-circle" class="w-3 h-3"></i> Chatbot Ativo
-                        </span>
+                        <p>Extraia e visualize os dados do StatusInvest.</p>
                     </div>
                 </div>
             </div>
@@ -45,8 +42,7 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-2">Código (Ticker)</label>
                     <div class="relative">
-                        <input type="text" id="ticker" value="GARE11" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none uppercase font-mono pr-10" placeholder="Ex: SNAG11">
-                        <i data-lucide="loader-2" id="detectingSpinner" class="hidden absolute right-3 top-2.5 w-5 h-5 text-indigo-500 animate-spin"></i>
+                        <input type="text" id="ticker" value="GARE11" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none uppercase font-mono pr-10">
                     </div>
                 </div>
                 <div>
@@ -59,20 +55,19 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Ponto de Acesso (Endpoint)</label>
-                    <select id="endpoint" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        </select>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Ponto de Acesso</label>
+                    <select id="endpoint" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Estrutura de Retorno (Type)</label>
-                    <select id="dataType" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-400">
-                        <option value="0">Tipo 0 (Padrão/Mensal)</option>
-                        <option value="1">Tipo 1 (Anual/Alternativo)</option>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Estrutura (Type)</label>
+                    <select id="dataType" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-100 disabled:text-slate-400">
+                        <option value="0">Tipo 0 (Padrão)</option>
+                        <option value="1">Tipo 1 (Alternativo)</option>
                         <option value="2">Tipo 2 (Máximo)</option>
                     </select>
                 </div>
             </div>
-
+            
             <div id="rangeOptions" class="hidden grid-cols-2 gap-4 mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">Ano Inicial</label>
@@ -85,78 +80,57 @@
             </div>
         </div>
 
-        <div class="flex bg-white rounded-t-2xl border-b border-slate-200 overflow-hidden shadow-sm">
-            <button id="tabConsole" class="flex-1 py-4 font-medium text-sm flex justify-center items-center gap-2 transition-colors bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600">
-                <i data-lucide="terminal" class="w-5 h-5"></i> Método 1: Script de Consola (Recomendado)
-            </button>
-            <button id="tabProxy" class="flex-1 py-4 font-medium text-sm flex justify-center items-center gap-2 transition-colors text-slate-600 hover:bg-slate-50">
-                <i data-lucide="code" class="w-5 h-5"></i> Método 2: Proxy Interno
-            </button>
-        </div>
-
-        <div id="contentConsole" class="bg-white p-6 rounded-b-2xl shadow-sm border border-slate-200 border-t-0 space-y-5">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <p class="text-sm text-slate-600">Copie o script abaixo e cole-o na consola (F12) da página do StatusInvest.</p>
-                <div class="flex bg-slate-100 p-1 rounded-lg">
-                    <button id="btnSingleScript" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-white shadow-sm text-indigo-700">Extrair Apenas 1 Métrica</button>
-                    <button id="btnBatchScript" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-500 hover:text-slate-700">Extração Completa</button>
-                </div>
-            </div>
-
-            <div class="relative group">
-                <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button id="btnCopyScript" class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg cursor-pointer">
-                        <i data-lucide="copy" class="w-4 h-4"></i> Copiar Código
-                    </button>
-                </div>
-                <pre class="bg-slate-900 text-emerald-400 p-5 rounded-xl overflow-x-auto text-sm leading-relaxed shadow-inner border border-slate-800"><code id="codeBlock"></code></pre>
-            </div>
-            
-            <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl flex gap-3 text-amber-800 text-sm">
-                <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0"></i>
-                <p><strong>Porquê este método?</strong> O StatusInvest tem bloqueios de segurança rígidos (Cloudflare). Ao executar o script diretamente no site deles através da Consola, contornamos esses bloqueios porque o pedido é feito utilizando a sua sessão e cookies de utilizador autênticos.</p>
-            </div>
-        </div>
-
-        <div id="contentProxy" class="hidden bg-white p-6 rounded-b-2xl shadow-sm border border-slate-200 border-t-0 space-y-4">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
             <button id="btnExtractProxy" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 px-6 rounded-xl transition-all disabled:opacity-50 flex justify-center items-center gap-2 shadow-sm cursor-pointer">
-                Tentar Extração Direta
+                <i data-lucide="download" class="w-5 h-5"></i> Extrair e Visualizar Dados
             </button>
+            <div id="errorMsg" class="hidden mt-4 bg-red-50 text-red-700 p-4 rounded-xl text-sm border border-red-200"></div>
+        </div>
 
-            <div id="errorMsg" class="hidden bg-red-50 text-red-700 p-4 rounded-xl text-sm border border-red-200 flex flex-col gap-2"></div>
+        <div id="dataContainer" class="hidden bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="flex bg-slate-50 border-b border-slate-200">
+                <button id="tabChart" class="flex-1 py-3 font-medium text-sm flex justify-center items-center gap-2 bg-white text-indigo-700 border-b-2 border-indigo-600">
+                    <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Gráfico
+                </button>
+                <button id="tabTable" class="flex-1 py-3 font-medium text-sm flex justify-center items-center gap-2 text-slate-600 hover:bg-slate-100">
+                    <i data-lucide="list" class="w-4 h-4"></i> Tabela
+                </button>
+                <button id="tabJson" class="flex-1 py-3 font-medium text-sm flex justify-center items-center gap-2 text-slate-600 hover:bg-slate-100">
+                    <i data-lucide="file-json" class="w-4 h-4"></i> JSON Bruto
+                </button>
+            </div>
 
-            <div id="dataContainer" class="hidden mt-6 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                <div class="bg-slate-50 border-b border-slate-200 p-3 flex justify-between items-center">
-                    <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                        <i data-lucide="file-json" class="w-4 h-4 text-indigo-500"></i> Resposta do Servidor
-                    </h3>
-                    <button id="btnCopyJson" class="text-xs flex items-center gap-1 bg-white border border-slate-300 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer">
-                        <i data-lucide="copy" class="w-3 h-3"></i> Copiar JSON
-                    </button>
-                </div>
-                <div class="bg-slate-900 p-0">
-                    <pre id="jsonBlock" class="text-green-400 p-4 overflow-auto text-xs max-h-96 font-mono"></pre>
-                </div>
+            <div id="viewChart" class="p-6">
+                <canvas id="myChart" style="max-height: 400px;"></canvas>
+            </div>
+
+            <div id="viewTable" class="hidden p-0 overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-500">
+                    <thead id="tableHead" class="text-xs text-slate-700 uppercase bg-slate-50 border-b border-slate-200">
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="viewJson" class="hidden bg-slate-900 p-0 relative">
+                <button id="btnCopyJson" class="absolute top-4 right-4 text-xs flex items-center gap-1 bg-white/10 text-white border border-white/20 px-3 py-1.5 rounded-lg hover:bg-white/20 transition-colors">
+                    <i data-lucide="copy" class="w-3 h-3"></i> Copiar
+                </button>
+                <pre id="jsonBlock" class="text-green-400 p-6 overflow-auto text-xs max-h-[500px] font-mono"></pre>
             </div>
         </div>
 
     </div>
 
     <script>
-        // Inicializar ícones
         lucide.createIcons();
+        let chartInstance = null;
 
-        // Estado Global
-        let state = {
-            assetType: 'fii',
-            ticker: 'GARE11',
-            endpoint: 'getpatrimonioliquido',
-            dataType: '0',
-            rangeMin: '2020',
-            rangeMax: new Date().getFullYear().toString(),
-            scriptType: 'single',
-            activeTab: 'console',
-            proxyData: null
+        const state = {
+            assetType: 'fii', ticker: 'GARE11', endpoint: 'getpatrimonioliquido',
+            dataType: '0', rangeMin: '2020', rangeMax: new Date().getFullYear().toString(),
+            activeDataTab: 'chart', proxyData: null
         };
 
         const endpoints = [
@@ -165,318 +139,189 @@
             { id: 'getdespesas', name: 'Despesas', param: 'code' },
             { id: 'getcaixa', name: 'Caixa', param: 'code' },
             { id: 'getresultado', name: 'Resultado', param: 'code' },
-            { id: 'demonstracoestrimestrais', name: 'Demonstrações Trimestrais (Requer Anos)', param: 'code', requiresRange: true },
+            { id: 'demonstracoestrimestrais', name: 'Demonstrações Trimestrais', param: 'code', requiresRange: true },
             { id: 'companytickerprovents', name: 'Proventos / Dividendos', param: 'companyName', extraParam: '&chartProventsType=1' }
         ];
 
-        // Elementos DOM
-        const els = {
-            ticker: document.getElementById('ticker'),
-            assetType: document.getElementById('assetType'),
-            endpoint: document.getElementById('endpoint'),
-            dataType: document.getElementById('dataType'),
-            rangeMin: document.getElementById('rangeMin'),
-            rangeMax: document.getElementById('rangeMax'),
-            rangeOptions: document.getElementById('rangeOptions'),
-            detectingSpinner: document.getElementById('detectingSpinner'),
-            tabConsole: document.getElementById('tabConsole'),
-            tabProxy: document.getElementById('tabProxy'),
-            contentConsole: document.getElementById('contentConsole'),
-            contentProxy: document.getElementById('contentProxy'),
-            btnSingleScript: document.getElementById('btnSingleScript'),
-            btnBatchScript: document.getElementById('btnBatchScript'),
-            codeBlock: document.getElementById('codeBlock'),
-            btnCopyScript: document.getElementById('btnCopyScript'),
-            btnExtractProxy: document.getElementById('btnExtractProxy'),
-            errorMsg: document.getElementById('errorMsg'),
-            dataContainer: document.getElementById('dataContainer'),
-            jsonBlock: document.getElementById('jsonBlock'),
-            btnCopyJson: document.getElementById('btnCopyJson'),
-            chatBadge: document.getElementById('chatBadge')
-        };
-
-        // Preencher Endpoints
+        // Populando Select
+        const endpointSelect = document.getElementById('endpoint');
         endpoints.forEach(ep => {
             const opt = document.createElement('option');
-            opt.value = ep.id;
-            opt.textContent = ep.name;
-            els.endpoint.appendChild(opt);
+            opt.value = ep.id; opt.textContent = ep.name;
+            endpointSelect.appendChild(opt);
+        });
+        document.getElementById('rangeMax').value = state.rangeMax;
+
+        // Atualização de UI Básica
+        const updateUIParams = () => {
+            const ep = endpoints.find(e => e.id === state.endpoint);
+            document.getElementById('rangeOptions').style.display = ep.requiresRange ? 'flex' : 'none';
+            document.getElementById('dataType').disabled = (ep.id === 'companytickerprovents');
+        };
+
+        ['ticker', 'assetType', 'endpoint', 'dataType', 'rangeMin', 'rangeMax'].forEach(id => {
+            document.getElementById(id).addEventListener('change', (e) => {
+                state[id] = e.target.value; updateUIParams();
+            });
         });
 
-        // Setup inicial
-        els.rangeMax.value = state.rangeMax;
-
-        // Injeta o Chatbot do StatusInvest (HubSpot)
-        const initChatbot = () => {
-            const portalId = '7171354'; 
-            const script = document.createElement('script');
-            script.src = `//js.hs-scripts.com/${portalId}.js`;
-            script.async = true;
-            script.defer = true;
-            script.onload = () => {
-                els.chatBadge.classList.remove('hidden');
-                els.chatBadge.classList.add('flex');
-            };
-            document.body.appendChild(script);
-        };
-        initChatbot();
-
-        // Autodetectar o tipo de ativo
-        let detectTimeoutId;
-        const detectCategory = async () => {
-            if (!state.ticker || state.ticker.length < 4) return;
-            
-            els.detectingSpinner.classList.remove('hidden');
-            
-            try {
-                const url = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://statusinvest.com.br/home/mainsearchquery?q=' + state.ticker)}`;
-                const res = await fetch(url);
-                if (res.ok) {
-                    const data = await res.json();
-                    const jsonString = JSON.stringify(data).toLowerCase();
-                    const searchTicker = state.ticker.toLowerCase();
-                    
-                    if (jsonString.includes(`/fiagro/${searchTicker}`) || jsonString.includes(`/fiagros/${searchTicker}`)) {
-                        state.assetType = 'fiagro';
-                    } else if (jsonString.includes(`/fundos-imobiliarios/${searchTicker}`)) {
-                        state.assetType = 'fii';
-                    } else if (jsonString.includes(`/acoes/${searchTicker}`)) {
-                        state.assetType = 'acoes';
-                    }
-                    els.assetType.value = state.assetType;
-                    updateUI();
+        // Abas de Visualização
+        const setTab = (tabName) => {
+            state.activeDataTab = tabName;
+            const tabs = ['Chart', 'Table', 'Json'];
+            tabs.forEach(t => {
+                const isMatch = tabName.toLowerCase() === t.toLowerCase();
+                document.getElementById(`view${t}`).classList.toggle('hidden', !isMatch);
+                
+                const btn = document.getElementById(`tab${t}`);
+                if (isMatch) {
+                    btn.className = `flex-1 py-3 font-medium text-sm flex justify-center items-center gap-2 bg-white text-indigo-700 border-b-2 border-indigo-600`;
+                } else {
+                    btn.className = `flex-1 py-3 font-medium text-sm flex justify-center items-center gap-2 text-slate-600 hover:bg-slate-100`;
                 }
-            } catch (e) {
-                console.error("Falha ao autodetectar a categoria", e);
-            } finally {
-                els.detectingSpinner.classList.add('hidden');
-            }
+            });
         };
 
-        // Lógica de Geração de Script
-        const getActiveEndpoint = () => endpoints.find(e => e.id === state.endpoint);
+        document.getElementById('tabChart').addEventListener('click', () => setTab('chart'));
+        document.getElementById('tabTable').addEventListener('click', () => setTab('table'));
+        document.getElementById('tabJson').addEventListener('click', () => setTab('json'));
 
-        const generateSingleScript = () => {
-            const ep = getActiveEndpoint();
-            return `// Extração Única Inteligente: ${ep.name}
-// Autodeteta o ativo e a categoria através do URL da página
-const pathParts = window.location.pathname.split('/').filter(Boolean);
-const pathCategory = pathParts[0]; 
-const t = pathParts[1] ? pathParts[1].toUpperCase() : '${state.ticker.toUpperCase()}';
-
-let assetType = '${state.assetType}';
-if (pathCategory === 'fiagro' || pathCategory === 'fiagros') assetType = 'fiagro';
-else if (pathCategory === 'fundos-imobiliarios') assetType = 'fii';
-
-const endpoint = '${ep.id}';
-const queryParams = new URLSearchParams();
-queryParams.append('${ep.param}', t);
-${ep.id !== 'companytickerprovents' ? `queryParams.append('type', '${state.dataType}');` : ''}
-${ep.requiresRange || state.endpoint === 'demonstracoestrimestrais' ? `queryParams.append('contabil', 'true');
-queryParams.append('range.min', '${state.rangeMin}');
-queryParams.append('range.max', '${state.rangeMax}');` : ''}
-
-const url = \`https://statusinvest.com.br/\${assetType}/\${endpoint}?\${queryParams.toString()}${ep.extraParam || ''}\`;
-
-fetch(url)
-  .then(res => res.json())
-  .then(dados => {
-    console.log('%c✅ ${ep.name} Extraído!', 'color: #10b981; font-size: 14px; font-weight: bold;');
-    console.log(dados);
-    copy(JSON.stringify(dados, null, 2));
-    console.log('%c📋 JSON copiado para a sua área de transferência!', 'color: #3b82f6;');
-  })
-  .catch(err => console.error('Erro:', err));`;
-        };
-
-        const generateBatchScript = () => {
-            return `// Extração em Lote Inteligente (Descobre o Fundo Sozinho)
-async function extrairTudo() {
-  const pathParts = window.location.pathname.split('/').filter(Boolean);
-  const pathCategory = pathParts[0];
-  const t = pathParts[1] ? pathParts[1].toUpperCase() : '${state.ticker.toUpperCase()}';
-
-  let assetType = '${state.assetType}';
-  if (pathCategory === 'fiagro' || pathCategory === 'fiagros') {
-    assetType = 'fiagro';
-  } else if (pathCategory === 'fundos-imobiliarios') {
-    assetType = 'fii';
-  }
-
-  console.log(\`%c🚀 A iniciar extração em lote para \${t} (\${assetType.toUpperCase()})...\`, 'color: #8b5cf6; font-size: 14px; font-weight: bold;');
-  
-  const urls = {
-    patrimonio: \`https://statusinvest.com.br/\${assetType}/getpatrimonioliquido?code=\${t}&type=${state.dataType}\`,
-    receitas: \`https://statusinvest.com.br/\${assetType}/getreceitas?code=\${t}&type=${state.dataType}\`,
-    despesas: \`https://statusinvest.com.br/\${assetType}/getdespesas?code=\${t}&type=${state.dataType}\`,
-    caixa: \`https://statusinvest.com.br/\${assetType}/getcaixa?code=\${t}&type=${state.dataType}\`,
-    resultado: \`https://statusinvest.com.br/\${assetType}/getresultado?code=\${t}&type=${state.dataType}\`,
-    proventos: \`https://statusinvest.com.br/\${assetType}/companytickerprovents?companyName=\${t}&chartProventsType=1\`
-  };
-
-  const dadosCompletos = {};
-
-  for (const [chave, url] of Object.entries(urls)) {
-    try {
-      console.log(\`A extrair \${chave}...\`);
-      const res = await fetch(url);
-      dadosCompletos[chave] = await res.json();
-    } catch (e) {
-      console.error(\`Erro ao extrair \${chave}:\`, e);
-      dadosCompletos[chave] = { erro: e.message };
-    }
-  }
-
-  console.log('%c✅ Extração concluída!', 'color: #10b981; font-size: 14px; font-weight: bold;');
-  console.log(dadosCompletos);
-
-  const blob = new Blob([JSON.stringify(dadosCompletos, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = \`\${t.toLowerCase()}_dados_completos.json\`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  console.log('%c💾 Ficheiro descarregado automaticamente!', 'color: #3b82f6;');
-}
-
-extrairTudo();`;
-        };
-
-        // Obter URL do Proxy
-        const getTargetUrl = () => {
-            const ep = getActiveEndpoint();
-            let baseUrl = `https://statusinvest.com.br/${state.assetType}/${ep.id}`;
+        // Extração de Dados
+        document.getElementById('btnExtractProxy').addEventListener('click', async () => {
+            const btn = document.getElementById('btnExtractProxy');
+            const err = document.getElementById('errorMsg');
+            const container = document.getElementById('dataContainer');
             
-            if(ep.id === 'companytickerprovents' && state.assetType === 'fiagro') {
-               baseUrl = `https://statusinvest.com.br/${state.assetType}/${ep.id}`;
-            }
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> A obter dados...`;
+            err.classList.add('hidden');
+            container.classList.add('hidden');
+            lucide.createIcons();
 
+            const ep = endpoints.find(e => e.id === state.endpoint);
             const queryParams = new URLSearchParams();
             queryParams.append(ep.param, state.ticker.toUpperCase());
-            
-            if (ep.id !== 'companytickerprovents') {
-              queryParams.append('type', state.dataType);
-            }
-            
-            if (ep.requiresRange || state.endpoint === 'demonstracoestrimestrais') {
-              queryParams.append('contabil', 'true');
-              queryParams.append('range.min', state.rangeMin);
-              queryParams.append('range.max', state.rangeMax);
-            }
-
-            return `${baseUrl}?${queryParams.toString()}${ep.extraParam || ''}`;
-        };
-
-        // Função de Atualização da UI (reatividade manual)
-        const updateUI = () => {
-            const ep = getActiveEndpoint();
-            
-            // Lógica para Ranges
+            if (ep.id !== 'companytickerprovents') queryParams.append('type', state.dataType);
             if (ep.requiresRange) {
-                els.rangeOptions.classList.remove('hidden');
-                els.rangeOptions.classList.add('grid');
-            } else {
-                els.rangeOptions.classList.add('hidden');
-                els.rangeOptions.classList.remove('grid');
+                queryParams.append('contabil', 'true');
+                queryParams.append('range.min', state.rangeMin);
+                queryParams.append('range.max', state.rangeMax);
             }
 
-            // Desativar dataType em proventos
-            els.dataType.disabled = (ep.id === 'companytickerprovents');
-
-            // Atualizar Botões de Script
-            els.btnSingleScript.className = state.scriptType === 'single' ? 'px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-white shadow-sm text-indigo-700' : 'px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-500 hover:text-slate-700';
-            els.btnBatchScript.className = state.scriptType === 'batch' ? 'px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-white shadow-sm text-indigo-700' : 'px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-500 hover:text-slate-700';
-
-            // Atualizar Código Pre
-            els.codeBlock.textContent = state.scriptType === 'single' ? generateSingleScript() : generateBatchScript();
-
-            // Atualizar Tabs
-            els.tabConsole.className = state.activeTab === 'console' ? 'flex-1 py-4 font-medium text-sm flex justify-center items-center gap-2 transition-colors bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600' : 'flex-1 py-4 font-medium text-sm flex justify-center items-center gap-2 transition-colors text-slate-600 hover:bg-slate-50';
-            els.tabProxy.className = state.activeTab === 'proxy' ? 'flex-1 py-4 font-medium text-sm flex justify-center items-center gap-2 transition-colors bg-indigo-50 text-indigo-700 border-b-2 border-indigo-600' : 'flex-1 py-4 font-medium text-sm flex justify-center items-center gap-2 transition-colors text-slate-600 hover:bg-slate-50';
-
-            // Mostrar/Ocultar Conteúdos das Tabs
-            if (state.activeTab === 'console') {
-                els.contentConsole.classList.remove('hidden');
-                els.contentProxy.classList.add('hidden');
-            } else {
-                els.contentProxy.classList.remove('hidden');
-                els.contentConsole.classList.add('hidden');
-            }
-        };
-
-        // Event Listeners (Inputs)
-        els.ticker.addEventListener('input', (e) => {
-            state.ticker = e.target.value;
-            clearTimeout(detectTimeoutId);
-            detectTimeoutId = setTimeout(detectCategory, 800);
-            updateUI();
-        });
-
-        els.assetType.addEventListener('change', (e) => { state.assetType = e.target.value; updateUI(); });
-        els.endpoint.addEventListener('change', (e) => { state.endpoint = e.target.value; updateUI(); });
-        els.dataType.addEventListener('change', (e) => { state.dataType = e.target.value; updateUI(); });
-        els.rangeMin.addEventListener('input', (e) => { state.rangeMin = e.target.value; updateUI(); });
-        els.rangeMax.addEventListener('input', (e) => { state.rangeMax = e.target.value; updateUI(); });
-
-        // Event Listeners (Tabs & Botões)
-        els.tabConsole.addEventListener('click', () => { state.activeTab = 'console'; updateUI(); });
-        els.tabProxy.addEventListener('click', () => { state.activeTab = 'proxy'; updateUI(); });
-        els.btnSingleScript.addEventListener('click', () => { state.scriptType = 'single'; updateUI(); });
-        els.btnBatchScript.addEventListener('click', () => { state.scriptType = 'batch'; updateUI(); });
-
-        // Função Genérica de Copiar
-        const handleCopy = (text, btnElement, defaultHtml) => {
-            navigator.clipboard.writeText(text);
-            btnElement.innerHTML = `<i data-lucide="check-circle-2" class="w-4 h-4 text-green-500"></i> Copiado!`;
-            lucide.createIcons();
-            setTimeout(() => {
-                btnElement.innerHTML = defaultHtml;
-                lucide.createIcons();
-            }, 2000);
-        };
-
-        els.btnCopyScript.addEventListener('click', () => {
-            const text = state.scriptType === 'single' ? generateSingleScript() : generateBatchScript();
-            handleCopy(text, els.btnCopyScript, `<i data-lucide="copy" class="w-4 h-4"></i> Copiar Código`);
-        });
-
-        els.btnCopyJson.addEventListener('click', () => {
-            if(state.proxyData) {
-                handleCopy(JSON.stringify(state.proxyData, null, 2), els.btnCopyJson, `<i data-lucide="copy" class="w-3 h-3"></i> Copiar JSON`);
-            }
-        });
-
-        // Event Listener (Extração Proxy)
-        els.btnExtractProxy.addEventListener('click', async () => {
-            els.btnExtractProxy.disabled = true;
-            els.btnExtractProxy.innerHTML = `<span class="animate-pulse">A comunicar com o servidor...</span>`;
-            els.errorMsg.classList.add('hidden');
-            els.dataContainer.classList.add('hidden');
-
-            const targetUrl = getTargetUrl();
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+            const url = `https://statusinvest.com.br/${state.assetType}/${ep.id}?${queryParams.toString()}${ep.extraParam || ''}`;
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
 
             try {
                 const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Bloqueado pelo Cloudflare ou CORS.');
+                if (!response.ok) throw new Error('Bloqueado');
                 const jsonData = await response.json();
-                state.proxyData = jsonData;
                 
-                els.jsonBlock.textContent = JSON.stringify(jsonData, null, 2);
-                els.dataContainer.classList.remove('hidden');
-            } catch (err) {
-                els.errorMsg.innerHTML = `<span class="font-semibold">Falha ao contornar a proteção. Por favor, utilize o 'Script para Consola'.</span><span>O proxy não conseguiu contornar o Cloudflare. Mude para o <b>Método 1 (Script de Consola)</b>.</span>`;
-                els.errorMsg.classList.remove('hidden');
+                state.proxyData = jsonData;
+                document.getElementById('jsonBlock').textContent = JSON.stringify(jsonData, null, 2);
+                
+                processVisualizations(jsonData);
+                container.classList.remove('hidden');
+            } catch (error) {
+                err.textContent = "Erro ao buscar dados. O StatusInvest pode ter bloqueado o pedido ou os parâmetros são inválidos.";
+                err.classList.remove('hidden');
             } finally {
-                els.btnExtractProxy.disabled = false;
-                els.btnExtractProxy.innerHTML = `Tentar Extração Direta`;
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="download" class="w-5 h-5"></i> Extrair e Visualizar Dados`;
+                lucide.createIcons();
             }
         });
 
-        // Renderização Inicial
-        updateUI();
+        // Função Inteligente para processar JSON para Gráfico/Tabela
+        const processVisualizations = (data) => {
+            // Tenta encontrar o array de dados (StatusInvest retorna às vezes arrays diretos, ou obj.assetEarningsModels)
+            let dataArray = [];
+            if (Array.isArray(data)) {
+                dataArray = data;
+            } else if (data && typeof data === 'object') {
+                // Procura a primeira chave que contenha um array (ex: assetEarningsModels)
+                const arrayKey = Object.keys(data).find(key => Array.isArray(data[key]));
+                if (arrayKey) dataArray = data[arrayKey];
+            }
 
+            if (dataArray.length === 0) {
+                document.getElementById('viewChart').innerHTML = "<p class='text-slate-500'>Nenhum array de dados suportado encontrado para gerar gráfico.</p>";
+                document.getElementById('tableHead').innerHTML = "";
+                document.getElementById('tableBody').innerHTML = "<tr><td class='p-4'>Sem dados tabulares.</td></tr>";
+                return;
+            }
+
+            // --- TABELA ---
+            const thead = document.getElementById('tableHead');
+            const tbody = document.getElementById('tableBody');
+            thead.innerHTML = ''; tbody.innerHTML = '';
+
+            // Pega as chaves do primeiro objeto para criar as colunas
+            const keys = Object.keys(dataArray[0]);
+            
+            const trHead = document.createElement('tr');
+            keys.forEach(key => {
+                const th = document.createElement('th');
+                th.className = 'px-6 py-3';
+                th.textContent = key;
+                trHead.appendChild(th);
+            });
+            thead.appendChild(trHead);
+
+            dataArray.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'bg-white border-b hover:bg-slate-50';
+                keys.forEach(key => {
+                    const td = document.createElement('td');
+                    td.className = 'px-6 py-4';
+                    // Formata se for objeto (para não quebrar a tabela)
+                    td.textContent = typeof item[key] === 'object' ? JSON.stringify(item[key]) : item[key];
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+
+            // --- GRÁFICO ---
+            // Heurística: Tenta achar uma chave de "data/nome" para o eixo X e uma numéria para o Y
+            let xKey = keys.find(k => k.toLowerCase().includes('date') || k.toLowerCase().includes('ed') || k.toLowerCase().includes('competence')) || keys[0];
+            let yKey = keys.find(k => k.toLowerCase() === 'value' || k.toLowerCase() === 'v') || keys.find(k => typeof dataArray[0][k] === 'number');
+
+            if (xKey && yKey) {
+                const labels = dataArray.map(item => item[xKey]);
+                const values = dataArray.map(item => item[yKey]);
+
+                if (chartInstance) chartInstance.destroy(); // Remove gráfico antigo
+                
+                // Re-cria o canvas para evitar bugs do Chart.js
+                document.getElementById('viewChart').innerHTML = '<canvas id="myChart" style="max-height: 400px;"></canvas>';
+                const ctx = document.getElementById('myChart').getContext('2d');
+                
+                chartInstance = new Chart(ctx, {
+                    type: 'bar', // ou 'line'
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: yKey.toUpperCase(),
+                            data: values,
+                            backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            borderWidth: 2,
+                            borderRadius: 4,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: true }
+                        }
+                    }
+                });
+            } else {
+                document.getElementById('viewChart').innerHTML = "<p class='text-slate-500'>Não foi possível identificar eixos X/Y numéricos automaticamente.</p>";
+            }
+        };
+
+        updateUIParams();
     </script>
 </body>
 </html>
