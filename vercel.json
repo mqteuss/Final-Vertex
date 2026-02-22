@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/statusinvest/:path*",
+      "destination": "https://statusinvest.com.br/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
