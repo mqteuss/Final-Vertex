@@ -1,136 +1,180 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-PT" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extrator Avançado de FIIs</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
-        .loader { border-top-color: #6366f1; animation: spinner 1.5s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        pre::-webkit-scrollbar { width: 8px; height: 8px; }
-        pre::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
-        pre::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        
+        .card {
+            background-color: #18181b;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        
+        .glass {
+            background: rgba(24, 24, 27, 0.85);
+            backdrop-filter: blur(16px);
+        }
+        
+        pre::-webkit-scrollbar { width: 6px; height: 6px; }
+        pre::-webkit-scrollbar-track { background: #27272a; }
+        pre::-webkit-scrollbar-thumb { background: #52525b; border-radius: 9999px; }
+        
+        .tab-active {
+            background-color: #27272a;
+            color: #a5b4fc;
+            border-bottom: 3px solid #6366f1;
+        }
+        
+        .data-row:hover {
+            background-color: #27272a;
+        }
     </style>
 </head>
-<body class="min-h-screen bg-slate-100 p-4 md:p-8 text-slate-800 font-sans pb-24">
+<body class="min-h-screen bg-zinc-950 text-zinc-200 pb-24">
 
-    <div class="max-w-5xl mx-auto space-y-6">
-        
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="bg-indigo-100 p-3 rounded-xl">
-                    <i data-lucide="layers" class="text-indigo-600 w-8 h-8"></i>
+    <div class="max-w-5xl mx-auto px-6 py-10">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-12">
+            <div class="flex items-center gap-5">
+                <div class="w-12 h-12 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-3xl flex items-center justify-center shadow-inner">
+                    <i data-lucide="layers" class="w-7 h-7 text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Extrator Avançado de FIIs</h1>
-                    <div class="text-sm text-slate-500 mt-1 flex items-center gap-3">
-                        <p>Extraia e visualize os dados do StatusInvest.</p>
-                    </div>
+                    <h1 class="text-3xl font-semibold tracking-tight text-white">Extrator Avançado de FIIs</h1>
+                    <p class="text-zinc-500 text-sm">Dados em tempo real • Status Invest</p>
                 </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs uppercase tracking-widest px-4 py-2 bg-zinc-900 rounded-3xl border border-zinc-800">
+                <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                ONLINE
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-            <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2 mb-4">
-                <i data-lucide="settings" class="w-4 h-4"></i> Parâmetros da Consulta
-            </h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Código (Ticker)</label>
-                    <div class="relative">
-                        <input type="text" id="ticker" value="GARE11" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none uppercase font-mono pr-10">
-                    </div>
+        <!-- Controls -->
+        <div class="card rounded-3xl p-8 mb-10 border border-zinc-800/50">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <!-- Ticker -->
+                <div class="md:col-span-3">
+                    <label class="block text-xs font-medium text-zinc-500 mb-2 tracking-widest">TICKER</label>
+                    <input id="ticker" value="GARE11" 
+                           class="w-full bg-zinc-900 border border-zinc-700 focus:border-violet-500 rounded-2xl px-6 py-4 text-2xl font-mono font-semibold outline-none transition-all uppercase">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Categoria</label>
-                    <select id="assetType" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium text-indigo-700 bg-indigo-50 transition-colors">
+                
+                <!-- Categoria -->
+                <div class="md:col-span-3">
+                    <label class="block text-xs font-medium text-zinc-500 mb-2 tracking-widest">CATEGORIA</label>
+                    <select id="assetType" 
+                            class="w-full bg-zinc-900 border border-zinc-700 focus:border-violet-500 rounded-2xl px-6 py-4 outline-none text-zinc-200">
                         <option value="fii">FIIs</option>
                         <option value="fiagro">Fiagros</option>
                         <option value="acoes">Ações</option>
                         <option value="bdrs">BDRs</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Ponto de Acesso</label>
-                    <select id="endpoint" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+
+                <!-- Indicador -->
+                <div class="md:col-span-4">
+                    <label class="block text-xs font-medium text-zinc-500 mb-2 tracking-widest">INDICADOR</label>
+                    <select id="endpoint" 
+                            class="w-full bg-zinc-900 border border-zinc-700 focus:border-violet-500 rounded-2xl px-6 py-4 outline-none text-zinc-200"></select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Estrutura (Type)</label>
-                    <select id="dataType" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-100 disabled:text-slate-400">
-                        <option value="0">Tipo 0 (Padrão)</option>
-                        <option value="1">Tipo 1 (Alternativo)</option>
-                        <option value="2">Tipo 2 (Máximo)</option>
+
+                <!-- Tipo -->
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-zinc-500 mb-2 tracking-widest">TIPO</label>
+                    <select id="dataType" 
+                            class="w-full bg-zinc-900 border border-zinc-700 focus:border-violet-500 rounded-2xl px-6 py-4 outline-none text-zinc-200">
+                        <option value="0">Padrão</option>
+                        <option value="1">Alternativo</option>
+                        <option value="2">Máximo</option>
                     </select>
                 </div>
             </div>
+
+            <!-- Range -->
+            <div id="rangeOptions" class="hidden mt-8 grid grid-cols-2 gap-6 pt-8 border-t border-zinc-800">
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 mb-2 tracking-widest">ANO INICIAL</label>
+                    <input id="rangeMin" type="number" value="2020"
+                           class="w-full bg-zinc-900 border border-zinc-700 focus:border-violet-500 rounded-2xl px-6 py-4 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 mb-2 tracking-widest">ANO FINAL</label>
+                    <input id="rangeMax" type="number" value="2025"
+                           class="w-full bg-zinc-900 border border-zinc-700 focus:border-violet-500 rounded-2xl px-6 py-4 outline-none">
+                </div>
+            </div>
+        </div>
+
+        <!-- Extract Button -->
+        <button id="btnExtract" 
+                class="w-full bg-white hover:bg-zinc-100 text-zinc-950 font-semibold py-6 rounded-3xl text-lg flex items-center justify-center gap-3 transition-all shadow-2xl shadow-black/60">
+            <i data-lucide="download-cloud" class="w-6 h-6"></i>
+            EXTRAIR E VISUALIZAR
+        </button>
+
+        <div id="errorMsg" class="hidden mt-6 bg-red-950/70 border border-red-900 text-red-400 p-5 rounded-3xl text-center text-sm"></div>
+
+        <!-- Results -->
+        <div id="dataContainer" class="hidden mt-16">
             
-            <div id="rangeOptions" class="hidden grid-cols-2 gap-4 mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Ano Inicial</label>
-                    <input type="number" id="rangeMin" value="2020" class="w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm">
+            <!-- Tabs -->
+            <div class="flex bg-zinc-900 rounded-3xl p-1 mb-8 w-fit">
+                <button id="tabChart" class="tab-btn tab-active px-10 py-4 rounded-3xl text-sm font-medium transition-all">GRÁFICO</button>
+                <button id="tabTable" class="tab-btn px-10 py-4 rounded-3xl text-sm font-medium text-zinc-400 hover:text-zinc-200 transition-all">TABELA</button>
+                <button id="tabJson" class="tab-btn px-10 py-4 rounded-3xl text-sm font-medium text-zinc-400 hover:text-zinc-200 transition-all">JSON BRUTO</button>
+            </div>
+
+            <!-- Chart -->
+            <div id="viewChart" class="card rounded-3xl p-8 border border-zinc-800/50">
+                <canvas id="myChart" class="w-full" height="420"></canvas>
+            </div>
+
+            <!-- Table -->
+            <div id="viewTable" class="card rounded-3xl overflow-hidden hidden border border-zinc-800/50">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead id="tableHead" class="bg-zinc-900 sticky top-0"></thead>
+                        <tbody id="tableBody" class="divide-y divide-zinc-800"></tbody>
+                    </table>
                 </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Ano Final</label>
-                    <input type="number" id="rangeMax" class="w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm">
+            </div>
+
+            <!-- JSON -->
+            <div id="viewJson" class="card rounded-3xl p-8 hidden border border-zinc-800/50">
+                <div class="flex justify-between mb-4 items-center">
+                    <span class="uppercase text-xs tracking-widest text-zinc-500">Resposta completa</span>
+                    <button id="btnCopyJson" 
+                            class="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-sm transition-all">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        Copiar JSON
+                    </button>
                 </div>
+                <pre id="jsonBlock" class="bg-black/60 p-8 rounded-2xl text-emerald-300 text-xs overflow-auto max-h-[520px] font-mono leading-relaxed border border-zinc-800"></pre>
             </div>
         </div>
-
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <button id="btnExtractProxy" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 px-6 rounded-xl transition-all disabled:opacity-50 flex justify-center items-center gap-2 shadow-sm cursor-pointer">
-                <i data-lucide="download" class="w-5 h-5"></i> Extrair e Visualizar Dados
-            </button>
-            <div id="errorMsg" class="hidden mt-4 bg-red-50 text-red-700 p-4 rounded-xl text-sm border border-red-200"></div>
-        </div>
-
-        <div id="dataContainer" class="hidden bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <div class="flex bg-slate-50 border-b border-slate-200">
-                <button id="tabChart" class="flex-1 py-3 font-medium text-sm flex justify-center items-center gap-2 bg-white text-indigo-700 border-b-2 border-indigo-600">
-                    <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Gráfico
-                </button>
-                <button id="tabTable" class="flex-1 py-3 font-medium text-sm flex justify-center items-center gap-2 text-slate-600 hover:bg-slate-100">
-                    <i data-lucide="list" class="w-4 h-4"></i> Tabela
-                </button>
-                <button id="tabJson" class="flex-1 py-3 font-medium text-sm flex justify-center items-center gap-2 text-slate-600 hover:bg-slate-100">
-                    <i data-lucide="file-json" class="w-4 h-4"></i> JSON Bruto
-                </button>
-            </div>
-
-            <div id="viewChart" class="p-6">
-                <canvas id="myChart" style="max-height: 400px;"></canvas>
-            </div>
-
-            <div id="viewTable" class="hidden p-0 overflow-x-auto">
-                <table class="w-full text-sm text-left text-slate-500">
-                    <thead id="tableHead" class="text-xs text-slate-700 uppercase bg-slate-50 border-b border-slate-200">
-                    </thead>
-                    <tbody id="tableBody">
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="viewJson" class="hidden bg-slate-900 p-0 relative">
-                <button id="btnCopyJson" class="absolute top-4 right-4 text-xs flex items-center gap-1 bg-white/10 text-white border border-white/20 px-3 py-1.5 rounded-lg hover:bg-white/20 transition-colors">
-                    <i data-lucide="copy" class="w-3 h-3"></i> Copiar
-                </button>
-                <pre id="jsonBlock" class="text-green-400 p-6 overflow-auto text-xs max-h-[500px] font-mono"></pre>
-            </div>
-        </div>
-
     </div>
 
     <script>
         lucide.createIcons();
         let chartInstance = null;
+        let currentData = null;
 
         const state = {
-            assetType: 'fii', ticker: 'GARE11', endpoint: 'getpatrimonioliquido',
-            dataType: '0', rangeMin: '2020', rangeMax: new Date().getFullYear().toString(),
-            activeDataTab: 'chart', proxyData: null
+            ticker: 'GARE11',
+            assetType: 'fii',
+            endpoint: 'getpatrimonioliquido',
+            dataType: '0',
+            rangeMin: '2020',
+            rangeMax: new Date().getFullYear().toString()
         };
 
         const endpoints = [
@@ -140,188 +184,281 @@
             { id: 'getcaixa', name: 'Caixa', param: 'code' },
             { id: 'getresultado', name: 'Resultado', param: 'code' },
             { id: 'demonstracoestrimestrais', name: 'Demonstrações Trimestrais', param: 'code', requiresRange: true },
-            { id: 'companytickerprovents', name: 'Proventos / Dividendos', param: 'companyName', extraParam: '&chartProventsType=1' }
+            { id: 'companytickerprovents', name: 'Proventos / Dividendos', param: 'companyName', extra: '&chartProventsType=1' }
         ];
 
-        // Populando Select
-        const endpointSelect = document.getElementById('endpoint');
+        // Populate endpoint select
+        const endpointEl = document.getElementById('endpoint');
         endpoints.forEach(ep => {
             const opt = document.createElement('option');
-            opt.value = ep.id; opt.textContent = ep.name;
-            endpointSelect.appendChild(opt);
+            opt.value = ep.id;
+            opt.textContent = ep.name;
+            endpointEl.appendChild(opt);
         });
         document.getElementById('rangeMax').value = state.rangeMax;
 
-        // Atualização de UI Básica
-        const updateUIParams = () => {
+        // Update UI
+        function updateUI() {
             const ep = endpoints.find(e => e.id === state.endpoint);
-            document.getElementById('rangeOptions').style.display = ep.requiresRange ? 'flex' : 'none';
+            document.getElementById('rangeOptions').classList.toggle('hidden', !ep.requiresRange);
             document.getElementById('dataType').disabled = (ep.id === 'companytickerprovents');
-        };
+        }
 
-        ['ticker', 'assetType', 'endpoint', 'dataType', 'rangeMin', 'rangeMax'].forEach(id => {
-            document.getElementById(id).addEventListener('change', (e) => {
-                state[id] = e.target.value; updateUIParams();
+        ['ticker','assetType','endpoint','dataType','rangeMin','rangeMax'].forEach(id => {
+            document.getElementById(id).addEventListener('change', e => {
+                state[id] = (id === 'ticker') ? e.target.value.toUpperCase() : e.target.value;
+                updateUI();
             });
         });
 
-        // Abas de Visualização
-        const setTab = (tabName) => {
-            state.activeDataTab = tabName;
-            const tabs = ['Chart', 'Table', 'Json'];
-            tabs.forEach(t => {
-                const isMatch = tabName.toLowerCase() === t.toLowerCase();
-                document.getElementById(`view${t}`).classList.toggle('hidden', !isMatch);
-                
-                const btn = document.getElementById(`tab${t}`);
-                if (isMatch) {
-                    btn.className = `flex-1 py-3 font-medium text-sm flex justify-center items-center gap-2 bg-white text-indigo-700 border-b-2 border-indigo-600`;
-                } else {
-                    btn.className = `flex-1 py-3 font-medium text-sm flex justify-center items-center gap-2 text-slate-600 hover:bg-slate-100`;
+        // Tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById(`tab${tab}`).classList.add('tab-active');
+            
+            ['Chart','Table','Json'].forEach(t => {
+                document.getElementById(`view${t}`).classList.toggle('hidden', t.toLowerCase() !== tab.toLowerCase());
+            });
+        }
+
+        document.getElementById('tabChart').addEventListener('click', () => switchTab('Chart'));
+        document.getElementById('tabTable').addEventListener('click', () => switchTab('Table'));
+        document.getElementById('tabJson').addEventListener('click', () => switchTab('Json'));
+
+        // Format helper
+        function formatCell(val, key) {
+            if (val === null || val === undefined) return '—';
+            
+            const k = key.toLowerCase();
+            
+            if (typeof val === 'number') {
+                if (k.includes('dy') || k.includes('yield') || k.includes('percent') || k.includes('taxa')) {
+                    return val.toFixed(2) + '%';
+                }
+                if (Math.abs(val) > 999 || k.includes('valor') || k.includes('patrim') || k.includes('receit') || k.includes('caixa') || k.includes('result')) {
+                    return 'R$ ' + val.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                }
+                return val.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            }
+            
+            if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+                return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(val));
+            }
+            
+            return val;
+        }
+
+        // Smart multi-series chart
+        function renderChart(dataArray) {
+            if (chartInstance) chartInstance.destroy();
+
+            const keys = Object.keys(dataArray[0] || {});
+            const dateCandidates = keys.filter(k => /date|ed|competence|payment|ano|trimestre/i.test(k));
+            const xKey = dateCandidates[0] || keys[0];
+
+            // Numeric series (max 5)
+            const numericKeys = keys.filter(k => {
+                if (k === xKey) return false;
+                const sample = dataArray[0][k];
+                return typeof sample === 'number' || 
+                       (typeof sample === 'string' && !isNaN(parseFloat(sample)));
+            }).slice(0, 5);
+
+            if (numericKeys.length === 0) {
+                document.getElementById('viewChart').innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-96 text-zinc-500">
+                        <i data-lucide="bar-chart-3" class="w-20 h-20 mb-6 opacity-30"></i>
+                        <p class="text-lg">Sem dados numéricos para gráfico</p>
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            // Sort chronologically if dates
+            if (dateCandidates.length) {
+                dataArray.sort((a,b) => new Date(a[xKey]) - new Date(b[xKey]));
+            }
+
+            const labels = dataArray.map(item => {
+                let v = item[xKey];
+                if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) {
+                    return new Intl.DateTimeFormat('pt-BR', {month:'short', year:'2-digit'}).format(new Date(v));
+                }
+                return v;
+            });
+
+            const colorPalette = ['#a5b4fc', '#67e8f9', '#c4d0ff', '#f472b6', '#fb923c'];
+
+            const datasets = numericKeys.map((key, i) => ({
+                label: key.replace(/([A-Z])/g, ' $1').trim().toUpperCase(),
+                data: dataArray.map(item => {
+                    let v = item[key];
+                    return typeof v === 'string' ? parseFloat(v) || 0 : (v || 0);
+                }),
+                borderColor: colorPalette[i],
+                backgroundColor: colorPalette[i] + '22',
+                borderWidth: 3.5,
+                tension: 0.35,
+                pointRadius: 0,
+                pointHoverRadius: 6
+            }));
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+            
+            chartInstance = new Chart(ctx, {
+                type: dateCandidates.length ? 'line' : 'bar',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { 
+                            position: 'top',
+                            labels: { color: '#d1d5db', padding: 20, usePointStyle: true }
+                        },
+                        tooltip: {
+                            backgroundColor: '#18181b',
+                            borderColor: '#3f3f46',
+                            borderWidth: 1,
+                            titleColor: '#71717a',
+                            bodyColor: '#e4e4e7',
+                            callbacks: {
+                                label: (ctx) => {
+                                    const lbl = ctx.dataset.label.toLowerCase();
+                                    let val = ctx.raw;
+                                    if (lbl.includes('dy') || lbl.includes('yield')) return val.toFixed(2) + '%';
+                                    if (Math.abs(val) > 1000) return 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits:2});
+                                    return val.toLocaleString('pt-BR');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: '#27272a' }, ticks: { color: '#71717a' } },
+                        y: { grid: { color: '#27272a' }, ticks: { color: '#71717a' } }
+                    }
                 }
             });
-        };
+        }
 
-        document.getElementById('tabChart').addEventListener('click', () => setTab('chart'));
-        document.getElementById('tabTable').addEventListener('click', () => setTab('table'));
-        document.getElementById('tabJson').addEventListener('click', () => setTab('json'));
+        // Table render
+        function renderTable(dataArray) {
+            const thead = document.getElementById('tableHead');
+            const tbody = document.getElementById('tableBody');
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
 
-        // Extração de Dados
-        document.getElementById('btnExtractProxy').addEventListener('click', async () => {
-            const btn = document.getElementById('btnExtractProxy');
+            const keys = Object.keys(dataArray[0] || {});
+
+            // Header
+            const headRow = document.createElement('tr');
+            keys.forEach(key => {
+                const th = document.createElement('th');
+                th.className = 'px-8 py-5 text-left text-xs font-medium text-zinc-400 uppercase tracking-widest';
+                th.textContent = key.replace(/([A-Z])/g, ' $1').trim();
+                headRow.appendChild(th);
+            });
+            thead.appendChild(headRow);
+
+            // Rows
+            dataArray.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'data-row';
+                keys.forEach(key => {
+                    const td = document.createElement('td');
+                    td.className = 'px-8 py-5 whitespace-nowrap';
+                    const formatted = formatCell(item[key], key);
+                    td.textContent = formatted;
+                    if (typeof item[key] === 'number') td.classList.add('font-mono', 'text-emerald-300');
+                    row.appendChild(td);
+                });
+                tbody.appendChild(row);
+            });
+        }
+
+        // Main process
+        function processData(raw) {
+            currentData = raw;
+
+            // Find main data array
+            let dataArray = [];
+            if (Array.isArray(raw)) dataArray = raw;
+            else {
+                const arrKey = Object.keys(raw).find(k => Array.isArray(raw[k]));
+                dataArray = arrKey ? raw[arrKey] : [];
+            }
+
+            if (dataArray.length === 0) {
+                document.getElementById('viewChart').innerHTML = `<p class="text-center py-32 text-zinc-500">Nenhum dado tabular encontrado. Veja o JSON.</p>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="10" class="text-center py-20 text-zinc-500">Sem dados</td></tr>`;
+                return;
+            }
+
+            // Render everything
+            renderTable(dataArray);
+            renderChart(dataArray);
+        }
+
+        // Extract
+        document.getElementById('btnExtract').addEventListener('click', async () => {
+            const btn = document.getElementById('btnExtract');
             const err = document.getElementById('errorMsg');
             const container = document.getElementById('dataContainer');
-            
+
             btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> A obter dados...`;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i> A obter dados...`;
             err.classList.add('hidden');
-            container.classList.add('hidden');
             lucide.createIcons();
 
             const ep = endpoints.find(e => e.id === state.endpoint);
-            const queryParams = new URLSearchParams();
-            queryParams.append(ep.param, state.ticker.toUpperCase());
-            if (ep.id !== 'companytickerprovents') queryParams.append('type', state.dataType);
+            
+            let url = `https://statusinvest.com.br/${state.assetType}/${ep.id}?${ep.param}=${state.ticker}`;
+            if (ep.id !== 'companytickerprovents') url += `&type=${state.dataType}`;
             if (ep.requiresRange) {
-                queryParams.append('contabil', 'true');
-                queryParams.append('range.min', state.rangeMin);
-                queryParams.append('range.max', state.rangeMax);
+                url += `&contabil=true&range.min=${state.rangeMin}&range.max=${state.rangeMax}`;
             }
+            if (ep.extra) url += ep.extra;
 
-            const url = `https://statusinvest.com.br/${state.assetType}/${ep.id}?${queryParams.toString()}${ep.extraParam || ''}`;
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+            const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
 
             try {
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Bloqueado');
-                const jsonData = await response.json();
+                const res = await fetch(proxy);
+                if (!res.ok) throw new Error();
                 
-                state.proxyData = jsonData;
-                document.getElementById('jsonBlock').textContent = JSON.stringify(jsonData, null, 2);
+                const json = await res.json();
+                document.getElementById('jsonBlock').textContent = JSON.stringify(json, null, 2);
                 
-                processVisualizations(jsonData);
+                processData(json);
                 container.classList.remove('hidden');
-            } catch (error) {
-                err.textContent = "Erro ao buscar dados. O StatusInvest pode ter bloqueado o pedido ou os parâmetros são inválidos.";
+                switchTab('Chart');
+                
+            } catch (e) {
+                err.textContent = 'Erro ao conectar com o StatusInvest. Verifique o ticker ou tente novamente.';
                 err.classList.remove('hidden');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i data-lucide="download" class="w-5 h-5"></i> Extrair e Visualizar Dados`;
+                btn.innerHTML = `<i data-lucide="download-cloud" class="w-6 h-6"></i> EXTRAIR E VISUALIZAR`;
                 lucide.createIcons();
             }
         });
 
-        // Função Inteligente para processar JSON para Gráfico/Tabela
-        const processVisualizations = (data) => {
-            // Tenta encontrar o array de dados (StatusInvest retorna às vezes arrays diretos, ou obj.assetEarningsModels)
-            let dataArray = [];
-            if (Array.isArray(data)) {
-                dataArray = data;
-            } else if (data && typeof data === 'object') {
-                // Procura a primeira chave que contenha um array (ex: assetEarningsModels)
-                const arrayKey = Object.keys(data).find(key => Array.isArray(data[key]));
-                if (arrayKey) dataArray = data[arrayKey];
-            }
+        // Copy JSON
+        document.getElementById('btnCopyJson').addEventListener('click', async () => {
+            const text = document.getElementById('jsonBlock').textContent;
+            await navigator.clipboard.writeText(text);
+            const orig = this.innerHTML;
+            this.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Copiado!`;
+            this.style.color = '#4ade80';
+            setTimeout(() => {
+                this.innerHTML = orig;
+                this.style.color = '';
+            }, 1800);
+        });
 
-            if (dataArray.length === 0) {
-                document.getElementById('viewChart').innerHTML = "<p class='text-slate-500'>Nenhum array de dados suportado encontrado para gerar gráfico.</p>";
-                document.getElementById('tableHead').innerHTML = "";
-                document.getElementById('tableBody').innerHTML = "<tr><td class='p-4'>Sem dados tabulares.</td></tr>";
-                return;
-            }
-
-            // --- TABELA ---
-            const thead = document.getElementById('tableHead');
-            const tbody = document.getElementById('tableBody');
-            thead.innerHTML = ''; tbody.innerHTML = '';
-
-            // Pega as chaves do primeiro objeto para criar as colunas
-            const keys = Object.keys(dataArray[0]);
-            
-            const trHead = document.createElement('tr');
-            keys.forEach(key => {
-                const th = document.createElement('th');
-                th.className = 'px-6 py-3';
-                th.textContent = key;
-                trHead.appendChild(th);
-            });
-            thead.appendChild(trHead);
-
-            dataArray.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = 'bg-white border-b hover:bg-slate-50';
-                keys.forEach(key => {
-                    const td = document.createElement('td');
-                    td.className = 'px-6 py-4';
-                    // Formata se for objeto (para não quebrar a tabela)
-                    td.textContent = typeof item[key] === 'object' ? JSON.stringify(item[key]) : item[key];
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
-
-            // --- GRÁFICO ---
-            // Heurística: Tenta achar uma chave de "data/nome" para o eixo X e uma numéria para o Y
-            let xKey = keys.find(k => k.toLowerCase().includes('date') || k.toLowerCase().includes('ed') || k.toLowerCase().includes('competence')) || keys[0];
-            let yKey = keys.find(k => k.toLowerCase() === 'value' || k.toLowerCase() === 'v') || keys.find(k => typeof dataArray[0][k] === 'number');
-
-            if (xKey && yKey) {
-                const labels = dataArray.map(item => item[xKey]);
-                const values = dataArray.map(item => item[yKey]);
-
-                if (chartInstance) chartInstance.destroy(); // Remove gráfico antigo
-                
-                // Re-cria o canvas para evitar bugs do Chart.js
-                document.getElementById('viewChart').innerHTML = '<canvas id="myChart" style="max-height: 400px;"></canvas>';
-                const ctx = document.getElementById('myChart').getContext('2d');
-                
-                chartInstance = new Chart(ctx, {
-                    type: 'bar', // ou 'line'
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: yKey.toUpperCase(),
-                            data: values,
-                            backgroundColor: 'rgba(99, 102, 241, 0.2)',
-                            borderColor: 'rgba(99, 102, 241, 1)',
-                            borderWidth: 2,
-                            borderRadius: 4,
-                            tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: true }
-                        }
-                    }
-                });
-            } else {
-                document.getElementById('viewChart').innerHTML = "<p class='text-slate-500'>Não foi possível identificar eixos X/Y numéricos automaticamente.</p>";
-            }
-        };
-
-        updateUIParams();
+        // Init
+        updateUI();
+        document.getElementById('rangeOptions').classList.add('hidden'); // initial
     </script>
 </body>
 </html>
