@@ -1,42 +1,39 @@
 // api/proxy.js — Vercel Serverless Function
-// Proxy para o StatusInvest com headers de browser real para contornar Cloudflare
 
 module.exports = async function handler(req, res) {
-  // Permite CORS para o frontend
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
+  // O Vercel já decodifica o query string — NÃO usar decodeURIComponent outra vez
   const { url } = req.query;
 
-  if (!url) {
-    return res.status(400).json({ error: 'Parâmetro "url" obrigatório.' });
-  }
+  if (!url) return res.status(400).json({ error: 'Parâmetro "url" obrigatório.' });
 
-  // Valida que só permitimos requests para o StatusInvest (segurança)
+  // Valida domínio permitido
   let targetUrl;
   try {
-    targetUrl = decodeURIComponent(url);
+    targetUrl = url; // já vem decodificado pelo Vercel
     const parsed = new URL(targetUrl);
     if (!parsed.hostname.endsWith('statusinvest.com.br')) {
       return res.status(403).json({ error: 'Domínio não permitido.' });
     }
   } catch {
-    return res.status(400).json({ error: 'URL inválido.' });
+    return res.status(400).json({ error: `URL inválido: ${url}` });
   }
+
+  console.log('[proxy] Fetching:', targetUrl);
 
   try {
     const response = await fetch(targetUrl, {
       method: 'GET',
+      redirect: 'follow',
       headers: {
-        // Headers que imitam um browser real — essencial para passar pelo Cloudflare
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
         'Accept': 'application/json, text/plain, */*',
-        'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Accept-Language': 'pt-BR,pt;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
         'Referer': 'https://statusinvest.com.br/',
         'Origin': 'https://statusinvest.com.br',
@@ -48,36 +45,48 @@ module.exports = async function handler(req, res) {
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Site': 'same-origin',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
       },
     });
 
-    if (!response.ok) {
-      return res.status(response.status).json({
-        error: `StatusInvest retornou ${response.status}`,
-        status: response.status,
-      });
-    }
-
     const contentType = response.headers.get('content-type') || '';
-    
-    // Se for HTML (Cloudflare challenge page), retorna erro claro
-    if (contentType.includes('text/html')) {
+    console.log('[proxy] Response status:', response.status, '| Content-Type:', contentType);
+
+    // Lê o body uma só vez
+    const rawText = await response.text();
+
+    // Detecta Cloudflare / challenge page
+    if (
+      !response.ok ||
+      contentType.includes('text/html') ||
+      rawText.trimStart().startsWith('<!') ||
+      rawText.trimStart().startsWith('<html')
+    ) {
+      console.error('[proxy] Recebeu HTML em vez de JSON. Primeiros 300 chars:', rawText.slice(0, 300));
       return res.status(503).json({
-        error: 'Cloudflare challenge page detectada. Tente novamente.',
-        blocked: true,
+        error: 'StatusInvest devolveu HTML (possível bloqueio Cloudflare).',
+        httpStatus: response.status,
+        preview: rawText.slice(0, 200),
       });
     }
 
-    const data = await response.json();
+    // Tenta fazer parse do JSON
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch (parseErr) {
+      console.error('[proxy] JSON inválido. Primeiros 300 chars:', rawText.slice(0, 300));
+      return res.status(502).json({
+        error: 'Resposta não é JSON válido.',
+        preview: rawText.slice(0, 200),
+      });
+    }
 
-    // Cache de 5 minutos no CDN da Vercel para reduzir requests
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
     res.setHeader('Content-Type', 'application/json');
-
     return res.status(200).json(data);
+
   } catch (err) {
-    console.error('[proxy] Erro:', err.message);
+    console.error('[proxy] Erro de rede:', err.message);
     return res.status(500).json({ error: 'Erro interno no proxy.', details: err.message });
   }
-}
+};
